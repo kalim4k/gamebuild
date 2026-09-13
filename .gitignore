@@ -1,0 +1,11 @@
+# Système
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Vercel
+.vercel
+
+# Éditeurs
+.vscode/
+*.swp

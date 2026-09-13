@@ -1,0 +1,129 @@
+DOSSIER MEDIA — GAME BUILD
+==========================
+
+Dépose ici tes vidéos et tes images, avec EXACTEMENT ces noms de fichiers.
+Tu n'as aucun code à modifier : la page les détecte toute seule.
+
+Tant qu'un fichier est absent, la page affiche un cadre en pointillés
+avec le nom attendu. Rien ne casse.
+
+
+CE QU'IL FAUT DÉPOSER
+---------------------
+
+  hero.png             TA BANNIÈRE DE PRÉSENTATION  [DÉJÀ EN PLACE]
+                       La toute première chose que le visiteur voit.
+                       Format PAYSAGE 16:9 (celle en place fait 1672 x 941).
+                       Elle porte déjà le titre, la promesse, les 4 arguments
+                       et ton nom — la page ne les répète donc pas.
+                       Si tu la remplaces, garde le 16:9, sinon elle sera
+                       recadrée et du texte sera coupé.
+
+  jeu-1.mp4            [EN PLACE] Gameplay de TES jeux, en vertical.
+  jeu-2.mp4            Elles tournent en boucle, sans son.
+  jeu-3.mp4
+
+  eleve-1.mp4          [EN PLACE] Gameplay des jeux DE TES ÉLÈVES.
+  eleve-2.mp4          Six vidéos, qu'on balaye horizontalement.
+  eleve-3.mp4
+  eleve-4.mp4
+  eleve-5.mp4
+  eleve-6.mp4
+
+  revenu-1.png         [EN PLACE] Les 5 captures de revenus.
+  revenu-2.png         Elles se balayent horizontalement, et chacune
+  revenu-3.png         s'ouvre en taille réelle d'un clic, pour que le
+  revenu-4.png         visiteur puisse lire les montants lui-même.
+  revenu-5.png
+
+  (Les témoignages vidéo ont été abandonnés : la section a été retirée.)
+
+
+DÉJÀ EN PLACE — RIEN À FAIRE
+----------------------------
+
+  pay/mixx.jpg         Les logos Mobile Money affichés sous le prix,
+  pay/moov.png         en haut de page. Rangés dans de petites tuiles
+  pay/mtn.jpg          blanches identiques, parce que tes fichiers
+  pay/orange.png       n'avaient ni le même fond ni le même format.
+  pay/wave.png
+
+
+FACULTATIF — LES LOGOS DU BANDEAU DÉFILANT
+------------------------------------------
+
+Sous le héros, une bande fait défiler les outils de la formation.
+Pour l'instant elle n'affiche que les NOMS, ce qui est déjà propre.
+
+Si tu veux y ajouter les logos, dépose-les dans un sous-dossier
+media/stack/ avec ces noms exacts :
+
+  stack/antigravity.png    stack/playstore.png
+  stack/claude.png         stack/adsense.png
+  stack/chatgpt.png        stack/adsterra.png
+  stack/gemini.png         stack/mobilemoney.png
+  stack/discord.png
+
+Format : PNG à fond TRANSPARENT, environ 96 px de haut, logo sombre
+(la bande est sur fond blanc). Chaque logo apparaît tout seul dès que
+son fichier est là. Ceux que tu ne fournis pas gardent simplement leur
+nom en texte — rien ne casse, aucune image cassée ne s'affiche.
+
+
+RÈGLES À RESPECTER
+------------------
+
+FORMAT
+  Vidéos : .mp4 uniquement (codec H.264). C'est ce que sortent tous les
+  téléphones par défaut, tu n'as normalement rien à convertir.
+  Images : .jpg
+
+POIDS
+  Vise 3 Mo maximum par vidéo. Tes acheteurs sont souvent en données
+  mobiles : une page à 60 Mo ne se chargera jamais chez eux.
+  Pour alléger : coupe court (10 à 20 secondes suffisent) et exporte
+  en 720p plutôt qu'en 1080p.
+
+ORIENTATION
+  Les gameplays et les témoignages doivent être filmés EN VERTICAL.
+  La bannière hero.png doit rester EN PAYSAGE 16:9.
+  Un média dans le mauvais sens sera recadré, et mal recadré.
+
+LE CAS DE hero.png
+  Elle pèse actuellement 1,68 Mo, ce qui est lourd pour une première
+  image — sur une connexion mobile lente, c'est plusieurs secondes
+  d'écran vide avant qu'elle apparaisse.
+  Passe-la sur https://squoosh.app (gratuit, dans le navigateur) :
+  choisis MozJPEG en qualité 80, tu tomberas autour de 250 Ko sans
+  différence visible. Enregistre le résultat sous media/hero.jpg,
+  puis remplace hero.png par hero.jpg dans index.html (une seule ligne,
+  dans le <header>).
+
+SON
+  Les gameplays (jeu-*.mp4 et eleve-*.mp4) démarrent tout seuls, donc
+  sans son — c'est une obligation des navigateurs, pas un choix.
+  Enlève la bande son avant d'exporter, ça allège le fichier.
+  La présentation et les témoignages se lancent au clic, avec le son.
+
+
+LES CAPTURES DE REVENUS
+-----------------------
+
+Elles sont affichées. Aucune ne laisse fuiter d'email, de nom ni de
+numéro de compte : de ce côté, elles sont publiables telles quelles.
+
+Chaque capture s'ouvre en taille réelle quand on clique dessus, dans
+un nouvel onglet. C'est volontaire : quelqu'un qui doute peut agrandir
+et lire les chiffres lui-même plutôt que de te croire sur parole.
+
+Si tu en ajoutes d'autres plus tard, garde le format vertical d'une
+capture de téléphone. Le cadre est calé sur 821 x 1916 px ; un format
+très différent serait légèrement recadré.
+
+
+UNE FOIS LES FICHIERS DÉPOSÉS
+-----------------------------
+
+Ouvre index.html dans ton navigateur. Les cadres en pointillés doivent
+avoir disparu. S'il en reste un, c'est que le nom du fichier ne
+correspond pas — attention aux majuscules et aux accents.
