@@ -3,15 +3,22 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Game Build — Crée ton jeu, gagne de l'argent avec</title>
+<title>Game Build — Ton jeu vidéo, fabriqué par l'IA</title>
 <meta name="description" content="Deux guides PDF et un tutoriel vidéo pour créer ton propre jeu avec l'IA, le mettre en ligne et le monétiser. Sans écrire une ligne de code.">
 <meta name="theme-color" content="#ffffff">
 <link rel="canonical" href="https://game-build.vercel.app/">
 
 <meta property="og:type" content="website">
 <meta property="og:locale" content="fr_FR">
-<meta property="og:title" content="Game Build — Crée ton jeu, gagne de l'argent avec">
-<meta property="og:description" content="D'une idée à un jeu en ligne qui rapporte. Deux guides PDF + tutoriel vidéo. Sans coder.">
+<meta property="og:title" content="Ton jeu vidéo. Fabriqué par l'IA. Payé par la pub.">
+<meta property="og:description" content="Deux guides et un tutoriel vidéo pour créer ton jeu et le monétiser. Ce week-end, il peut être en ligne — sans écrire une ligne de code. 6 900 F CFA.">
+<meta property="og:url" content="https://game-build.vercel.app/">
+<!-- Sans og:image, un lien partagé ou une publicité Meta s'affiche sans visuel.
+     L'adresse doit être absolue : à corriger en même temps que <link rel="canonical">. -->
+<meta property="og:image" content="https://game-build.vercel.app/media/hero.png">
+<meta property="og:image:width" content="1672">
+<meta property="og:image:height" content="941">
+<meta property="og:image:alt" content="Game Build — créer un jeu vidéo avec l'IA, sans coder.">
 <meta name="twitter:card" content="summary_large_image">
 
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
@@ -169,13 +176,56 @@ a:hover{ text-decoration: underline; }
   gap: clamp(28px, 5vw, 44px);
   max-width: 1120px; margin-inline: auto;
 }
-/* La bannière porte déjà le titre et la promesse : elle occupe
-   toute la largeur, et n'est jamais recadrée (elle est en 16:9). */
+/* La bannière vient APRÈS le texte : le titre et l'offre se lisent
+   sans attendre le chargement de l'image. Elle n'est jamais recadrée
+   (elle est en 16:9). */
 .hero-visual{ width: 100%; }
 .hero-copy{ display: flex; flex-direction: column; align-items: center; gap: 16px; text-align: center; }
+.hero-copy .t-hero{
+  /* Plus petit que le .t-hero générique : ce titre fait 49 signes,
+     il ferait cinq lignes sur un écran de 320 px à 44 px. */
+  font-size: clamp(35px, 7.4vw, 72px);
+  max-width: 21ch; text-wrap: balance;
+}
 .hero-copy .t-body{ max-width: 46ch; }
-.hero-price{ font-size: 17px; color: var(--ink-2); }
-.hero-price s{ color: var(--ink-3); }
+
+/* L'offre : ce qu'on reçoit, en trois lignes cochées. Alignées à
+   gauche même dans une colonne centrée — une liste centrée se lit mal. */
+.hero-offer{
+  list-style: none; margin: 6px 0 2px; padding: 0;
+  display: grid; gap: 13px;
+  max-width: 42ch; text-align: left;
+  font-size: clamp(15px, 1.9vw, 17px); line-height: 1.35;
+}
+.hero-offer li{
+  display: grid; grid-template-columns: 21px 1fr;
+  column-gap: 11px; row-gap: 2px; align-items: start;
+}
+.hero-offer li::before{
+  content: "✓"; grid-column: 1; grid-row: 1;
+  display: grid; place-items: center;
+  width: 21px; height: 21px; border-radius: 50%;
+  background: var(--blue); color: #fff;
+  font-size: 12px; font-weight: 700; line-height: 1;
+}
+.hero-offer b{ grid-column: 2; grid-row: 1; font-weight: 600; color: var(--ink); }
+.hero-offer span{ grid-column: 2; grid-row: 2; color: var(--ink-2); }
+
+/* Le prix, lisible d'un coup d'œil, avec l'ancien prix et la remise. */
+.hero-price{
+  display: flex; flex-wrap: wrap; align-items: baseline;
+  justify-content: center; gap: 4px 12px;
+  margin-top: 4px; font-size: 17px; color: var(--ink-2);
+}
+.hero-price b{
+  font-size: clamp(34px, 6vw, 44px); font-weight: 600; color: var(--ink);
+  line-height: 1; letter-spacing: -.015em; font-variant-numeric: tabular-nums;
+}
+.hero-price s{ color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.hero-off{
+  font-size: 13px; font-weight: 600; color: var(--orange);
+  border: 1px solid currentColor; border-radius: 980px; padding: 2px 9px;
+}
 
 /* Moyens de paiement — tuiles de taille fixe, car les logos fournis
    n'ont ni le même fond ni le même rapport (JPG 16:9 à fond plein
@@ -787,6 +837,54 @@ src="https://www.facebook.com/tr?id=4451955808377862&ev=PageView&noscript=1"
   <div class="wrap">
     <div class="hero-grid">
 
+      <!-- La promesse passe avant la bannière : elle s'affiche tout de
+           suite, sans attendre le chargement d'une image de 1,7 Mo. -->
+      <div class="hero-copy">
+        <p class="eyebrow">Game&nbsp;Build</p>
+        <h1 class="t-hero">Ton jeu vidéo. Fabriqué par l'IA. Payé par la pub.</h1>
+        <p class="t-body">
+          Tu racontes ton idée, l'IA fabrique le jeu, tu y branches la publicité.
+          Ce week-end, il peut déjà être en ligne — sans que tu écrives une seule
+          ligne de code.
+        </p>
+
+        <ul class="hero-offer">
+          <li>
+            <b>Volume&nbsp;1 — Créer ton jeu</b>
+            <span>11 chapitres, de l'idée au jeu qui tourne pour de vrai.</span>
+          </li>
+          <li>
+            <b>Volume&nbsp;2 — Gagner de l'argent avec</b>
+            <span>11 chapitres : la boutique dans le jeu, puis la publicité.</span>
+          </li>
+          <li>
+            <b>Le tutoriel vidéo</b>
+            <span>Je refais le Volume&nbsp;1 devant toi, écran partagé, sans rien couper.</span>
+          </li>
+        </ul>
+
+        <p class="hero-price">
+          <b>6 900 F</b>
+          <s>19 900 F CFA</s>
+          <span class="hero-off">Lancement −65 %</span>
+        </p>
+
+        <div class="cta-row">
+          <a class="btn btn-lg js-buy" href="#acheter">Je crée mon jeu — 6 900 F</a>
+          <a class="link-more" href="#produit">Voir ce qu'il y a dedans</a>
+        </div>
+
+        <p class="t-caption">Paiement unique · accès immédiat · mises à jour incluses</p>
+
+        <ul class="pay" aria-label="Moyens de paiement acceptés">
+          <li><img src="media/pay/mixx.jpg"  alt="Mixx by Yas"   loading="lazy"></li>
+          <li><img src="media/pay/moov.png"  alt="Moov Money"    loading="lazy"></li>
+          <li><img src="media/pay/mtn.jpg"   alt="MTN Mobile Money" loading="lazy"></li>
+          <li><img src="media/pay/orange.png" alt="Orange Money" loading="lazy"></li>
+          <li><img src="media/pay/wave.png"  alt="Wave"          loading="lazy"></li>
+        </ul>
+      </div>
+
       <div class="hero-visual">
         <figure class="media media-16x9">
           <img src="media/hero.png" width="1672" height="941" fetchpriority="high"
@@ -796,28 +894,6 @@ src="https://www.facebook.com/tr?id=4451955808377862&ev=PageView&noscript=1"
             <b>Ta bannière de présentation</b><code>media/hero.png</code>
           </div>
         </figure>
-      </div>
-
-      <div class="hero-copy">
-        <p class="eyebrow">Deux guides + tutoriel vidéo</p>
-        <h1 class="t-hero">Game&nbsp;Build</h1>
-        <p class="t-body">
-          Tu racontes ton jeu. L'IA le fabrique. Tu le mets en ligne, et tu gagnes de l'argent avec.
-          Sans écrire une seule ligne de code.
-        </p>
-        <div class="cta-row">
-          <a class="btn btn-lg js-buy" href="#acheter">Acheter — 6 900 F</a>
-          <a class="link-more" href="#produit">Voir ce qu'il y a dedans</a>
-        </div>
-        <p class="hero-price">Au lieu de <s>19 900 F CFA</s> · accès immédiat</p>
-
-        <ul class="pay" aria-label="Moyens de paiement acceptés">
-          <li><img src="media/pay/mixx.jpg"  alt="Mixx by Yas"   loading="lazy"></li>
-          <li><img src="media/pay/moov.png"  alt="Moov Money"    loading="lazy"></li>
-          <li><img src="media/pay/mtn.jpg"   alt="MTN Mobile Money" loading="lazy"></li>
-          <li><img src="media/pay/orange.png" alt="Orange Money" loading="lazy"></li>
-          <li><img src="media/pay/wave.png"  alt="Wave"          loading="lazy"></li>
-        </ul>
       </div>
 
     </div>

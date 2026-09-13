@@ -12,10 +12,13 @@ CE QU'IL FAUT DÉPOSER
 ---------------------
 
   hero.png             TA BANNIÈRE DE PRÉSENTATION  [DÉJÀ EN PLACE]
-                       La toute première chose que le visiteur voit.
+                       Elle s’affiche juste sous le titre et l’offre.
                        Format PAYSAGE 16:9 (celle en place fait 1672 x 941).
-                       Elle porte déjà le titre, la promesse, les 4 arguments
-                       et ton nom — la page ne les répète donc pas.
+                       La page affiche maintenant son propre titre et son
+                       offre AU-DESSUS de la bannière. Si la bannière
+                       répète le même texte, refais-en une plus simple
+                       (une image du jeu, ou toi) : lire deux fois la
+                       même promesse affaiblit les deux.
                        Si tu la remplaces, garde le 16:9, sinon elle sera
                        recadrée et du texte sera coupé.
 
