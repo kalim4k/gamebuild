@@ -14,16 +14,19 @@ GAME BUILD/
 
 ## 1. À faire avant de mettre en ligne
 
-### Le lien de paiement (obligatoire)
+### Le lien de paiement — en place ✅
 
-Ouvre `index.html`, descends tout en bas jusqu'au `<script>`, et remplis cette ligne :
+En bas de `index.html`, dans le `<script>` :
 
 ```js
-var LIEN_PAIEMENT = "https://kgpqinxc.mychariow.shop/prd_xxxxxxxx";
+var LIEN_PAIEMENT = "https://kgpqinxc.mychariow.shop/prd_iiq2laak/checkout";
 ```
 
-Tant qu'elle est vide, tous les boutons affichent un rappel au lieu de rediriger. Une fois remplie,
-les 5 boutons d'achat de la page pointent automatiquement vers ce lien, dans un nouvel onglet.
+Les 5 boutons d'achat de la page pointent tous dessus, dans un nouvel onglet. Si tu vides cette
+ligne, ils affichent un rappel au lieu de rediriger vers une page morte.
+
+Le prix affiché sur Chariow doit correspondre aux **6 900 F CFA** de la page : sinon le visiteur
+voit un montant à l'arrivée sur le paiement, et il abandonne.
 
 ### Tes vidéos et tes images
 
