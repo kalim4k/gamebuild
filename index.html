@@ -486,16 +486,6 @@ a:hover{ text-decoration: underline; }
   display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
   margin-top: clamp(36px, 5vw, 52px);
 }
-@media (max-width: 733px){
-  .reel{
-    display: flex; gap: 14px; overflow-x: auto;
-    scroll-snap-type: x mandatory; scrollbar-width: none;
-    margin-inline: calc(var(--gut) * -1);
-    padding-inline: var(--gut);
-  }
-  .reel::-webkit-scrollbar{ display: none; }
-  .reel-item{ flex: none; width: 62vw; scroll-snap-align: center; }
-}
 
 /* Variante pour les séries longues : on balaye à toutes les tailles,
    plutôt que d'empiler deux rangées de vidéos très hautes. */
@@ -515,6 +505,40 @@ a:hover{ text-decoration: underline; }
 /* Un peu plus larges que les vidéos : il faut pouvoir lire les montants. */
 .reel-shots{ margin-top: clamp(28px, 4vw, 40px); }
 .reel-shots .reel-item{ width: clamp(180px, 58vw, 240px); }
+
+/* ---------- Sur mobile : trois vidéos visibles d'un coup ----------
+   Chaque vignette prend le tiers de la largeur utile, moins les deux
+   espaces qui les séparent. La quatrième dépasse du bord droit : c'est
+   ce débord qui fait comprendre qu'il y en a d'autres à balayer.
+   Ce bloc est placé APRÈS les règles ci-dessus, car il doit les
+   emporter à specificité égale. */
+@media (max-width: 733px){
+  .reel, .reel-scroll{
+    display: flex; gap: 10px; overflow-x: auto;
+    scroll-snap-type: x mandatory; scrollbar-width: none;
+    margin-inline: calc(var(--gut) * -1);
+    padding-inline: var(--gut);
+    scroll-padding-inline: var(--gut);
+  }
+  .reel::-webkit-scrollbar, .reel-scroll::-webkit-scrollbar{ display: none; }
+  .reel .reel-item, .reel-scroll .reel-item{
+    flex: none; width: calc((100% - 20px) / 3);
+    scroll-snap-align: start;
+  }
+  /* Un rayon de 18 px serait trop rond sur une vignette de cette taille. */
+  .reel:not(.reel-shots) .media{ border-radius: 13px; }
+  /* Le nom du fichier attendu ne tiendrait pas dans une vignette si étroite. */
+  .reel:not(.reel-shots) .media-ph{ padding: 8px; gap: 6px; }
+  .reel:not(.reel-shots) .media-ph code{ display: none; }
+
+  /* Les captures de revenus gardent leur largeur : réduites au tiers de
+     l'écran, plus aucun montant ne serait lisible, et c'est justement
+     ce qu'on vient y lire. */
+  .reel-shots{ gap: 14px; }
+  .reel-shots .reel-item{
+    width: clamp(180px, 58vw, 240px); scroll-snap-align: center;
+  }
+}
 
 /* ---------- Présentation ---------- */
 
