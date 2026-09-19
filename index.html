@@ -884,18 +884,25 @@ src="https://www.facebook.com/tr?id=4451955808377862&ev=PageView&noscript=1"
    ══════════════════════════════════════════════════════════ */
 (function () {
   var ACTIVE = true;
-  var HEURES = 24;
+
+  /* Le compte à rebours ne part PAS d'un chiffre rond. Un visiteur qui
+     tombe toujours sur 23:59:5x voit immédiatement que le chrono vient
+     de démarrer pour lui. Chacun démarre donc à un temps tiré au hasard
+     dans cette fourchette, exprimée en heures. */
+  var H_MIN = 9.5;    // 9 h 30
+  var H_MAX = 12.9;   // 12 h 54
   var CLE = "gb_fin_promo";
 
-  var duree = HEURES * 3600000, fin = 0;
+  /* Plafond de cohérence : au-delà, la valeur stockée est fausse
+     (horloge changée, ancienne durée, bricolage) et on retire au sort. */
+  var plafond = H_MAX * 3600000, fin = 0;
   try { fin = parseInt(localStorage.getItem(CLE), 10) || 0; } catch (e) {}
 
   var reste = fin - Date.now();
-  /* Première visite, ou horloge incohérente : on repart d'une durée pleine. */
-  if (!fin || reste > duree) {
-    fin = Date.now() + duree;
+  if (!fin || reste > plafond) {
+    reste = Math.round((H_MIN + Math.random() * (H_MAX - H_MIN)) * 3600) * 1000;
+    fin = Date.now() + reste;
     try { localStorage.setItem(CLE, String(fin)); } catch (e) {}
-    reste = duree;
   }
 
   window.GB_PROMO = { fin: fin, active: ACTIVE };

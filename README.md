@@ -34,12 +34,19 @@ Réglages en haut de `index.html`, dans le premier `<script>` du `<head>` :
 
 ```js
 var ACTIVE = true;   // false = plus d'offre, la page revient à 6 900 F
-var HEURES = 24;     // durée offerte à chaque nouveau visiteur
+var H_MIN  = 9.5;    // 9 h 30 — temps le plus court qu'un visiteur peut voir
+var H_MAX  = 12.9;   // 12 h 54 — le plus long
 ```
 
 **Comment ça marche.** Le compte à rebours part à la **première visite** de chaque
 personne et vit dans son navigateur. Ce n'est donc pas une date limite commune : quelqu'un
-qui arrive demain aura lui aussi 24 heures. Quelqu'un qui vide son navigateur repart à zéro.
+qui arrive demain aura lui aussi son propre décompte. Quelqu'un qui vide son navigateur
+repart à zéro.
+
+Le temps de départ est **tiré au hasard** entre `H_MIN` et `H_MAX`, à la seconde près.
+C'est volontaire : un chrono qui affiche 23:59:5x à chaque arrivée se trahit tout seul,
+alors que 11:07:43 ressemble à une échéance déjà entamée. Garde la fourchette sous les
+13 heures, sinon l'effet disparaît.
 
 Quand le temps est écoulé, la page bascule **entièrement** au prix normal : le bandeau
 disparaît, le compte à rebours aussi, et les six prix repassent à 6 900 F. Il n'y a rien
