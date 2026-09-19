@@ -28,6 +28,27 @@ ligne, ils affichent un rappel au lieu de rediriger vers une page morte.
 Le prix affiché sur Chariow doit correspondre aux **6 900 F CFA** de la page : sinon le visiteur
 voit un montant à l'arrivée sur le paiement, et il abandonne.
 
+### L'offre de lancement et son compte à rebours
+
+Réglages en haut de `index.html`, dans le premier `<script>` du `<head>` :
+
+```js
+var ACTIVE = true;   // false = plus d'offre, la page revient à 6 900 F
+var HEURES = 24;     // durée offerte à chaque nouveau visiteur
+```
+
+**Comment ça marche.** Le compte à rebours part à la **première visite** de chaque
+personne et vit dans son navigateur. Ce n'est donc pas une date limite commune : quelqu'un
+qui arrive demain aura lui aussi 24 heures. Quelqu'un qui vide son navigateur repart à zéro.
+
+Quand le temps est écoulé, la page bascule **entièrement** au prix normal : le bandeau
+disparaît, le compte à rebours aussi, et les six prix repassent à 6 900 F. Il n'y a rien
+à modifier à la main.
+
+**Le prix Chariow doit suivre.** La page annonce 1 990 F ; ton produit est réglé à 6 900 F.
+Tant que tu ne changes pas le prix promotionnel dans Chariow, l'acheteur voit 1 990 F sur
+la page et 6 900 F au paiement — il abandonne.
+
 ### Tes vidéos et tes images
 
 Dépose-les dans `media/` avec les noms exacts listés dans
