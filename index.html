@@ -153,9 +153,10 @@ a:hover{ text-decoration: underline; }
    navigateur du visiteur : deux personnes qui arrivent à deux heures
    différentes voient deux fins différentes. Ce n'est pas une date
    limite commune à tout le monde.
-   Quand il tombe à zéro, data-promo="off" bascule TOUTE la page au prix
-   normal d'un seul coup : bandeau, cases du compte à rebours, prix,
-   prix barrés et badges de remise suivent sans une ligne de JS de plus. */
+   Le prix, lui, ne dépend que de ACTIVE dans le <head>. Quand il passe à
+   false, data-promo="off" bascule TOUTE la page au prix normal d'un seul
+   coup : bandeau, cases du compte à rebours, prix, prix barrés et badges
+   de remise suivent sans une ligne de JS de plus. */
 
 .only-fin{ display: none; }
 [data-promo="off"] .only-promo{ display: none; }
@@ -877,8 +878,17 @@ src="https://www.facebook.com/tr?id=4451955808377862&ev=PageView&noscript=1"
 <script>
 /* ══════════════════════════════════════════════════════════
    OFFRE DE LANCEMENT — réglages
-   HEURES : durée offerte à chaque nouveau visiteur.
-   Pour arrêter l'offre partout, mets ACTIVE à false.
+
+   L'offre à 1 990 F est PERMANENTE. Elle ne s'arrête jamais d'elle-même :
+   le seul interrupteur, c'est ACTIVE. Mets-le à false et la page entière
+   repasse à 6 900 F — bandeau, compte à rebours, prix, prix barrés et
+   badges de remise, d'un seul coup.
+
+   Le compte à rebours est un habillage : il ne commande plus le prix.
+   Chaque visiteur en reçoit un, tiré au hasard dans la fourchette
+   ci-dessous ; quand il est épuisé, le visiteur suivant en reçoit un
+   nouveau au chargement, et le prix, lui, n'a pas bougé.
+
    Ce script tourne dans le <head>, avant le premier affichage :
    le bon prix s'affiche du premier coup, sans clignotement.
    ══════════════════════════════════════════════════════════ */
@@ -898,16 +908,18 @@ src="https://www.facebook.com/tr?id=4451955808377862&ev=PageView&noscript=1"
   var plafond = H_MAX * 3600000, fin = 0;
   try { fin = parseInt(localStorage.getItem(CLE), 10) || 0; } catch (e) {}
 
+  /* Échéance absente, épuisée, ou incohérente (horloge changée, ancienne
+     durée) : on tire simplement un nouveau compte à rebours. Le prix,
+     lui, ne dépend que de ACTIVE. */
   var reste = fin - Date.now();
-  if (!fin || reste > plafond) {
+  if (!fin || reste <= 0 || reste > plafond) {
     reste = Math.round((H_MIN + Math.random() * (H_MAX - H_MIN)) * 3600) * 1000;
     fin = Date.now() + reste;
     try { localStorage.setItem(CLE, String(fin)); } catch (e) {}
   }
 
   window.GB_PROMO = { fin: fin, active: ACTIVE };
-  document.documentElement.setAttribute("data-promo",
-    (ACTIVE && reste > 0) ? "on" : "off");
+  document.documentElement.setAttribute("data-promo", ACTIVE ? "on" : "off");
 })();
 </script>
 </head>
@@ -1629,8 +1641,13 @@ var LIEN_PAIEMENT = "https://kgpqinxc.mychariow.shop/prd_iiq2laak/checkout";
     };
     var tic = function () {
       var reste = GB_PROMO.fin - Date.now();
+      /* À zéro, le prix ne bouge pas : seul ACTIVE arrête l'offre. On fige
+         l'affichage sur 00:00:00 — faire remonter le compteur sous les yeux
+         du visiteur serait la meilleure façon de griller le procédé. Au
+         prochain chargement, un nouveau compte à rebours est tiré. */
       if (reste <= 0) {
-        document.documentElement.setAttribute("data-promo", "off");
+        pose(horloges, "00:00:00");
+        pose(casesH, "00"); pose(casesM, "00"); pose(casesS, "00");
         if (minuteur) clearInterval(minuteur);
         return;
       }

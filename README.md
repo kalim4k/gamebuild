@@ -48,9 +48,12 @@ C'est volontaire : un chrono qui affiche 23:59:5x à chaque arrivée se trahit t
 alors que 11:07:43 ressemble à une échéance déjà entamée. Garde la fourchette sous les
 13 heures, sinon l'effet disparaît.
 
-Quand le temps est écoulé, la page bascule **entièrement** au prix normal : le bandeau
-disparaît, le compte à rebours aussi, et les six prix repassent à 6 900 F. Il n'y a rien
-à modifier à la main.
+**L'offre ne s'arrête jamais toute seule.** Quand le compte à rebours d'un visiteur est
+épuisé, il en reçoit un nouveau au chargement suivant — le prix, lui, reste à 1 990 F.
+
+**Pour fermer l'offre**, un seul geste : `ACTIVE = false`. La page bascule alors
+**entièrement** au prix normal — le bandeau disparaît, le compte à rebours aussi, et les
+six prix repassent à 6 900 F. Il n'y a rien d'autre à modifier.
 
 **Le prix Chariow doit suivre.** La page annonce 1 990 F ; ton produit est réglé à 6 900 F.
 Tant que tu ne changes pas le prix promotionnel dans Chariow, l'acheteur voit 1 990 F sur
