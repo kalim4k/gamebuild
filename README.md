@@ -4,9 +4,16 @@ Site statique d'une seule page. Aucune dépendance à installer, aucun build à 
 
 ```
 GAME BUILD/
-├── index.html      ← toute la page (HTML + CSS + JS)
-├── media/          ← tes vidéos et images (voir media/LISEZ-MOI.txt)
-├── vercel.json     ← en-têtes et cache
+├── index.html         ← la page de vente (HTML + CSS + JS)
+├── admin.html         ← l'espace admin, servi sur /admin
+├── api/
+│   ├── track.mjs      ← reçoit les événements et les range dans Neon
+│   └── stats.mjs      ← renvoie les statistiques à l'espace admin
+├── scripts/
+│   └── init-db.mjs    ← crée la table (une seule fois)
+├── media/             ← tes vidéos et images (voir media/LISEZ-MOI.txt)
+├── vercel.json        ← en-têtes et cache
+├── .env.example       ← modèle des variables ; .env.local n'est jamais versionné
 └── README.md
 ```
 
@@ -74,6 +81,63 @@ attendu dans un cadre en pointillés — la page reste présentable.
 | Les prénoms sous les trois témoignages | section `#temoignages`, remplace les six `<b>Prénom</b>` (trois cartes + leurs trois copies) |
 | L'URL finale du site | balise `<link rel="canonical">` dans le `<head>` |
 | Le numéro WhatsApp | `footer`, lien `wa.me/22897222373` |
+
+---
+
+## 1 bis. Les statistiques et l'espace admin
+
+L'espace admin est sur **`/admin`**. Il montre les visiteurs, les pages vues, le taux
+de clic sur les boutons d'achat, où les gens s'arrêtent dans la page, quel bouton
+travaille, d'où ils viennent, à quelle heure, sur quel appareil et depuis quel pays.
+
+### Les trois variables à régler sur Vercel
+
+**Settings → Environment Variables**, pour les trois environnements (Production,
+Preview, Development) :
+
+| Variable | À quoi ça sert |
+| --- | --- |
+| `DATABASE_URL` | la chaîne de connexion Neon (onglet **Connect** du tableau de bord Neon) |
+| `ADMIN_MOT_DE_PASSE` | le mot de passe de `/admin` — mets-en un long |
+| `HASH_SEL` | une chaîne au hasard, pour le calcul des visiteurs uniques |
+
+Un modèle est dans [.env.example](.env.example). Pour travailler en local, recopie-le en
+`.env.local` : ce fichier n'est **jamais** versionné, parce que le dépôt est public.
+**Ne mets jamais la chaîne Neon dans un fichier suivi par git.**
+
+### Créer la table (une seule fois)
+
+```bash
+npm install
+npm run init-db
+```
+
+Sans danger : tout est en `IF NOT EXISTS`, rien n'est jamais supprimé. C'est déjà fait,
+la table `evenements` existe.
+
+### Ce qui est mesuré
+
+| Événement | Quand |
+| --- | --- |
+| `vue` | à l'ouverture de la page |
+| `scroll` | aux paliers 25 %, 50 %, 75 % et 90 % de la page |
+| `clic` | au clic sur un bouton d'achat, avec son emplacement |
+| `sortie` | au départ, avec la durée de la visite en secondes |
+
+### Vie privée
+
+**Aucune adresse IP n'est enregistrée.** Le compteur de visiteurs uniques repose sur
+une empreinte à sens unique (SHA-256 de l'IP + navigateur + `HASH_SEL`), qu'on ne peut
+pas remonter vers une personne, et qui n'est pas déposée sur son appareil. L'identifiant
+de visite vit dans l'onglet et disparaît à sa fermeture : ce n'est pas un mouchard
+persistant. C'est volontairement plus sobre qu'un outil de mesure du marché — et ça
+t'évite d'avoir à demander un consentement pour cette mesure-là.
+
+### À savoir
+
+Les mesures n'arrivent **que depuis le site déployé sur Vercel**, parce que la page
+appelle une fonction serveur. Ouvrir `index.html` par double-clic n'enregistre rien,
+et l'espace admin affichera zéro.
 
 ---
 

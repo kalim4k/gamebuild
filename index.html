@@ -946,7 +946,7 @@ src="https://www.facebook.com/tr?id=4451955808377862&ev=PageView&noscript=1"
       <a href="#revenus">Simulateur</a>
       <a href="#faq">FAQ</a>
     </div>
-    <a class="btn js-buy" href="#acheter">Acheter</a>
+    <a class="btn js-buy" data-mesure="navigation" href="#acheter">Acheter</a>
   </div>
 </nav>
 
@@ -996,7 +996,7 @@ src="https://www.facebook.com/tr?id=4451955808377862&ev=PageView&noscript=1"
         <p class="t-caption only-fin">L'offre de lancement est terminée.</p>
 
         <div class="cta-row">
-          <a class="btn btn-lg js-buy" href="#acheter">Je crée mon jeu — <span class="only-promo">1 990 F</span><span class="only-fin">6 900 F</span></a>
+          <a class="btn btn-lg js-buy" data-mesure="héros" href="#acheter">Je crée mon jeu — <span class="only-promo">1 990 F</span><span class="only-fin">6 900 F</span></a>
           <a class="link-more" href="#produit">Voir ce qu'il y a dedans</a>
         </div>
 
@@ -1480,7 +1480,7 @@ src="https://www.facebook.com/tr?id=4451955808377862&ev=PageView&noscript=1"
         <li><span>Les mises à jour<small>Les outils évoluent vite — tu reçois les révisions sans repayer</small></span><s>6 000 F</s></li>
       </ul>
 
-      <a class="btn btn-lg js-buy" href="#" style="justify-self:start">Je commence maintenant</a>
+      <a class="btn btn-lg js-buy" data-mesure="fin de méthode" href="#" style="justify-self:start">Je commence maintenant</a>
 
       <div class="buy-foot">
         <span>Mobile Money</span><span>Carte bancaire</span><span>Accès immédiat</span><span>Paiement sécurisé</span>
@@ -1564,7 +1564,7 @@ src="https://www.facebook.com/tr?id=4451955808377862&ev=PageView&noscript=1"
       Le reste, c'est toi qui décides de le faire.
     </p>
     <div class="cta-row rise">
-      <a class="btn btn-lg js-buy" href="#">Obtenir les deux volumes — <span class="only-promo">1 990 F</span><span class="only-fin">6 900 F</span></a>
+      <a class="btn btn-lg js-buy" data-mesure="clôture" href="#">Obtenir les deux volumes — <span class="only-promo">1 990 F</span><span class="only-fin">6 900 F</span></a>
     </div>
   </div>
 </section>
@@ -1585,7 +1585,7 @@ src="https://www.facebook.com/tr?id=4451955808377862&ev=PageView&noscript=1"
     <b><span class="only-promo">1 990 F</span><span class="only-fin">6 900 F</span></b>
     <span><span class="only-promo">offre finie dans <span class="clock">--:--:--</span></span><span class="only-fin">au lieu de 19 900 F</span></span>
   </div>
-  <a class="btn js-buy" href="#">Je commence</a>
+  <a class="btn js-buy" data-mesure="barre mobile" href="#">Je commence</a>
 </div>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -1872,6 +1872,116 @@ var LIEN_PAIEMENT = "https://kgpqinxc.mychariow.shop/prd_iiq2laak/checkout";
   }
 
   })();
+</script>
+<script>
+/* ══════════════════════════════════════════════════════════
+   MESURE D'AUDIENCE
+   Envoie quatre choses à /api/track : l'arrivée, les paliers de
+   défilement, les clics sur les boutons d'achat, et la durée de la
+   visite au moment de partir.
+
+   Volontairement isolé du script principal, et tout en « on oublie si
+   ça rate » : si la base est en panne ou la fonction absente (page
+   ouverte en local, par exemple), la page de vente n'en sait rien.
+   ══════════════════════════════════════════════════════════ */
+(function () {
+  "use strict";
+  var API = "/api/track";
+
+  /* Identifiant de session : vit dans l'onglet, disparaît à la
+     fermeture. Ce n'est pas un mouchard persistant. */
+  var session;
+  try {
+    session = sessionStorage.getItem("gb_session");
+    if (!session) {
+      session = Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
+      sessionStorage.setItem("gb_session", session);
+    }
+  } catch (e) {
+    session = Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
+  }
+
+  var p = new URLSearchParams(location.search);
+  var hote = "";
+  try { hote = document.referrer ? new URL(document.referrer).hostname : ""; } catch (e) {}
+  if (hote === location.hostname) hote = "";
+
+  var commun = {
+    session: session,
+    source: p.get("utm_source") || p.get("source") || "",
+    campagne: p.get("utm_campaign") || "",
+    referent: hote,
+    promo: document.documentElement.getAttribute("data-promo") === "on"
+  };
+
+  function envoie(type, libelle, valeur, auDepart) {
+    var corps;
+    try {
+      corps = JSON.stringify({
+        type: type, libelle: libelle || null,
+        valeur: (valeur === undefined ? null : valeur),
+        session: commun.session, source: commun.source,
+        campagne: commun.campagne, referent: commun.referent, promo: commun.promo
+      });
+    } catch (e) { return; }
+
+    try {
+      /* Au départ de la page, seul sendBeacon part à coup sûr : un fetch
+         est annulé dès que le document est détruit. */
+      if (auDepart && navigator.sendBeacon) {
+        navigator.sendBeacon(API, new Blob([corps], { type: "application/json" }));
+        return;
+      }
+      fetch(API, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: corps,
+        keepalive: true
+      })["catch"](function () {});
+    } catch (e) {}
+  }
+
+  envoie("vue");
+
+  /* ---------- Paliers de défilement, une seule fois chacun ---------- */
+  var paliers = [25, 50, 75, 90], atteint = 0, enAttente = false;
+  function mesureDefilement() {
+    var h = document.documentElement;
+    var total = h.scrollHeight - h.clientHeight;
+    if (total < 200) return;
+    var pct = Math.round((h.scrollTop || document.body.scrollTop || 0) / total * 100);
+    for (var i = 0; i < paliers.length; i++) {
+      if (pct >= paliers[i] && atteint < paliers[i]) {
+        atteint = paliers[i];
+        envoie("scroll", null, paliers[i]);
+      }
+    }
+  }
+  addEventListener("scroll", function () {
+    if (enAttente) return;
+    enAttente = true;
+    requestAnimationFrame(function () { enAttente = false; mesureDefilement(); });
+  }, { passive: true });
+  mesureDefilement();
+
+  /* ---------- Clics sur les boutons d'achat ---------- */
+  Array.prototype.forEach.call(document.querySelectorAll(".js-buy"), function (a, i) {
+    var nom = a.getAttribute("data-mesure") || ("bouton " + (i + 1));
+    a.addEventListener("click", function () { envoie("clic", nom); });
+  });
+
+  /* ---------- Durée de la visite ---------- */
+  var debut = Date.now(), parti = false;
+  function sortie() {
+    if (parti) return;
+    parti = true;
+    envoie("sortie", null, Math.round((Date.now() - debut) / 1000), true);
+  }
+  addEventListener("pagehide", sortie);
+  document.addEventListener("visibilitychange", function () {
+    if (document.visibilityState === "hidden") sortie();
+  });
+})();
 </script>
 </body>
 </html>

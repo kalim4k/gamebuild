@@ -9,3 +9,11 @@ desktop.ini
 # Éditeurs
 .vscode/
 *.swp
+
+# Secrets — JAMAIS dans le dépôt (il est public)
+.env
+.env.*
+!.env.example
+
+# Dépendances
+node_modules/

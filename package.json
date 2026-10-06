@@ -1,0 +1,13 @@
+{
+  "name": "game-build",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Page de vente Game Build — page statique, fonctions Vercel et base Neon pour les statistiques.",
+  "type": "module",
+  "scripts": {
+    "init-db": "node scripts/init-db.mjs"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^0.10.4"
+  }
+}
