@@ -172,6 +172,7 @@ voir sans la montrer : ajoute `?vocal=test` à l'adresse de ta page.
 | `ELEVENLABS_API_KEY` | pour le salut et les questions dictées | ta clé ElevenLabs |
 | `ELEVENLABS_VOICE_ID` | pour le salut | l'identifiant de ta voix clonée |
 | `ANTHROPIC_API_KEY` | non | trier les questions écrites avec Claude plutôt qu'aux mots-clés |
+| `ELEVENLABS_MODELE` | non | `eleven_v4` par défaut ; `eleven_multilingual_v2` pour revenir à l'ancien modèle |
 | `SALUT_MAX_JOUR` | non | nouveaux prénoms générés par jour, 300 par défaut |
 
 Sans ElevenLabs, la bulle fonctionne quand même : ton vocal est joué sans le salut, et
@@ -188,10 +189,14 @@ dans un fichier versionné ni dans une conversation** — directement dans Verce
 - Au plus 300 nouveaux prénoms par jour : une attaque coûterait au pire un dollar.
 - Au plus 12 questions par heure et par visiteur ; au-delà, renvoi vers WhatsApp.
 
-### Si tu changes de voix clonée
+### Si tu changes de voix ou de modèle
 
-Les saluts déjà générés gardent l'ancienne voix. Pour tout régénérer, vide la table dans
-l'éditeur SQL de Neon : `delete from saluts;`
+Rien à faire : chaque salut est rangé avec l'empreinte de la voix et du modèle qui l'ont
+produit. Change `ELEVENLABS_VOICE_ID` ou `ELEVENLABS_MODELE`, et les saluts se régénèrent
+d'eux-mêmes à la demande suivante.
+
+**Eleven v4 et les voix anciennes :** une voix clonée créée avant la sortie de v4
+(28 septembre 2026) doit être réentraînée avec v4 pour bien sonner, d'après ElevenLabs.
 
 ---
 

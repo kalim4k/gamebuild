@@ -11,7 +11,7 @@
 import { neon } from "@neondatabase/serverless";
 import {
   chargeConfig, normalisePrenom, affichePrenom, empreinte,
-  choisitVersion, classe, elevenLabsPret, transcrit
+  choisitVersion, classe, elevenLabsPret, transcrit, versionVoix
 } from "./_vocaux.mjs";
 
 const sql = process.env.DATABASE_URL ? neon(process.env.DATABASE_URL) : null;
@@ -114,7 +114,11 @@ export default async function handler(req, res) {
     texte,
     prenom: clePrenom ? affichePrenom(clePrenom) : null,
     fichier: fichier ? "/media/vocaux/" + fichier : null,
-    salut: elevenLabsPret() ? "/api/salut?p=" + encodeURIComponent(clePrenom || "_") : null,
+    /* « v » change avec la voix ou le modèle : le navigateur ne ressert
+       jamais de son cache un salut fait avec l'ancienne voix. */
+    salut: elevenLabsPret()
+      ? "/api/salut?p=" + encodeURIComponent(clePrenom || "_") + "&v=" + versionVoix()
+      : null,
     whatsapp: objection === "generale"
   });
 }

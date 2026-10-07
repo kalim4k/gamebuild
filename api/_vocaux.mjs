@@ -202,6 +202,22 @@ export function elevenLabsPret() {
   return Boolean(process.env.ELEVENLABS_API_KEY && process.env.ELEVENLABS_VOICE_ID);
 }
 
+/* Eleven v4 (sorti le 28 septembre 2026) par défaut. ELEVENLABS_MODELE
+   permet de revenir à « eleven_multilingual_v2 » sans toucher au code. */
+export function modeleVoix() {
+  return process.env.ELEVENLABS_MODELE || "eleven_v4";
+}
+
+/* Empreinte de la voix ET du modèle. Elle entre dans la clé de stockage
+   des saluts et dans leur adresse : changer de voix, de modèle, ou
+   réentraîner sa voix sous un nouvel identifiant régénère tous les
+   saluts tout seuls, sans rien vider à la main. */
+export function versionVoix() {
+  return createHash("sha256")
+    .update(String(process.env.ELEVENLABS_VOICE_ID) + "|" + modeleVoix())
+    .digest("hex").slice(0, 10);
+}
+
 /* Le texte du salut dans ta voix clonée → MP3. */
 export async function synthese(texte) {
   const voix = encodeURIComponent(process.env.ELEVENLABS_VOICE_ID);
@@ -213,10 +229,7 @@ export async function synthese(texte) {
         "Content-Type": "application/json",
         "Accept": "audio/mpeg"
       },
-      body: JSON.stringify({
-        text: texte,
-        model_id: process.env.ELEVENLABS_MODELE || "eleven_multilingual_v2"
-      }),
+      body: JSON.stringify({ text: texte, model_id: modeleVoix() }),
       signal: AbortSignal.timeout(15000)
     });
   if (!rep.ok) {
