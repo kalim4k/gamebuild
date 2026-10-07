@@ -17,3 +17,6 @@ desktop.ini
 
 # Dépendances
 node_modules/
+
+# Essais de voix générés en local (jamais publiés)
+essais-voix/
