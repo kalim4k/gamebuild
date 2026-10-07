@@ -202,10 +202,11 @@ export function elevenLabsPret() {
   return Boolean(process.env.ELEVENLABS_API_KEY && process.env.ELEVENLABS_VOICE_ID);
 }
 
-/* Eleven v4 (sorti le 28 septembre 2026) par défaut. ELEVENLABS_MODELE
-   permet de revenir à « eleven_multilingual_v2 » sans toucher au code. */
+/* Multilingual v2 par défaut : comparé à l'oreille avec Eleven v4 le
+   7 octobre 2026 sur la voix Kalim, c'est lui qui sonnait le plus juste.
+   ELEVENLABS_MODELE permet d'essayer un autre modèle sans toucher au code. */
 export function modeleVoix() {
-  return process.env.ELEVENLABS_MODELE || "eleven_v4";
+  return process.env.ELEVENLABS_MODELE || "eleven_multilingual_v2";
 }
 
 /* Empreinte de la voix ET du modèle. Elle entre dans la clé de stockage

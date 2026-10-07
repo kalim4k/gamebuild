@@ -172,7 +172,7 @@ voir sans la montrer : ajoute `?vocal=test` à l'adresse de ta page.
 | `ELEVENLABS_API_KEY` | pour le salut et les questions dictées | ta clé ElevenLabs |
 | `ELEVENLABS_VOICE_ID` | pour le salut | l'identifiant de ta voix clonée |
 | `ANTHROPIC_API_KEY` | non | trier les questions écrites avec Claude plutôt qu'aux mots-clés |
-| `ELEVENLABS_MODELE` | non | `eleven_v4` par défaut ; `eleven_multilingual_v2` pour revenir à l'ancien modèle |
+| `ELEVENLABS_MODELE` | non | `eleven_multilingual_v2` par défaut, choisi à l'oreille face à `eleven_v4` |
 | `SALUT_MAX_JOUR` | non | nouveaux prénoms générés par jour, 300 par défaut |
 
 Sans ElevenLabs, la bulle fonctionne quand même : ton vocal est joué sans le salut, et
