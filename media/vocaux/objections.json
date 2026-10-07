@@ -1,5 +1,5 @@
 {
-  "actif": false,
+  "actif": true,
   "attente_secondes": 15,
   "objections": [
     {
