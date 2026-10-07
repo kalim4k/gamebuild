@@ -1,0 +1,39 @@
+{
+  "actif": false,
+  "objections": [
+    {
+      "cle": "serieux",
+      "bouton": "Comment je sais que c'est sérieux ?",
+      "fichiers": ["serieux-1.mp3"],
+      "mots": ["arnaque", "arnaqueur", "serieux", "confiance", "escroquerie", "escroc", "fiable", "vrai", "faux", "garantie", "rembourse", "remboursement", "voleur", "brouteur", "arnaquer", "escroquer", "verifier", "preuve", "preuves", "temoignage", "temoignages"]
+    },
+    {
+      "cle": "coder",
+      "bouton": "Je ne sais pas coder",
+      "fichiers": ["coder-1.mp3"],
+      "mots": ["coder", "code", "programmer", "programmation", "informatique", "technique", "debutant", "difficile", "complique", "nul", "codage", "logiciel", "logiciels", "compliquer", "savoir rien"]
+    },
+    {
+      "cle": "telephone",
+      "bouton": "Je n'ai qu'un téléphone",
+      "fichiers": ["telephone-1.mp3"],
+      "mots": ["telephone", "ordinateur", "ordi", "pc", "laptop", "portable", "smartphone", "android", "iphone", "machine", "tel", "phone", "tablette", "sans ordinateur"]
+    },
+    {
+      "cle": "gains",
+      "bouton": "Combien je peux gagner ?",
+      "fichiers": ["gains-1.mp3"],
+      "mots": ["gagner", "gain", "gains", "argent", "revenu", "revenus", "rentable", "rapporte", "benefice", "adsense", "monetiser", "combien je", "gagne", "gagnes", "gagnent", "pub", "pubs", "publicite", "rapporter", "rentabilite", "salaire", "mois"]
+    },
+    {
+      "cle": "reception",
+      "bouton": "Comment je reçois la formation ?",
+      "fichiers": ["reception-1.mp3"],
+      "mots": ["recevoir", "recois", "livraison", "email", "mail", "acces", "paiement", "payer", "wave", "momo", "mobile money", "orange money", "flooz", "telecharger", "recu", "lien", "telechargement", "apres paiement", "comment payer", "moov", "mtn", "mixx"]
+    }
+  ],
+  "generale": {
+    "fichiers": ["generale-1.mp3"]
+  },
+  "prenoms_interdits": []
+}

@@ -13,7 +13,8 @@
 import { neon } from "@neondatabase/serverless";
 import { createHash } from "node:crypto";
 
-const TYPES = new Set(["vue", "scroll", "clic", "sortie"]);
+/* « bulle » : ouverture de la bulle des réponses vocales. */
+const TYPES = new Set(["vue", "scroll", "clic", "sortie", "bulle"]);
 const MAX_CORPS = 2000;              // un événement légitime fait ~200 octets
 
 const sql = process.env.DATABASE_URL ? neon(process.env.DATABASE_URL) : null;

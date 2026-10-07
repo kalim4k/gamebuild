@@ -855,6 +855,179 @@ footer{
 @media (prefers-contrast: more){
   :root{ --ink-2: #4b4b50; --ink-3: #5b5b60; --hair: #a1a1a6; }
 }
+/* ══════════════════════════════════════════════════════════
+   RÉPONSES VOCALES — la bulle, le panneau façon WhatsApp, le lecteur
+   ══════════════════════════════════════════════════════════ */
+
+/* Sans cette règle, display:grid l'emporterait sur l'attribut hidden
+   et la bulle s'afficherait même désactivée. */
+.vx-bouton[hidden], .vx-teaser[hidden], .vx-voile[hidden],
+.vx-panneau[hidden], .vx-faq[hidden]{ display: none !important; }
+
+.vx-avatar{
+  position: relative; flex: none; display: grid; place-items: center;
+  width: 40px; height: 40px; border-radius: 50%; overflow: hidden;
+  background: linear-gradient(145deg, #0a84ff, #0058b3); color: #fff;
+}
+.vx-avatar b{ font-size: 17px; font-weight: 600; }
+.vx-avatar img{ position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+
+/* Le bouton rond, toujours là */
+.vx-bouton{
+  position: fixed; right: 18px; bottom: calc(18px + env(safe-area-inset-bottom)); z-index: 57;
+  width: 62px; height: 62px; padding: 0; border: 0; border-radius: 50%; cursor: pointer;
+  display: grid; place-items: center; background: #fff;
+  box-shadow: 0 0 0 3px #fff, 0 10px 28px rgba(0,0,0,.24);
+  transition: transform .35s var(--ease);
+}
+.vx-bouton:hover{ transform: scale(1.05); }
+.vx-bouton .vx-avatar{ width: 100%; height: 100%; }
+.vx-bouton .vx-avatar b{ font-size: 24px; }
+.vx-bouton::after{
+  content: ""; position: absolute; right: -3px; bottom: -3px;
+  width: 22px; height: 22px; border-radius: 50%; box-shadow: 0 0 0 2px #fff;
+  background: #25d366 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11h-2z'/%3E%3C/svg%3E") center / 13px no-repeat;
+}
+/* Sur mobile, au-dessus de la barre d'achat : il ne doit jamais la cacher. */
+@media (max-width: 899px){
+  .vx-bouton{ right: 14px; bottom: calc(84px + env(safe-area-inset-bottom)); width: 56px; height: 56px; }
+}
+
+/* La petite bulle qui apparaît une seule fois */
+.vx-teaser{
+  position: fixed; z-index: 57; right: 92px; bottom: calc(28px + env(safe-area-inset-bottom));
+  display: flex; align-items: center; gap: 2px;
+  max-width: min(272px, calc(100vw - 118px));
+  padding: 4px 4px 4px 14px; border-radius: 16px 16px 4px 16px;
+  background: #fff; color: var(--ink); box-shadow: 0 10px 30px rgba(0,0,0,.18);
+  animation: vx-entre .45s var(--ease) both;
+}
+@media (max-width: 899px){ .vx-teaser{ right: 80px; bottom: calc(92px + env(safe-area-inset-bottom)); } }
+.vx-teaser-txt{
+  appearance: none; border: 0; background: none; padding: 6px 0; cursor: pointer;
+  font: inherit; font-size: 14px; line-height: 1.35; text-align: left; color: inherit;
+}
+.vx-teaser-x{
+  appearance: none; flex: none; border: 0; background: none; cursor: pointer;
+  width: 30px; height: 30px; border-radius: 50%; font-size: 19px; line-height: 1; color: var(--ink-3);
+}
+.vx-teaser-x:hover{ background: var(--bg-alt); }
+
+/* Le panneau */
+.vx-voile{ position: fixed; inset: 0; z-index: 88; background: rgba(0,0,0,.34); animation: vx-fondu .3s ease both; }
+.vx-panneau{
+  position: fixed; z-index: 90; right: 18px; bottom: 18px;
+  width: 384px; height: min(660px, calc(100vh - 110px));
+  display: flex; flex-direction: column; overflow: hidden; outline: none;
+  background: #fff; border-radius: 22px; box-shadow: 0 28px 70px rgba(0,0,0,.3);
+  animation: vx-monte .42s var(--ease) both;
+}
+@media (max-width: 699px){
+  .vx-panneau{ left: 0; right: 0; bottom: 0; width: auto; height: 88vh; height: 88dvh; border-radius: 22px 22px 0 0; }
+}
+html.vx-ouvert{ overflow: hidden; }
+/* Sur ordinateur, le panneau s'ouvre là où se trouve le bouton rond :
+   on le masque le temps de la conversation. */
+html.vx-ouvert .vx-bouton, html.vx-ouvert .vx-teaser{ visibility: hidden; }
+
+.vx-tete{ display: flex; align-items: center; gap: 11px; padding: 12px 12px 12px 14px; border-bottom: 1px solid var(--hair); }
+.vx-tete > div{ flex: 1; min-width: 0; }
+.vx-tete h2{ font-size: 16px; letter-spacing: -.01em; }
+.vx-tete p{ margin: 1px 0 0; font-size: 12.5px; color: #1a8f4c; }
+.vx-fermer{
+  appearance: none; flex: none; border: 0; cursor: pointer;
+  width: 34px; height: 34px; border-radius: 50%; background: var(--bg-alt);
+  font-size: 21px; line-height: 1; color: var(--ink-2);
+}
+
+/* Le fil, aux couleurs de WhatsApp */
+.vx-fil{
+  flex: 1; overflow-y: auto; overscroll-behavior: contain;
+  display: flex; flex-direction: column; gap: 6px; padding: 14px 12px 10px;
+  background: #efeae2;
+}
+.vx-msg{
+  max-width: 85%; padding: 7px 10px 8px; border-radius: 12px;
+  font-size: 15px; line-height: 1.38; overflow-wrap: anywhere;
+  box-shadow: 0 1px .5px rgba(11,20,26,.13); animation: vx-bulle .28s var(--ease) both;
+}
+.vx-lui{ align-self: flex-start; background: #fff; border-top-left-radius: 4px; }
+.vx-moi{ align-self: flex-end; background: #d9fdd3; border-top-right-radius: 4px; }
+.vx-moi small{ display: block; margin-top: 4px; font-size: 13px; font-style: italic; color: #4a5a52; }
+.vx-points{ display: inline-flex; gap: 4px; padding: 5px 2px; }
+.vx-points i{ width: 7px; height: 7px; border-radius: 50%; background: #9aa3a9; animation: vx-point 1.2s infinite ease-in-out; }
+.vx-points i:nth-child(2){ animation-delay: .15s; }
+.vx-points i:nth-child(3){ animation-delay: .3s; }
+
+/* Le message vocal */
+.vx-msg:has(.vx-vocal){ padding: 6px 8px; }
+.vx-vocal{ display: flex; align-items: center; gap: 8px; width: min(258px, 64vw); }
+.vx-vocal .vx-avatar{ width: 42px; height: 42px; }
+.vx-lire{
+  appearance: none; flex: none; border: 0; background: none; cursor: pointer;
+  width: 34px; height: 34px; display: grid; place-items: center; color: #54656f;
+}
+.vx-lire svg{ width: 26px; height: 26px; }
+.vx-lire:disabled{ opacity: .35; cursor: default; }
+.vx-piste{ flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.vx-onde{ display: flex; align-items: center; gap: 2px; height: 30px; cursor: pointer; }
+.vx-onde i{ flex: 1; min-width: 2px; border-radius: 2px; background: #c2c9ce; transition: background .15s; }
+.vx-onde i.joue{ background: #0071e3; }
+.vx-duree{ font-size: 11.5px; color: #667781; font-variant-numeric: tabular-nums; }
+.vx-erreur{ font-size: 13.5px; color: #b3261e; }
+
+/* La zone de réponse */
+.vx-saisie{
+  flex: none; max-height: 48%; overflow-y: auto;
+  padding: 10px 12px calc(12px + env(safe-area-inset-bottom));
+  background: #f7f7f8; border-top: 1px solid var(--hair);
+}
+.vx-choix{ display: flex; flex-direction: column; gap: 7px; }
+.vx-puce{
+  appearance: none; display: block; text-align: left; text-decoration: none; cursor: pointer;
+  font: inherit; font-size: 15px; line-height: 1.3; color: var(--blue-ink);
+  padding: 10px 14px; border: 1px solid #d7dde3; border-radius: 18px; background: #fff;
+  transition: background .15s, border-color .15s;
+}
+.vx-puce:hover{ background: #f0f6ff; border-color: #b9d4f5; text-decoration: none; }
+.vx-puce.vx-fort, .vx-puce.vx-wa{ text-align: center; font-weight: 500; color: #fff; }
+.vx-puce.vx-fort{ background: var(--blue); border-color: var(--blue); }
+.vx-puce.vx-fort:hover{ background: #0077ed; }
+.vx-puce.vx-wa{ background: #25d366; border-color: #25d366; }
+.vx-puce.vx-wa:hover{ background: #20bd5a; }
+.vx-ligne{ display: flex; align-items: flex-end; gap: 8px; }
+.vx-champ{
+  flex: 1; min-width: 0; resize: none; max-height: 120px;
+  font: inherit; font-size: 16px;            /* 16 px : sous ce seuil, l'iPhone zoome */
+  padding: 10px 14px; border: 1px solid #d7dde3; border-radius: 20px;
+  background: #fff; color: var(--ink);
+}
+.vx-champ:focus{ outline: 0; border-color: var(--blue); }
+.vx-rond{
+  appearance: none; flex: none; border: 0; cursor: pointer;
+  width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center;
+  background: #00a884; color: #fff;
+}
+.vx-rond svg{ width: 21px; height: 21px; }
+.vx-rond:disabled{ opacity: .45; cursor: default; }
+.vx-passer{
+  appearance: none; border: 0; background: none; cursor: pointer;
+  padding: 9px 4px 0; font: inherit; font-size: 13px; color: var(--ink-3); text-decoration: underline;
+}
+.vx-enreg{ flex: 1; display: flex; align-items: center; gap: 10px; min-height: 44px; font-size: 15px; font-variant-numeric: tabular-nums; }
+.vx-enreg i{ width: 10px; height: 10px; border-radius: 50%; background: #e53935; animation: vx-pulse 1s infinite; }
+
+/* Le lien sous la FAQ */
+.vx-faq{ margin: 28px 0 0; text-align: center; }
+.vx-lien{ appearance: none; border: 0; background: none; cursor: pointer; font: inherit; font-size: 17px; color: var(--blue-ink); }
+.vx-lien:hover{ text-decoration: underline; }
+
+@keyframes vx-entre{ from{ opacity: 0; transform: translateY(8px) scale(.96); } }
+@keyframes vx-monte{ from{ opacity: 0; transform: translateY(26px); } }
+@keyframes vx-fondu{ from{ opacity: 0; } }
+@keyframes vx-bulle{ from{ opacity: 0; transform: translateY(6px); } }
+@keyframes vx-point{ 0%, 60%, 100%{ opacity: .5; transform: none; } 30%{ opacity: 1; transform: translateY(-3px); } }
+@keyframes vx-pulse{ 50%{ opacity: .3; } }
 </style>
 
 <!-- Meta Pixel Code -->
@@ -1552,6 +1725,9 @@ src="https://www.facebook.com/tr?id=4451955808377862&ev=PageView&noscript=1"
         <p>Un email arrive dans les minutes qui suivent, avec les deux PDF, l'accès au tutoriel vidéo et le lien du groupe WhatsApp. Si tu ne vois rien au bout de 10 minutes, regarde tes spams, puis écris-moi directement sur WhatsApp.</p>
       </details>
     </div>
+    <p class="vx-faq" hidden>
+      <button type="button" class="vx-lien">Ta question n'est pas là&nbsp;? Pose-la-moi, je te réponds en vocal&nbsp;🎙️</button>
+    </p>
   </div>
 </section>
 
@@ -1942,6 +2118,9 @@ var LIEN_PAIEMENT = "https://kgpqinxc.mychariow.shop/prd_iiq2laak/checkout";
   }
 
   envoie("vue");
+  /* La bulle des réponses vocales s'en sert pour compter ses ouvertures
+     et les clics « Je commence » qu'elle déclenche. */
+  window.gbMesure = envoie;
 
   /* ---------- Paliers de défilement, une seule fois chacun ---------- */
   var paliers = [25, 50, 75, 90], atteint = 0, enAttente = false;
@@ -1981,6 +2160,540 @@ var LIEN_PAIEMENT = "https://kgpqinxc.mychariow.shop/prd_iiq2laak/checkout";
   document.addEventListener("visibilitychange", function () {
     if (document.visibilityState === "hidden") sortie();
   });
+})();
+</script>
+<!-- ═══════════════ RÉPONSES VOCALES ═══════════════ -->
+<button type="button" class="vx-bouton" id="vx-bouton" hidden
+        aria-haspopup="dialog" aria-controls="vx-panneau"
+        aria-label="Poser une question à Rémialde — il te répond en vocal">
+  <span class="vx-avatar" aria-hidden="true"><b>R</b><img src="media/vocaux/avatar.jpg" alt="" loading="lazy" onerror="this.remove()"></span>
+</button>
+<div class="vx-teaser" id="vx-teaser" hidden>
+  <button type="button" class="vx-teaser-txt">Tu hésites&nbsp;? Pose-moi ta question&nbsp;🎙️</button>
+  <button type="button" class="vx-teaser-x" aria-label="Fermer">×</button>
+</div>
+<div class="vx-voile" id="vx-voile" hidden></div>
+<div class="vx-panneau" id="vx-panneau" role="dialog" aria-modal="true" aria-labelledby="vx-titre" tabindex="-1" hidden>
+  <div class="vx-tete">
+    <span class="vx-avatar" aria-hidden="true"><b>R</b><img src="media/vocaux/avatar.jpg" alt="" loading="lazy" onerror="this.remove()"></span>
+    <div>
+      <h2 id="vx-titre">Rémialde</h2>
+      <p>te répond en vocal</p>
+    </div>
+    <button type="button" class="vx-fermer" aria-label="Fermer">×</button>
+  </div>
+  <div class="vx-fil" id="vx-fil" aria-live="polite"></div>
+  <div class="vx-saisie" id="vx-saisie"></div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════════
+   RÉPONSES VOCALES
+   La bulle n'apparaît que si media/vocaux/objections.json dit
+   "actif": true — ou, pour tester, avec ?vocal=test dans l'adresse.
+   Tout le texte venu de l'extérieur passe par textContent.
+   ══════════════════════════════════════════════════════════ */
+(function () {
+  "use strict";
+  var test = /[?&]vocal=test(&|$)/.test(location.search);
+  var $ = function (id) { return document.getElementById(id); };
+  var bouton = $("vx-bouton"), teaser = $("vx-teaser"), voile = $("vx-voile"),
+      panneau = $("vx-panneau"), fil = $("vx-fil"), saisie = $("vx-saisie");
+  if (!bouton || !window.fetch || !window.Promise) return;
+
+  var config = null, prenom = null, introFaite = false, ouvreur = null, ouverturesComptees = false;
+  var enCours = null;
+  try { prenom = sessionStorage.getItem("gb_prenom"); } catch (e) {}
+  var session = (function () { try { return sessionStorage.getItem("gb_session"); } catch (e) { return null; } })()
+    || Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
+  var wa = (function () {
+    var a = document.querySelector('a[href^="https://wa.me/"]');
+    return a ? a.getAttribute("href").split("?")[0] : null;
+  })();
+  var peutEnregistrer = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder);
+  var clavier = window.matchMedia && matchMedia("(pointer: fine)").matches;
+
+  function mesure(type, libelle) { try { if (window.gbMesure) window.gbMesure(type, libelle); } catch (e) {} }
+
+  /* ---------- Fabrique ---------- */
+  function el(tag, classe, texte) {
+    var n = document.createElement(tag);
+    if (classe) n.className = classe;
+    if (texte != null) n.textContent = texte;
+    return n;
+  }
+  var ICONES = {
+    lecture: "M8 5.14v13.72c0 .79.87 1.27 1.54.84l10.8-6.86a1 1 0 0 0 0-1.69L9.54 4.3A1 1 0 0 0 8 5.14z",
+    pause: "M7 5h3.5v14H7zm6.5 0H17v14h-3.5z",
+    micro: "M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11h-2z",
+    envoi: "M3.4 20.4 21 12 3.4 3.6v6.4l12.6 2-12.6 2z"
+  };
+  function svg(nom) {
+    var ns = "http://www.w3.org/2000/svg";
+    var s = document.createElementNS(ns, "svg"); s.setAttribute("viewBox", "0 0 24 24"); s.setAttribute("aria-hidden", "true");
+    var p = document.createElementNS(ns, "path"); p.setAttribute("d", ICONES[nom]); p.setAttribute("fill", "currentColor");
+    s.appendChild(p);
+    return s;
+  }
+  function avatar() { return panneau.querySelector(".vx-tete .vx-avatar").cloneNode(true); }
+  function fmt(s) { s = Math.max(0, Math.round(s || 0)); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); }
+
+  function defile() { fil.scrollTop = fil.scrollHeight; }
+  function message(qui, contenu) {
+    var m = el("div", "vx-msg vx-" + qui);
+    if (typeof contenu === "string") m.textContent = contenu; else m.appendChild(contenu);
+    fil.appendChild(m); defile();
+    return m;
+  }
+  function attente() {
+    var p = el("span", "vx-points");
+    p.setAttribute("role", "img"); p.setAttribute("aria-label", "Réponse en préparation");
+    for (var i = 0; i < 3; i++) p.appendChild(el("i"));
+    return message("lui", p);
+  }
+  function puce(texte, action, classe) {
+    var b = el("button", "vx-puce" + (classe ? " " + classe : ""), texte);
+    b.type = "button"; b.addEventListener("click", action);
+    return b;
+  }
+  function lienPuce(texte, href, classe, auClic) {
+    var a = el("a", "vx-puce " + classe, texte);
+    a.href = href; a.target = "_blank"; a.rel = "noopener";
+    if (auClic) a.addEventListener("click", auClic);
+    return a;
+  }
+  function vide() { saisie.textContent = ""; }
+  function focusSaisie() {
+    setTimeout(function () {
+      var f = saisie.querySelector("input, textarea, button, a");
+      if (f) f.focus({ preventScroll: true });
+      defile();
+    }, 60);
+  }
+  /* Quand la zone du bas grandit (trois boutons au lieu de deux, un champ
+     qui s'allonge), elle mange le fil par le bas : sans ce rappel, le
+     dernier vocal resterait à moitié caché. */
+  if (window.ResizeObserver) new ResizeObserver(function () { defile(); }).observe(saisie);
+
+  /* ---------- Ouvrir, fermer ---------- */
+  function ouvre(depuis) {
+    if (!panneau.hidden) return;
+    ouvreur = depuis || document.activeElement;
+    cacheTeaser(true);
+    voile.hidden = false; panneau.hidden = false;
+    document.documentElement.classList.add("vx-ouvert");
+    if (!ouverturesComptees) { ouverturesComptees = true; mesure("bulle", "ouverture"); }
+    if (!introFaite) {
+      introFaite = true;
+      message("lui", "Salut 👋 Tu as une question avant de te lancer ? Choisis-la ci-dessous, je te réponds en vocal.");
+      afficheChoix();
+    } else {
+      focusSaisie();
+    }
+  }
+  function ferme() {
+    if (panneau.hidden) return;
+    if (enCours) enCours.pause();
+    arreteEnregistrement(true);
+    panneau.hidden = true; voile.hidden = true;
+    document.documentElement.classList.remove("vx-ouvert");
+    if (ouvreur && ouvreur.focus) ouvreur.focus();
+  }
+
+  /* ---------- Les questions préécrites ---------- */
+  function afficheChoix() {
+    vide();
+    var liste = el("div", "vx-choix");
+    config.objections.forEach(function (o) {
+      liste.appendChild(puce(o.bouton, function () { choisit(o); }));
+    });
+    liste.appendChild(puce("✏️ J'ai une autre question", autreQuestion));
+    saisie.appendChild(liste);
+    focusSaisie();
+  }
+  function choisit(o) {
+    vide();
+    message("moi", o.bouton);
+    avecPrenom(function () { pose({ cle: o.cle }); });
+  }
+
+  /* ---------- Le prénom : demandé APRÈS la question ---------- */
+  function avecPrenom(suite) {
+    if (prenom !== null) { suite(); return; }
+    message("lui", "Bonne question. C'est quoi ton prénom ?");
+    vide();
+    var f = el("form", "vx-ligne");
+    var champ = el("input", "vx-champ");
+    champ.type = "text"; champ.maxLength = 30; champ.autocomplete = "given-name";
+    champ.placeholder = "Ton prénom"; champ.setAttribute("aria-label", "Ton prénom");
+    var ok = el("button", "vx-rond"); ok.type = "submit"; ok.setAttribute("aria-label", "Envoyer"); ok.appendChild(svg("envoi"));
+    f.appendChild(champ); f.appendChild(ok);
+    f.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var v = champ.value.trim();
+      if (!v) { champ.focus(); return; }
+      retiens(v); vide(); message("moi", v); suite();
+    });
+    var passer = el("button", "vx-passer", "Je préfère ne pas le dire"); passer.type = "button";
+    passer.addEventListener("click", function () { retiens(""); vide(); suite(); });
+    saisie.appendChild(f); saisie.appendChild(passer);
+    focusSaisie();
+  }
+  function retiens(v) { prenom = v; try { sessionStorage.setItem("gb_prenom", v); } catch (e) {} }
+
+  /* ---------- « J'ai une autre question » : écrit ou vocal ---------- */
+  function autreQuestion() {
+    vide();
+    message("moi", "J'ai une autre question");
+    message("lui", peutEnregistrer
+      ? "Je t'écoute. Écris ta question, ou envoie-moi un vocal 🎙️"
+      : "Je t'écoute. Écris-moi ta question ✍️");
+    composeur();
+  }
+  function composeur() {
+    vide();
+    var f = el("form", "vx-ligne");
+    var champ = el("textarea", "vx-champ");
+    champ.rows = 1; champ.maxLength = 600;
+    champ.placeholder = "Écris ta question…"; champ.setAttribute("aria-label", "Ta question");
+    var action = el("button", "vx-rond");
+    function majAction() {
+      var plein = champ.value.trim().length > 0;
+      action.textContent = "";
+      if (plein || !peutEnregistrer) {
+        action.type = "submit"; action.disabled = !plein;
+        action.setAttribute("aria-label", "Envoyer"); action.appendChild(svg("envoi"));
+      } else {
+        action.type = "button"; action.disabled = false;
+        action.setAttribute("aria-label", "Enregistrer un vocal"); action.appendChild(svg("micro"));
+      }
+    }
+    champ.addEventListener("input", function () {
+      champ.style.height = "auto";
+      champ.style.height = Math.min(champ.scrollHeight, 120) + "px";
+      majAction();
+    });
+    if (clavier) champ.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); envoieTexte(); }
+    });
+    action.addEventListener("click", function (e) {
+      if (action.type === "button") { e.preventDefault(); enregistre(); }
+    });
+    f.addEventListener("submit", function (e) { e.preventDefault(); envoieTexte(); });
+    function envoieTexte() {
+      var t = champ.value.trim();
+      if (!t) return;
+      vide(); message("moi", t);
+      avecPrenom(function () { pose({ texte: t }); });
+    }
+    majAction();
+    f.appendChild(champ); f.appendChild(action);
+    var retour = el("button", "vx-passer", "← Revenir aux questions"); retour.type = "button";
+    retour.addEventListener("click", afficheChoix);
+    saisie.appendChild(f); saisie.appendChild(retour);
+    focusSaisie();
+  }
+
+  /* ---------- Le vocal du visiteur ---------- */
+  var rec = null, flux = null, morceaux = [], minuteurRec = null, debutRec = 0, annule = false;
+  function enregistre() {
+    navigator.mediaDevices.getUserMedia({ audio: true }).then(function (f) {
+      flux = f; morceaux = []; annule = false;
+      var types = ["audio/webm;codecs=opus", "audio/mp4", "audio/webm", "audio/ogg;codecs=opus"];
+      var mime = "";
+      for (var i = 0; i < types.length; i++) {
+        if (MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(types[i])) { mime = types[i]; break; }
+      }
+      rec = mime ? new MediaRecorder(flux, { mimeType: mime }) : new MediaRecorder(flux);
+      rec.ondataavailable = function (e) { if (e.data && e.data.size) morceaux.push(e.data); };
+      rec.onstop = finEnregistrement;
+      rec.start();
+      debutRec = Date.now();
+      vueEnregistrement();
+    }).catch(function () {
+      message("lui", "Je n'ai pas accès à ton micro. Tu peux écrire ta question à la place ✍️");
+      composeur();
+    });
+  }
+  function vueEnregistrement() {
+    vide();
+    var ligne = el("div", "vx-ligne");
+    var etat = el("div", "vx-enreg");
+    etat.appendChild(el("i"));
+    var temps = el("span", null, "0:00");
+    etat.appendChild(temps);
+    etat.appendChild(el("span", null, "· parle, puis appuie sur envoyer"));
+    var stop = el("button", "vx-rond"); stop.type = "button";
+    stop.setAttribute("aria-label", "Arrêter et envoyer"); stop.appendChild(svg("envoi"));
+    stop.addEventListener("click", function () { arreteEnregistrement(false); });
+    ligne.appendChild(etat); ligne.appendChild(stop);
+    var annuler = el("button", "vx-passer", "Annuler"); annuler.type = "button";
+    annuler.addEventListener("click", function () { arreteEnregistrement(true); composeur(); });
+    saisie.appendChild(ligne); saisie.appendChild(annuler);
+    stop.focus();
+    minuteurRec = setInterval(function () {
+      var s = Math.floor((Date.now() - debutRec) / 1000);
+      temps.textContent = fmt(s);
+      if (s >= 60) arreteEnregistrement(false);      // une minute suffit
+    }, 250);
+  }
+  function arreteEnregistrement(sansEnvoyer) {
+    clearInterval(minuteurRec);
+    if (!rec) return;
+    annule = sansEnvoyer;
+    if (rec.state !== "inactive") rec.stop(); else finEnregistrement();
+  }
+  function finEnregistrement() {
+    var r = rec; rec = null;
+    if (flux) { flux.getTracks().forEach(function (t) { t.stop(); }); flux = null; }
+    if (annule || !r) { annule = false; return; }
+    var duree = Math.round((Date.now() - debutRec) / 1000);
+    var blob = new Blob(morceaux, { type: r.mimeType || "audio/webm" });
+    if (duree < 1 || blob.size < 800) { message("lui", "Ton vocal est trop court, réessaie 🙂"); composeur(); return; }
+    vide();
+    var bulleMoi = message("moi", "🎤 Vocal · " + fmt(duree));
+    var lecture = new FileReader();
+    lecture.onload = function () {
+      var b64 = String(lecture.result).split(",")[1] || "";
+      avecPrenom(function () { pose({ audio: b64, mime: blob.type }, bulleMoi); });
+    };
+    lecture.readAsDataURL(blob);
+  }
+
+  /* ---------- Envoyer la question, recevoir le vocal ---------- */
+  function pose(params, bulleMoi) {
+    vide();
+    var att = attente();
+    var corps = { session: session, prenom: prenom || "" };
+    for (var k in params) corps[k] = params[k];
+    fetch("/api/vocal", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(corps)
+    })
+      .then(function (r) {
+        return r.json().catch(function () { return {}; }).then(function (j) { j._ok = r.ok; return j; });
+      })
+      .then(function (j) {
+        att.remove();
+        if (!j._ok) { echec(j.erreur, j.whatsapp !== false, params.texte); return; }
+        if (bulleMoi && j.canal === "vocal" && j.texte) bulleMoi.appendChild(el("small", null, "« " + j.texte + " »"));
+        message("lui", lecteur(j.salut, j.fichier));
+        actions(j.whatsapp, j.texte || params.texte || "");
+      })
+      .catch(function () { att.remove(); echec(null, true, params.texte); });
+  }
+  function echec(texte, proposeWa, question) {
+    message("lui", texte || "Oups, je n'ai pas pu te répondre. Écris-moi sur WhatsApp, je te réponds moi-même.");
+    actions(proposeWa, question || "");
+  }
+  function actions(avecWa, question) {
+    vide();
+    var liste = el("div", "vx-choix");
+    if (window.LIEN_PAIEMENT) {
+      liste.appendChild(lienPuce("Je commence maintenant", window.LIEN_PAIEMENT, "vx-fort",
+        function () { mesure("clic", "bulle vocale"); }));
+    }
+    if (avecWa && wa) {
+      var t = "Bonjour Rémialde" + (prenom ? ", c'est " + prenom : "") + ". "
+            + (question ? "Ma question : " + question : "J'ai une question sur Game Build.");
+      liste.appendChild(lienPuce("Continuer sur WhatsApp", wa + "?text=" + encodeURIComponent(t), "vx-wa"));
+    }
+    liste.appendChild(puce("J'ai une autre question", function () {
+      message("lui", "Vas-y, choisis ta question 👇");
+      afficheChoix();
+    }));
+    saisie.appendChild(liste);
+    focusSaisie();
+  }
+
+  /* ---------- Le lecteur façon WhatsApp ----------
+     Un SEUL élément audio, dont on change la source entre le salut et ton
+     vocal : sur iPhone, seul l'élément démarré par un toucher a le droit
+     de jouer ensuite. Deux éléments distincts, et la suite resterait muette. */
+  function lecteur(urlSalut, urlFichier) {
+    var racine = el("div", "vx-vocal");
+    var lire = el("button", "vx-lire"); lire.type = "button"; lire.disabled = true;
+    lire.setAttribute("aria-label", "Écouter le vocal"); lire.appendChild(svg("lecture"));
+    var piste = el("div", "vx-piste");
+    var onde = el("div", "vx-onde"), barres = [];
+    var g = 7;
+    String(urlFichier || "x").split("").forEach(function (c) { g = (g * 31 + c.charCodeAt(0)) >>> 0; });
+    for (var i = 0; i < 34; i++) {
+      g = (g * 1103515245 + 12345) >>> 0;
+      var b = el("i"); b.style.height = (24 + (g >>> 8) % 76) + "%";
+      barres.push(b); onde.appendChild(b);
+    }
+    var duree = el("span", "vx-duree", "--:--");
+    piste.appendChild(onde); piste.appendChild(duree);
+    racine.appendChild(lire); racine.appendChild(piste); racine.appendChild(avatar());
+
+    var audio = new Audio(); audio.preload = "auto";
+    var sources = [], durees = [], idx = 0, pret = false, termine = true;
+    var controle = { pause: function () { audio.pause(); } };
+
+    function erreur(t) { piste.textContent = ""; piste.appendChild(el("span", "vx-erreur", t)); }
+    function total() { return durees.reduce(function (s, d) { return s + (d || 0); }, 0); }
+    function ecoule() { var s = 0; for (var k = 0; k < idx; k++) s += durees[k] || 0; return s + (audio.currentTime || 0); }
+    function peint(p) { var n = Math.round(p * barres.length); barres.forEach(function (b, k) { b.classList.toggle("joue", k < n); }); }
+    function maj() {
+      var t = total(), e = ecoule();
+      peint(t ? Math.min(1, e / t) : 0);
+      duree.textContent = fmt(audio.paused && termine ? t : e);
+    }
+    function icone(nom) {
+      lire.textContent = ""; lire.appendChild(svg(nom));
+      lire.setAttribute("aria-label", nom === "pause" ? "Mettre en pause" : "Écouter le vocal");
+    }
+    function charge(k) { idx = k; audio.src = sources[k]; }
+    function dureeDe(src) {
+      return new Promise(function (ok) {
+        var a = new Audio(), fini = false;
+        function rend(v) { if (!fini) { fini = true; ok(v); } }
+        a.preload = "metadata";
+        a.addEventListener("loadedmetadata", function () { rend(isFinite(a.duration) ? a.duration : 0); });
+        a.addEventListener("error", function () { rend(null); });
+        setTimeout(function () { rend(0); }, 9000);
+        a.src = src;
+      });
+    }
+
+    audio.addEventListener("timeupdate", maj);
+    audio.addEventListener("play", function () {
+      icone("pause");
+      if (enCours && enCours !== controle) enCours.pause();
+      enCours = controle;
+    });
+    audio.addEventListener("pause", function () { icone("lecture"); });
+    audio.addEventListener("ended", function () {
+      if (idx < sources.length - 1) { charge(idx + 1); audio.play().catch(function () {}); return; }
+      termine = true; idx = 0; peint(0);
+      duree.textContent = fmt(total());
+      icone("lecture");
+    });
+    lire.addEventListener("click", function () {
+      if (!pret) return;
+      if (!audio.paused) { audio.pause(); return; }
+      if (termine) { termine = false; charge(0); }
+      audio.play().catch(function () {});
+    });
+    onde.addEventListener("click", function (e) {
+      if (!pret) return;
+      var r = onde.getBoundingClientRect();
+      var cible = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)) * total();
+      var cumul = 0, jouait = !audio.paused;
+      for (var k = 0; k < sources.length; k++) {
+        var d = durees[k] || 0;
+        if (cible <= cumul + d || k === sources.length - 1) {
+          var dans = Math.max(0, cible - cumul);
+          termine = false;
+          if (k !== idx || !audio.getAttribute("src")) charge(k);
+          var va = function () { try { audio.currentTime = dans; } catch (x) {} maj(); if (jouait) audio.play().catch(function () {}); };
+          if (audio.readyState >= 1) va(); else audio.addEventListener("loadedmetadata", va, { once: true });
+          return;
+        }
+        cumul += d;
+      }
+    });
+
+    if (!urlFichier) { erreur("Ce vocal n'est pas encore disponible."); return racine; }
+
+    /* Le salut est chargé en entier avant d'être joué : Safari lit alors
+       sans demander de morceaux au serveur. */
+    var salutPret = urlSalut
+      ? fetch(urlSalut).then(function (r) { return r.ok ? r.blob() : null; })
+          .then(function (b) { return b && b.size ? URL.createObjectURL(b) : null; })
+          .catch(function () { return null; })
+      : Promise.resolve(null);
+
+    salutPret.then(function (urlBlob) {
+      var candidats = urlBlob ? [urlBlob, urlFichier] : [urlFichier];
+      return Promise.all(candidats.map(dureeDe)).then(function (d) {
+        if (d[d.length - 1] === null) {
+          erreur(test ? "Vocal manquant : " + urlFichier.replace(/^\//, "") : "Ce vocal n'est pas disponible pour l'instant.");
+          return;
+        }
+        sources = []; durees = [];
+        candidats.forEach(function (src, k) { if (d[k] !== null) { sources.push(src); durees.push(d[k]); } });
+        pret = true; lire.disabled = false;
+        duree.textContent = total() ? fmt(total()) : "--:--";
+        defile();
+      });
+    });
+
+    return racine;
+  }
+
+  /* ---------- La petite bulle, une seule fois par visiteur ---------- */
+  var CLE_TEASER = "gb_vx_teaser";
+  function cacheTeaser(pourToujours) {
+    teaser.hidden = true;
+    if (pourToujours) { try { localStorage.setItem(CLE_TEASER, "1"); } catch (e) {} }
+  }
+  /* Quand la montrer ? Les premières mesures ont tranché : sur 16 visites,
+     personne n'a lu la moitié de la page, et la moitié des visiteurs
+     sont partis avant 12 secondes. Réglée « à mi-page », elle ne se
+     serait montrée à personne. Elle vient donc après 10 secondes, ou dès
+     le premier quart lu — au premier des deux. */
+  function surveilleLecture() {
+    var deja = false;
+    try { deja = localStorage.getItem(CLE_TEASER) === "1"; } catch (e) {}
+    if (deja && !test) return;
+    var fait = false, minuteur = null;
+    function montre() {
+      if (fait || !panneau.hidden) return;
+      fait = true;
+      removeEventListener("scroll", verifie);
+      clearTimeout(minuteur);
+      teaser.hidden = false;
+      try { localStorage.setItem(CLE_TEASER, "1"); } catch (e) {}
+      setTimeout(function () { cacheTeaser(false); }, 15000);
+    }
+    function verifie() {
+      var h = document.documentElement, t = h.scrollHeight - h.clientHeight;
+      if (t > 0 && (h.scrollTop || document.body.scrollTop || 0) / t >= 0.25) montre();
+    }
+    addEventListener("scroll", verifie, { passive: true });
+    minuteur = setTimeout(montre, 10000);
+  }
+
+  /* ---------- Les déclencheurs ---------- */
+  bouton.addEventListener("click", function () { ouvre(bouton); });
+  teaser.querySelector(".vx-teaser-txt").addEventListener("click", function () { ouvre(bouton); });
+  teaser.querySelector(".vx-teaser-x").addEventListener("click", function () { cacheTeaser(true); });
+  voile.addEventListener("click", ferme);
+  panneau.querySelector(".vx-fermer").addEventListener("click", ferme);
+  Array.prototype.forEach.call(document.querySelectorAll(".vx-lien"), function (b) {
+    b.addEventListener("click", function () { ouvre(b); });
+  });
+  document.addEventListener("keydown", function (e) {
+    if (panneau.hidden) return;
+    if (e.key === "Escape") { e.preventDefault(); ferme(); return; }
+    if (e.key !== "Tab") return;
+    var f = panneau.querySelectorAll('button:not([disabled]), a[href], input, textarea');
+    if (!f.length) return;
+    var premier = f[0], dernier = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === premier) { e.preventDefault(); dernier.focus(); }
+    else if (!e.shiftKey && document.activeElement === dernier) { e.preventDefault(); premier.focus(); }
+  });
+
+  /* ---------- Démarrage ---------- */
+  fetch("media/vocaux/objections.json", { cache: "no-cache" })
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (c) {
+      if (!c || !Array.isArray(c.objections)) return;
+      if (c.actif !== true && !test) return;
+      config = {
+        objections: c.objections.filter(function (o) {
+          return o && o.cle && o.bouton && o.fichiers && o.fichiers.length;
+        })
+      };
+      if (!config.objections.length) return;
+      bouton.hidden = false;
+      Array.prototype.forEach.call(document.querySelectorAll(".vx-faq"), function (p) { p.hidden = false; });
+      surveilleLecture();
+    })
+    ["catch"](function () {});
 })();
 </script>
 </body>

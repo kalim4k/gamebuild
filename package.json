@@ -8,6 +8,7 @@
     "init-db": "node scripts/init-db.mjs"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.131.0",
     "@neondatabase/serverless": "^0.10.4"
   }
 }

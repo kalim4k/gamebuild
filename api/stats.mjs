@@ -35,7 +35,7 @@ export default async function handler(req, res) {
   const j = Math.min(365, Math.max(1, parseInt(req.query.jours, 10) || 7));
 
   try {
-    const [resume, parJour, entonnoir, boutons, sources, pays, appareils, parHeure, paliers] =
+    const [resume, parJour, entonnoir, boutons, sources, pays, appareils, parHeure, paliers, objections, questions] =
       await Promise.all([
 
       sql`
@@ -45,6 +45,7 @@ export default async function handler(req, res) {
           count(distinct session)                                            as sessions,
           count(*) filter (where type = 'clic')                              as clics,
           count(distinct session) filter (where type = 'clic')               as sessions_clic,
+          count(distinct session) filter (where type = 'bulle')              as sessions_bulle,
           coalesce(round(avg(valeur) filter (where type = 'sortie')), 0)::int as duree,
           coalesce(round(avg(valeur) filter (where type = 'scroll')), 0)::int as scroll_moyen
         from evenements
@@ -107,7 +108,27 @@ export default async function handler(req, res) {
         select valeur as palier, count(distinct session)::int as sessions
         from evenements
         where type = 'scroll' and vu_le > now() - make_interval(days => ${j})
-        group by 1 order by 1`
+        group by 1 order by 1`,
+
+      /* Réponses vocales. « clics_apres » : la question a été suivie d'un
+         clic sur un bouton d'achat, dans la même visite. Si la table
+         n'existe pas encore, le reste du tableau de bord marche quand même. */
+      Promise.resolve(sql`
+        select q.objection,
+               count(*)::int as questions,
+               count(*) filter (where exists (
+                 select 1 from evenements e
+                 where e.session = q.session and e.type = 'clic' and e.vu_le > q.cree_le
+               ))::int as clics_apres
+        from questions q
+        where q.cree_le > now() - make_interval(days => ${j})
+        group by 1 order by 2 desc`).catch(() => []),
+
+      Promise.resolve(sql`
+        select cree_le, prenom, canal, objection, texte
+        from questions
+        where texte is not null and cree_le > now() - make_interval(days => ${j})
+        order by cree_le desc limit 50`).catch(() => [])
     ]);
 
     const r = resume[0] || {};
@@ -127,8 +148,14 @@ export default async function handler(req, res) {
            d'achat. C'est le chiffre à surveiller avant tout. */
         taux_clic: nb(r.sessions) ? +(nb(r.sessions_clic) / nb(r.sessions) * 100).toFixed(1) : 0,
         duree: nb(r.duree),
-        scroll_moyen: nb(r.scroll_moyen)
+        scroll_moyen: nb(r.scroll_moyen),
+        sessions_bulle: nb(r.sessions_bulle),
+        part_bulle: nb(r.sessions) ? +(nb(r.sessions_bulle) / nb(r.sessions) * 100).toFixed(1) : 0
       },
+      objections: objections.map(l => ({ objection: l.objection, questions: nb(l.questions), clics_apres: nb(l.clics_apres) })),
+      questions: questions.map(l => ({
+        cree_le: l.cree_le, prenom: l.prenom, canal: l.canal, objection: l.objection, texte: l.texte
+      })),
       entonnoir: {
         arrivees: nb(e.arrivees),
         quart: nb(e.quart),

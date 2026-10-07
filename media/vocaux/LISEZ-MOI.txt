@@ -1,0 +1,108 @@
+RÉPONSES VOCALES — GAME BUILD
+=============================
+
+Ce dossier contient tes vocaux et la liste des objections. La bulle
+« Rémialde te répond en vocal » est INVISIBLE pour tes visiteurs tant
+que "actif" vaut false dans objections.json.
+
+
+1. LES FICHIERS À DÉPOSER ICI
+-----------------------------
+
+  serieux-1.mp3      « Comment je sais que c'est sérieux ? »
+  coder-1.mp3        « Je ne sais pas coder »
+  telephone-1.mp3    « Je n'ai qu'un téléphone »
+  gains-1.mp3        « Combien je peux gagner ? »
+  reception-1.mp3    « Comment je reçois la formation ? »
+  generale-1.mp3     La réponse générale (« J'ai une autre question »)
+
+  avatar.jpg         Ta photo, CARRÉE, environ 400 x 400 px. Elle
+                     s'affiche dans la bulle ronde et dans chaque vocal.
+                     Sans elle, la page montre un « R » sur fond bleu.
+
+
+2. LE FORMAT
+------------
+
+  MP3 (ou M4A). PAS les notes vocales WhatsApp telles quelles : elles
+  sont en .opus, et l'iPhone ne sait pas les lire. Un fichier .ogg ou
+  .opus est ignoré, le bouton de son objection disparaît.
+  → Envoie-les à Claude, il les convertit et règle leur volume sur
+    celui de ton salut généré.
+
+  Les noms : minuscules, chiffres et tirets seulement. Pas d'espace,
+  pas d'accent.
+
+
+3. LES RÈGLES D'ENREGISTREMENT
+------------------------------
+
+  - Ne commence JAMAIS par « Salut » ni par un prénom : ce début-là est
+    généré dans ta voix clonée, juste avant ton vocal. Commence par
+    « Alors… », « Écoute… », « Bonne question… ».
+  - Ne dis jamais le prix ni une date limite. Le jour où il change,
+    tous tes vocaux deviennent faux. Dis « le prix affiché sur la page ».
+  - Aucun chiffre de gains promis : un vocal est une preuve enregistrée.
+  - Entre 40 et 70 secondes.
+  - Termine par une action : « appuie sur le bouton juste en dessous ».
+  - Même micro, même pièce que les échantillons de ton clone ElevenLabs,
+    sinon la jonction entre le salut et ton vocal s'entend.
+
+
+4. PLUSIEURS VERSIONS D'UNE MÊME RÉPONSE
+----------------------------------------
+
+  Enregistre serieux-2.mp3, puis ajoute-le dans objections.json :
+
+      "fichiers": ["serieux-1.mp3", "serieux-2.mp3"],
+
+  Chaque visiteur reçoit une version tirée au hasard, et retombe
+  toujours sur la même s'il repose la question.
+
+
+5. AJOUTER UNE OBJECTION
+------------------------
+
+  Dans /admin, la carte « Leurs questions, mot pour mot » montre ce que
+  tes visiteurs écrivent. Quand une question revient, copie un bloc
+  dans objections.json et adapte-le :
+
+      {
+        "cle": "temps",
+        "bouton": "Combien de temps ça prend ?",
+        "fichiers": ["temps-1.mp3"],
+        "mots": ["temps", "combien de temps", "heures", "jours", "rapide", "long"]
+      },
+
+  - "cle" : un mot court, sans accent ni espace, jamais deux fois le même.
+  - "bouton" : ce que le visiteur lit.
+  - "mots" : des mots SANS ACCENT qui aident à reconnaître la question
+    quand le visiteur l'écrit lui-même.
+
+  Attention aux virgules : chaque bloc est suivi d'une virgule, sauf le
+  dernier. Une virgule en trop et toute la bulle disparaît.
+
+
+6. ACTIVER, TESTER
+------------------
+
+  Tester sans rien montrer à tes visiteurs : ouvre ta page avec
+  ?vocal=test à la fin de l'adresse. Un vocal pas encore déposé y est
+  signalé par son nom de fichier.
+
+  Activer pour tout le monde : dans objections.json,
+
+      "actif": true,
+
+  Désactiver : remets false. La bulle disparaît au rechargement.
+
+
+7. LES PRÉNOMS INTERDITS
+------------------------
+
+  Ta voix clonée prononce le prénom tapé par le visiteur. Une liste
+  d'insultes est déjà bloquée dans le code ; tout prénom refusé reçoit
+  « Salut, j'espère que tu vas bien » sans prénom. Pour bloquer d'autres
+  mots (insultes en éwé, en mina…), ajoute-les SANS ACCENT :
+
+      "prenoms_interdits": ["mot1", "mot2"]

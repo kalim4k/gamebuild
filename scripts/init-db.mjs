@@ -51,13 +51,45 @@ const etapes = [
   ["index par date",      `create index if not exists evenements_date_idx    on evenements (vu_le desc)`],
   ["index par type",      `create index if not exists evenements_type_idx    on evenements (type, vu_le desc)`],
   ["index par visiteur",  `create index if not exists evenements_visiteur_idx on evenements (visiteur)`],
-  ["index par session",   `create index if not exists evenements_session_idx on evenements (session)`]
+  ["index par session",   `create index if not exists evenements_session_idx on evenements (session)`],
+
+  /* ---------- Réponses vocales ---------- */
+  ["table questions", `
+    create table if not exists questions (
+      id         bigserial    primary key,
+      cree_le    timestamptz  not null default now(),
+      session    text         not null,
+      visiteur   text         not null,
+      prenom     text,
+      canal      text         not null,   -- bouton | texte | vocal
+      objection  text         not null,   -- clé reconnue, ou « generale »
+      texte      text,                    -- question écrite ou transcription
+      fichier    text                     -- vocal joué
+    )`],
+  ["index questions par date",    `create index if not exists questions_date_idx     on questions (cree_le desc)`],
+  ["index questions par session", `create index if not exists questions_session_idx  on questions (session)`],
+  ["index questions par visiteur",`create index if not exists questions_visiteur_idx on questions (visiteur, cree_le desc)`],
+
+  /* Un salut par prénom, généré une seule fois dans ta voix puis resservi.
+     « _ » est le salut sans prénom. */
+  ["table saluts", `
+    create table if not exists saluts (
+      cle      text         primary key,
+      texte    text         not null,
+      audio    bytea        not null,
+      cree_le  timestamptz  not null default now()
+    )`]
 ];
 
 console.log("Connexion à Neon…");
 for (const [nom, ddl] of etapes) {
   await sql(ddl);
   console.log("  ✓ " + nom);
+}
+
+for (const table of ["questions", "saluts"]) {
+  const [{ n }] = await sql(`select count(*)::int as n from ${table}`);
+  console.log("  table " + table + " : " + n + " lignes");
 }
 
 const [{ version }] = await sql`select version()`;

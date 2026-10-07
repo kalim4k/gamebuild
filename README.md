@@ -8,10 +8,14 @@ GAME BUILD/
 ├── admin.html         ← l'espace admin, servi sur /admin
 ├── api/
 │   ├── track.mjs      ← reçoit les événements et les range dans Neon
-│   └── stats.mjs      ← renvoie les statistiques à l'espace admin
+│   ├── stats.mjs      ← renvoie les statistiques à l'espace admin
+│   ├── vocal.mjs      ← reçoit une question, choisit le vocal à jouer
+│   ├── salut.mjs      ← « Salut Kossi… » dans ta voix, généré une fois puis resservi
+│   └── _vocaux.mjs    ← outils partagés (filtre des prénoms, tri, ElevenLabs)
 ├── scripts/
 │   └── init-db.mjs    ← crée la table (une seule fois)
 ├── media/             ← tes vidéos et images (voir media/LISEZ-MOI.txt)
+│   └── vocaux/        ← tes réponses vocales + objections.json (voir son LISEZ-MOI.txt)
 ├── vercel.json        ← en-têtes et cache
 ├── .env.example       ← modèle des variables ; .env.local n'est jamais versionné
 └── README.md
@@ -133,11 +137,61 @@ de visite vit dans l'onglet et disparaît à sa fermeture : ce n'est pas un mouc
 persistant. C'est volontairement plus sobre qu'un outil de mesure du marché — et ça
 t'évite d'avoir à demander un consentement pour cette mesure-là.
 
+### Les réponses vocales, dans la même base
+
+Les questions posées dans la bulle vocale sont rangées dans la table `questions` :
+le **prénom** tapé par le visiteur et le **texte** de sa question, s'il l'a écrite ou
+dictée. Rien d'autre. Les saluts générés dans ta voix sont dans la table `saluts`.
+
 ### À savoir
 
 Les mesures n'arrivent **que depuis le site déployé sur Vercel**, parce que la page
 appelle une fonction serveur. Ouvrir `index.html` par double-clic n'enregistre rien,
 et l'espace admin affichera zéro.
+
+---
+
+## 1 ter. Les réponses vocales
+
+Une bulle ronde avec ta photo, en bas à droite. Le visiteur choisit une question parmi
+les objections prévues — ou écrit, ou dicte la sienne — donne son prénom, et reçoit un
+message vocal façon WhatsApp : « Salut Kossi, j'espère que tu vas bien », **généré dans
+ta voix clonée**, suivi de **ton vocal enregistré** pour cette objection.
+
+**Tout se règle dans [media/vocaux/](media/vocaux/)** — les fichiers à déposer, les
+règles d'enregistrement, comment ajouter une objection ou une version : voir
+[media/vocaux/LISEZ-MOI.txt](media/vocaux/LISEZ-MOI.txt).
+
+**Elle est invisible tant que `"actif"` vaut `false`** dans `objections.json`. Pour la
+voir sans la montrer : ajoute `?vocal=test` à l'adresse de ta page.
+
+### Les variables à ajouter sur Vercel
+
+| Variable | Obligatoire ? | À quoi ça sert |
+| --- | --- | --- |
+| `ELEVENLABS_API_KEY` | pour le salut et les questions dictées | ta clé ElevenLabs |
+| `ELEVENLABS_VOICE_ID` | pour le salut | l'identifiant de ta voix clonée |
+| `ANTHROPIC_API_KEY` | non | trier les questions écrites avec Claude plutôt qu'aux mots-clés |
+| `SALUT_MAX_JOUR` | non | nouveaux prénoms générés par jour, 300 par défaut |
+
+Sans ElevenLabs, la bulle fonctionne quand même : ton vocal est joué sans le salut, et
+seules les questions écrites sont acceptées. Comme pour Neon : **ne colle jamais ces clés
+dans un fichier versionné ni dans une conversation** — directement dans Vercel et dans
+`.env.local`.
+
+### Ce qui protège ta voix
+
+- Le visiteur ne choisit **jamais** les mots que dit ta voix : il ne fournit qu'un prénom.
+  Lettres seulement, un mot, 20 signes au plus, insultes refusées — sinon, salut sans
+  prénom.
+- Chaque prénom n'est généré **qu'une fois**, puis resservi depuis Neon.
+- Au plus 300 nouveaux prénoms par jour : une attaque coûterait au pire un dollar.
+- Au plus 12 questions par heure et par visiteur ; au-delà, renvoi vers WhatsApp.
+
+### Si tu changes de voix clonée
+
+Les saluts déjà générés gardent l'ancienne voix. Pour tout régénérer, vide la table dans
+l'éditeur SQL de Neon : `delete from saluts;`
 
 ---
 
