@@ -96,6 +96,8 @@ export default async function handler(req, res) {
     ? config.generale
     : (config.objections.find(o => o.cle === objection) || { fichiers: [] }).fichiers;
   const fichier = fichiers.length ? choisitVersion(fichiers, session + "|" + objection) : null;
+  /* Le salut tutoie ou vouvoie comme ce vocal-là. */
+  const vous = Boolean(fichier && config.vouvoiement.includes(fichier));
 
   /* ---------- Le prénom, filtré ---------- */
   const clePrenom = normalisePrenom(c.prenom, config.interdits);
@@ -117,8 +119,10 @@ export default async function handler(req, res) {
     /* « v » change avec la voix ou le modèle : le navigateur ne ressert
        jamais de son cache un salut fait avec l'ancienne voix. */
     salut: elevenLabsPret()
-      ? "/api/salut?p=" + encodeURIComponent(clePrenom || "_") + "&v=" + versionVoix()
+      ? "/api/salut?p=" + encodeURIComponent(clePrenom || "_") + (vous ? "&r=vous" : "") + "&v=" + versionVoix()
       : null,
-    whatsapp: objection === "generale"
+    whatsapp: objection === "generale",
+    /* Pour que le petit mot écrit avant le vocal vouvoie lui aussi. */
+    vous
   });
 }

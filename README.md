@@ -155,8 +155,9 @@ et l'espace admin affichera zéro.
 
 Une bulle ronde avec ta photo, en bas à droite. Le visiteur choisit une question parmi
 les objections prévues — ou écrit, ou dicte la sienne — donne son prénom, et reçoit un
-message vocal façon WhatsApp : « Salut Kossi, j'espère que tu vas bien », **généré dans
-ta voix clonée**, suivi de **ton vocal enregistré** pour cette objection.
+message vocal façon WhatsApp : « Salut Kossi, j'espère que tu vas bien » (ou « que vous
+allez bien » quand ton vocal vouvoie), **généré dans ta voix clonée**, suivi de **ton
+vocal enregistré** pour cette objection.
 
 **Tout se règle dans [media/vocaux/](media/vocaux/)** — les fichiers à déposer, les
 règles d'enregistrement, comment ajouter une objection ou une version : voir

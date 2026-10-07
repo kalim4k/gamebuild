@@ -61,7 +61,9 @@ function valideConfig(c) {
   const generale = ((c && c.generale && c.generale.fichiers) || []).filter(f => FICHIER_OK.test(f));
   const interdits = (Array.isArray(c && c.prenoms_interdits) ? c.prenoms_interdits : [])
     .filter(m => typeof m === "string").map(m => sansAccents(m.toLowerCase()));
-  return { actif: c && c.actif === true, objections, generale, interdits };
+  /* Les vocaux où tu dis « vous » : leur salut vouvoie aussi. */
+  const vouvoiement = (Array.isArray(c && c.vouvoiement) ? c.vouvoiement : []).filter(f => FICHIER_OK.test(f));
+  return { actif: c && c.actif === true, objections, generale, interdits, vouvoiement };
 }
 
 /* ══════════════ Le prénom ══════════════ */
@@ -103,11 +105,11 @@ export function affichePrenom(cle) {
   return cle.split("-").map(s => s.charAt(0).toUpperCase() + s.slice(1)).join("-");
 }
 
-/* Le SEUL texte que ta voix prononcera jamais. */
-export function texteSalut(cle) {
-  return cle === "_"
-    ? "Salut, j'espère que tu vas bien."
-    : "Salut " + affichePrenom(cle) + ", j'espère que tu vas bien.";
+/* Les SEULS textes que ta voix prononcera jamais. Le salut tutoie ou
+   vouvoie comme le vocal qui le suit (liste "vouvoiement" d'objections.json). */
+export function texteSalut(cle, vous = false) {
+  const fin = vous ? "j'espère que vous allez bien." : "j'espère que tu vas bien.";
+  return cle === "_" ? "Salut, " + fin : "Salut " + affichePrenom(cle) + ", " + fin;
 }
 
 /* ══════════════ Le visiteur ══════════════ */
@@ -128,9 +130,11 @@ export function choisitVersion(fichiers, graine) {
 
 /* ══════════════ Trier une question libre ══════════════ */
 
+/* Mot entier, au singulier comme au pluriel : « ordinateur » trouve aussi
+   « ordinateurs », mais « pc » ne trouve pas « pccc » ni « epc ». */
 function motif(mot) {
   const m = sansAccents(mot.toLowerCase()).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  return new RegExp("(^|[^a-z0-9])" + m + "($|[^a-z0-9])");
+  return new RegExp("(^|[^a-z0-9])" + m + "s?($|[^a-z0-9])");
 }
 
 /* Repli sans IA : l'objection dont les mots-clés reviennent le plus. */

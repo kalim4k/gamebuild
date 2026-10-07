@@ -1,39 +1,53 @@
 {
   "actif": false,
+  "attente_secondes": 15,
   "objections": [
     {
       "cle": "serieux",
       "bouton": "Comment je sais que c'est sérieux ?",
       "fichiers": ["serieux-1.mp3"],
-      "mots": ["arnaque", "arnaqueur", "serieux", "confiance", "escroquerie", "escroc", "fiable", "vrai", "faux", "garantie", "rembourse", "remboursement", "voleur", "brouteur", "arnaquer", "escroquer", "verifier", "preuve", "preuves", "temoignage", "temoignages"]
+      "mots": ["arnaque", "arnaqueur", "serieux", "confiance", "escroquerie", "escroc", "fiable", "vrai", "faux", "garantie", "rembourse", "remboursement", "voleur", "brouteur", "arnaquer", "escroquer", "verifier", "preuve", "preuves", "temoignage", "temoignages", "serieuse", "marche vraiment", "legit", "qui es tu", "qui es-tu", "c'est qui", "presente"]
     },
     {
       "cle": "coder",
       "bouton": "Je ne sais pas coder",
       "fichiers": ["coder-1.mp3"],
-      "mots": ["coder", "code", "programmer", "programmation", "informatique", "technique", "debutant", "difficile", "complique", "nul", "codage", "logiciel", "logiciels", "compliquer", "savoir rien"]
+      "mots": ["coder", "code", "programmer", "programmation", "informatique", "technique", "debutant", "difficile", "complique", "nul", "codage", "logiciel", "logiciels", "compliquer", "savoir rien", "dur", "doue"]
     },
     {
       "cle": "telephone",
       "bouton": "Je n'ai qu'un téléphone",
       "fichiers": ["telephone-1.mp3"],
-      "mots": ["telephone", "ordinateur", "ordi", "pc", "laptop", "portable", "smartphone", "android", "iphone", "machine", "tel", "phone", "tablette", "sans ordinateur"]
+      "mots": ["telephone", "ordinateur", "ordi", "pc", "laptop", "portable", "smartphone", "android", "iphone", "machine", "tel", "phone", "tablette", "sans ordinateur", "tecno", "infinix", "itel", "samsung", "redmi", "xiaomi", "huawei", "oppo"]
+    },
+    {
+      "cle": "prix",
+      "bouton": "Je n'ai pas les moyens",
+      "fichiers": ["prix-1.mp3"],
+      "mots": ["cher", "trop cher", "moyens", "pas les moyens", "budget", "prix", "cout", "coute", "couter", "reduction", "remise", "promo", "promotion", "fauche", "pas d'argent", "pas dargent", "1990", "2990"]
     },
     {
       "cle": "gains",
       "bouton": "Combien je peux gagner ?",
       "fichiers": ["gains-1.mp3"],
-      "mots": ["gagner", "gain", "gains", "argent", "revenu", "revenus", "rentable", "rapporte", "benefice", "adsense", "monetiser", "combien je", "gagne", "gagnes", "gagnent", "pub", "pubs", "publicite", "rapporter", "rentabilite", "salaire", "mois"]
+      "mots": ["gagner", "gain", "gains", "argent", "revenu", "revenus", "rentable", "rapporte", "benefice", "adsense", "monetiser", "combien je", "gagne", "gagnes", "gagnent", "pub", "pubs", "publicite", "rapporter", "rentabilite", "salaire", "par mois"]
+    },
+    {
+      "cle": "comment",
+      "bouton": "Comment ça marche ?",
+      "fichiers": ["comment-1.mp3"],
+      "mots": ["comment ca marche", "ca marche comment", "comment ca fonctionne", "fonctionne", "fonctionnement", "c'est quoi", "cest quoi", "c quoi", "explique", "expliquer", "explication", "principe", "concept", "game build", "gamebuild"]
     },
     {
       "cle": "reception",
       "bouton": "Comment je reçois la formation ?",
       "fichiers": ["reception-1.mp3"],
-      "mots": ["recevoir", "recois", "livraison", "email", "mail", "acces", "paiement", "payer", "wave", "momo", "mobile money", "orange money", "flooz", "telecharger", "recu", "lien", "telechargement", "apres paiement", "comment payer", "moov", "mtn", "mixx"]
+      "mots": ["recevoir", "recois", "livraison", "email", "mail", "acces", "paiement", "payer", "wave", "momo", "mobile money", "orange money", "flooz", "telecharger", "recu", "lien", "telechargement", "apres paiement", "comment payer", "moov", "mtn", "mixx", "paie", "paye", "t-money", "t money", "togocom", "carte bancaire", "bancaire", "visa", "mastercard"]
     }
   ],
   "generale": {
     "fichiers": ["generale-1.mp3"]
   },
+  "vouvoiement": ["prix-1.mp3"],
   "prenoms_interdits": []
 }

@@ -958,6 +958,12 @@ html.vx-ouvert .vx-bouton, html.vx-ouvert .vx-teaser{ visibility: hidden; }
 .vx-points i{ width: 7px; height: 7px; border-radius: 50%; background: #9aa3a9; animation: vx-point 1.2s infinite ease-in-out; }
 .vx-points i:nth-child(2){ animation-delay: .15s; }
 .vx-points i:nth-child(3){ animation-delay: .3s; }
+/* Pendant l'attente : le micro qui pulse, comme « enregistre un audio… » sur WhatsApp */
+.vx-prepare{ display: inline-flex; align-items: center; gap: 7px; color: #1a8f4c; }
+.vx-prepare svg{ width: 19px; height: 19px; animation: vx-pulse 1.4s infinite ease-in-out; }
+.vx-prepare .vx-points{ padding: 5px 2px 5px 0; }
+/* Ton vocal à toi, dans ta bulle verte : l'icône micro, pas d'emoji */
+.vx-vocal-moi svg{ width: 15px; height: 15px; vertical-align: -2px; margin-right: 5px; }
 
 /* Le message vocal */
 .vx-msg:has(.vx-vocal){ padding: 6px 8px; }
@@ -978,11 +984,17 @@ html.vx-ouvert .vx-bouton, html.vx-ouvert .vx-teaser{ visibility: hidden; }
 
 /* La zone de réponse */
 .vx-saisie{
-  flex: none; max-height: 48%; overflow-y: auto;
+  flex: none; max-height: 60%; overflow-y: auto;
   padding: 10px 12px calc(12px + env(safe-area-inset-bottom));
   background: #f7f7f8; border-top: 1px solid var(--hair);
 }
 .vx-choix{ display: flex; flex-direction: column; gap: 7px; }
+/* Les questions sur deux colonnes : les 8 tiennent sans défiler, même
+   sous la barre de Safari d'un petit téléphone. Une question seule sur
+   sa rangée prend toute la largeur. */
+.vx-questions{ display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.vx-questions .vx-puce{ text-align: center; padding: 8px 10px; border-radius: 14px; }
+.vx-questions .vx-puce:last-child:nth-child(odd){ grid-column: 1 / -1; }
 .vx-puce{
   appearance: none; display: block; text-align: left; text-decoration: none; cursor: pointer;
   font: inherit; font-size: 15px; line-height: 1.3; color: var(--blue-ink);
@@ -1484,10 +1496,10 @@ src="https://www.facebook.com/tr?id=4451955808377862&ev=PageView&noscript=1"
 
       <div class="feature rise">
         <svg class="feature-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <rect x="2.5" y="4" width="19" height="13" rx="2"/><path d="M8 21h8M12 17v4"/>
+          <rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="M10.5 18.5h3"/>
         </svg>
         <h3>Rien de compliqué à apprendre.</h3>
-        <p>Un ordinateur ordinaire et un compte Google. Le guide te fait installer ton atelier en dix minutes, une seule fois — ensuite on n'en reparle plus.</p>
+        <p>Ton téléphone, l'application Claude et un compte Google suffisent. Le guide te fait préparer ton atelier en dix minutes, une seule fois — ensuite on n'en reparle plus.</p>
       </div>
 
       <div class="feature rise">
@@ -1672,7 +1684,7 @@ src="https://www.facebook.com/tr?id=4451955808377862&ev=PageView&noscript=1"
         <h3>Oui, si…</h3>
         <ul>
           <li><svg class="ico-yes" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 10.5 4 4 8-9"/></svg><span>Tu as une idée de jeu qui traîne depuis des mois et tu veux enfin la voir en ligne.</span></li>
-          <li><svg class="ico-yes" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 10.5 4 4 8-9"/></svg><span>Tu as un ordinateur et un compte Google. C'est tout le matériel demandé.</span></li>
+          <li><svg class="ico-yes" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 10.5 4 4 8-9"/></svg><span>Tu as un téléphone, l'application Claude et un compte Google. C'est tout le matériel demandé.</span></li>
           <li><svg class="ico-yes" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 10.5 4 4 8-9"/></svg><span>Tu préfères un chiffre honnête à une promesse confortable.</span></li>
           <li><svg class="ico-yes" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 10.5 4 4 8-9"/></svg><span>Tu es prêt à expliquer ce que tu veux, au lieu d'attendre qu'on le devine.</span></li>
         </ul>
@@ -1681,7 +1693,6 @@ src="https://www.facebook.com/tr?id=4451955808377862&ev=PageView&noscript=1"
         <h3>Non, si…</h3>
         <ul>
           <li><svg class="ico-no" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="m5 5 10 10M15 5 5 15"/></svg><span>Tu cherches un bouton magique qui sort un jeu complet sans que tu touches à rien.</span></li>
-          <li><svg class="ico-no" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="m5 5 10 10M15 5 5 15"/></svg><span>Tu n'as qu'un téléphone — il faut un ordinateur pour fabriquer le jeu.</span></li>
           <li><svg class="ico-no" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="m5 5 10 10M15 5 5 15"/></svg><span>Tu attends un revenu garanti. Le tableau plus haut dit exactement le contraire.</span></li>
           <li><svg class="ico-no" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="m5 5 10 10M15 5 5 15"/></svg><span>Tu veux devenir développeur professionnel — prends plutôt une vraie formation en code.</span></li>
         </ul>
@@ -1706,7 +1717,7 @@ src="https://www.facebook.com/tr?id=4451955808377862&ev=PageView&noscript=1"
       </details>
       <details>
         <summary>Un téléphone suffit&nbsp;?</summary>
-        <p>Non, et je préfère te le dire ici plutôt qu'après ton paiement : il te faut un ordinateur pour fabriquer le jeu. En revanche aucune machine puissante n'est nécessaire, et ton jeu fini, lui, se jouera sur n'importe quel téléphone.</p>
+        <p>Oui. Tu peux fabriquer ton jeu du début à la fin sur ton téléphone, avec l'application Claude : une mise à jour du guide te montre comment, étape par étape. Si tu as un ordinateur, tu peux t'en servir aussi, mais il n'est pas obligatoire. Et ton jeu fini se jouera sur n'importe quel téléphone.</p>
       </details>
       <details>
         <summary>Pourquoi il me faut ma propre adresse web&nbsp;?</summary>
@@ -1726,7 +1737,7 @@ src="https://www.facebook.com/tr?id=4451955808377862&ev=PageView&noscript=1"
       </details>
     </div>
     <p class="vx-faq" hidden>
-      <button type="button" class="vx-lien">Ta question n'est pas là&nbsp;? Pose-la-moi, je te réponds en vocal&nbsp;🎙️</button>
+      <button type="button" class="vx-lien">Ta question n'est pas là&nbsp;? Pose-la-moi, je te réponds en vocal.</button>
     </p>
   </div>
 </section>
@@ -2169,7 +2180,7 @@ var LIEN_PAIEMENT = "https://kgpqinxc.mychariow.shop/prd_iiq2laak/checkout";
   <span class="vx-avatar" aria-hidden="true"><b>R</b><img src="media/vocaux/avatar.jpg" alt="" loading="lazy" onerror="this.remove()"></span>
 </button>
 <div class="vx-teaser" id="vx-teaser" hidden>
-  <button type="button" class="vx-teaser-txt">Tu hésites&nbsp;? Pose-moi ta question&nbsp;🎙️</button>
+  <button type="button" class="vx-teaser-txt">Tu hésites&nbsp;? Pose-moi ta question.</button>
   <button type="button" class="vx-teaser-x" aria-label="Fermer">×</button>
 </div>
 <div class="vx-voile" id="vx-voile" hidden></div>
@@ -2245,11 +2256,52 @@ var LIEN_PAIEMENT = "https://kgpqinxc.mychariow.shop/prd_iiq2laak/checkout";
     fil.appendChild(m); defile();
     return m;
   }
-  function attente() {
+  /* Comme sur WhatsApp, l'en-tête dit ce que Rémialde est en train de
+     faire : « écrit… » (trois points) puis « enregistre un audio… » (un
+     micro qui pulse). Renvoie la fonction qui remet tout comme avant. */
+  var statut = panneau.querySelector(".vx-tete p"), statutNormal = statut.textContent;
+  function indicateur(enregistre) {
+    var b = el("span", enregistre ? "vx-prepare" : null);
+    b.setAttribute("role", "img");
+    b.setAttribute("aria-label", enregistre ? "Rémialde enregistre un vocal" : "Rémialde écrit");
+    if (enregistre) b.appendChild(svg("micro"));
     var p = el("span", "vx-points");
-    p.setAttribute("role", "img"); p.setAttribute("aria-label", "Réponse en préparation");
     for (var i = 0; i < 3; i++) p.appendChild(el("i"));
-    return message("lui", p);
+    b.appendChild(p);
+    var m = message("lui", b);
+    statut.textContent = enregistre ? "enregistre un audio…" : "écrit…";
+    return function () { m.remove(); statut.textContent = statutNormal; };
+  }
+
+  /* Le petit mot écrit qui arrive avant le vocal : le visiteur sait que sa
+     question est bien reçue et qu'un vocal arrive. Avec son prénom la
+     première fois, plus court ensuite. Tutoie ou vouvoie comme le vocal. */
+  var dejaSalue = false;
+  var MOTS = {
+    tu: {
+      premier: ["Bien reçu ! Un instant, je t'envoie un vocal pour tout t'expliquer.",
+                "Merci pour ta question. Je t'enregistre un vocal, j'arrive.",
+                "Bonne question ! Un instant, je t'explique tout en vocal."],
+      suite:   ["Bien reçu, je t'enregistre un vocal.",
+                "Ok, je te réponds en vocal, un instant.",
+                "Bonne question ! Je t'envoie un vocal."]
+    },
+    vous: {
+      premier: ["Bien reçu ! Un instant, je vous envoie un vocal pour tout vous expliquer.",
+                "Merci pour votre question. Je vous enregistre un vocal, j'arrive."],
+      suite:   ["Bien reçu, je vous enregistre un vocal.",
+                "Bonne question ! Je vous envoie un vocal, un instant."]
+    }
+  };
+  function auHasard(liste) { return liste[Math.floor(Math.random() * liste.length)]; }
+  function petitMot(j) {
+    var mots = MOTS[j.vous ? "vous" : "tu"];
+    if (dejaSalue) return auHasard(mots.suite);
+    dejaSalue = true;
+    var h = new Date().getHours(), politesse = h >= 17 || h < 4 ? "Bonsoir" : "Bonjour";
+    var salut = j.vous ? politesse : auHasard([politesse, "Salut", "Coucou"]);
+    var phrase = auHasard(mots.premier);
+    return salut + (j.prenom ? " " + j.prenom : "") + ", " + phrase.charAt(0).toLowerCase() + phrase.slice(1);
   }
   function puce(texte, action, classe) {
     var b = el("button", "vx-puce" + (classe ? " " + classe : ""), texte);
@@ -2285,7 +2337,7 @@ var LIEN_PAIEMENT = "https://kgpqinxc.mychariow.shop/prd_iiq2laak/checkout";
     if (!ouverturesComptees) { ouverturesComptees = true; mesure("bulle", "ouverture"); }
     if (!introFaite) {
       introFaite = true;
-      message("lui", "Salut 👋 Tu as une question avant de te lancer ? Choisis-la ci-dessous, je te réponds en vocal.");
+      message("lui", "Salut ! Tu as une question avant de te lancer ? Choisis-la ci-dessous, je te réponds en vocal.");
       afficheChoix();
     } else {
       focusSaisie();
@@ -2303,11 +2355,12 @@ var LIEN_PAIEMENT = "https://kgpqinxc.mychariow.shop/prd_iiq2laak/checkout";
   /* ---------- Les questions préécrites ---------- */
   function afficheChoix() {
     vide();
-    var liste = el("div", "vx-choix");
+    var liste = el("div", "vx-choix vx-questions");
     config.objections.forEach(function (o) {
-      liste.appendChild(puce(o.bouton, function () { choisit(o); }));
+      /* Espace insécable avant « ? » : il ne part jamais seul à la ligne. */
+      liste.appendChild(puce(o.bouton.replace(/ ([?!:;])/g, " $1"), function () { choisit(o); }));
     });
-    liste.appendChild(puce("✏️ J'ai une autre question", autreQuestion));
+    liste.appendChild(puce("J'ai une autre question", autreQuestion));
     saisie.appendChild(liste);
     focusSaisie();
   }
@@ -2346,8 +2399,8 @@ var LIEN_PAIEMENT = "https://kgpqinxc.mychariow.shop/prd_iiq2laak/checkout";
     vide();
     message("moi", "J'ai une autre question");
     message("lui", peutEnregistrer
-      ? "Je t'écoute. Écris ta question, ou envoie-moi un vocal 🎙️"
-      : "Je t'écoute. Écris-moi ta question ✍️");
+      ? "Je t'écoute. Écris ta question, ou envoie-moi un vocal."
+      : "Je t'écoute. Écris-moi ta question.");
     composeur();
   }
   function composeur() {
@@ -2411,7 +2464,7 @@ var LIEN_PAIEMENT = "https://kgpqinxc.mychariow.shop/prd_iiq2laak/checkout";
       debutRec = Date.now();
       vueEnregistrement();
     }).catch(function () {
-      message("lui", "Je n'ai pas accès à ton micro. Tu peux écrire ta question à la place ✍️");
+      message("lui", "Je n'ai pas accès à ton micro. Tu peux écrire ta question à la place.");
       composeur();
     });
   }
@@ -2449,9 +2502,12 @@ var LIEN_PAIEMENT = "https://kgpqinxc.mychariow.shop/prd_iiq2laak/checkout";
     if (annule || !r) { annule = false; return; }
     var duree = Math.round((Date.now() - debutRec) / 1000);
     var blob = new Blob(morceaux, { type: r.mimeType || "audio/webm" });
-    if (duree < 1 || blob.size < 800) { message("lui", "Ton vocal est trop court, réessaie 🙂"); composeur(); return; }
+    if (duree < 1 || blob.size < 800) { message("lui", "Ton vocal est trop court, réessaie."); composeur(); return; }
     vide();
-    var bulleMoi = message("moi", "🎤 Vocal · " + fmt(duree));
+    var etiquette = el("span", "vx-vocal-moi");
+    etiquette.appendChild(svg("micro"));
+    etiquette.appendChild(document.createTextNode("Vocal · " + fmt(duree)));
+    var bulleMoi = message("moi", etiquette);
     var lecture = new FileReader();
     lecture.onload = function () {
       var b64 = String(lecture.result).split(",")[1] || "";
@@ -2460,10 +2516,19 @@ var LIEN_PAIEMENT = "https://kgpqinxc.mychariow.shop/prd_iiq2laak/checkout";
     lecture.readAsDataURL(blob);
   }
 
-  /* ---------- Envoyer la question, recevoir le vocal ---------- */
+  /* ---------- Envoyer la question, recevoir le vocal ----------
+     Rien n'arrive d'un coup, comme avec une vraie personne :
+     1. « écrit… » environ une seconde, puis le petit mot ;
+     2. « enregistre un audio… » jusqu'au vocal, au bout de "attente_secondes"
+        (objections.json, 15 par défaut), avec un peu de hasard.
+     Pendant ce temps, le salut et ton vocal se chargent déjà. */
+  function delai() { return config.attente * 1000 * (0.8 + Math.random() * 0.3); }
+
   function pose(params, bulleMoi) {
     vide();
-    var att = attente();
+    var fin = indicateur(false), depart = Date.now();
+    var tMot = 1000 + Math.random() * 800, tVocal = Math.max(delai(), tMot + 600);
+    function apres(ms, f) { setTimeout(f, Math.max(0, depart + ms - Date.now())); }
     var corps = { session: session, prenom: prenom || "" };
     for (var k in params) corps[k] = params[k];
     fetch("/api/vocal", {
@@ -2475,13 +2540,21 @@ var LIEN_PAIEMENT = "https://kgpqinxc.mychariow.shop/prd_iiq2laak/checkout";
         return r.json().catch(function () { return {}; }).then(function (j) { j._ok = r.ok; return j; });
       })
       .then(function (j) {
-        att.remove();
-        if (!j._ok) { echec(j.erreur, j.whatsapp !== false, params.texte); return; }
+        if (!j._ok) { fin(); echec(j.erreur, j.whatsapp !== false, params.texte); return; }
         if (bulleMoi && j.canal === "vocal" && j.texte) bulleMoi.appendChild(el("small", null, "« " + j.texte + " »"));
-        message("lui", lecteur(j.salut, j.fichier));
-        actions(j.whatsapp, j.texte || params.texte || "");
+        var vocal = lecteur(j.salut, j.fichier);
+        apres(tMot, function () {
+          fin();
+          message("lui", petitMot(j));
+          fin = indicateur(true);
+          apres(tVocal, function () {
+            fin();
+            message("lui", vocal);
+            actions(j.whatsapp, j.texte || params.texte || "");
+          });
+        });
       })
-      .catch(function () { att.remove(); echec(null, true, params.texte); });
+      .catch(function () { fin(); echec(null, true, params.texte); });
   }
   function echec(texte, proposeWa, question) {
     message("lui", texte || "Oups, je n'ai pas pu te répondre. Écris-moi sur WhatsApp, je te réponds moi-même.");
@@ -2500,7 +2573,7 @@ var LIEN_PAIEMENT = "https://kgpqinxc.mychariow.shop/prd_iiq2laak/checkout";
       liste.appendChild(lienPuce("Continuer sur WhatsApp", wa + "?text=" + encodeURIComponent(t), "vx-wa"));
     }
     liste.appendChild(puce("J'ai une autre question", function () {
-      message("lui", "Vas-y, choisis ta question 👇");
+      message("lui", "Vas-y, choisis ta question ci-dessous.");
       afficheChoix();
     }));
     saisie.appendChild(liste);
@@ -2683,10 +2756,12 @@ var LIEN_PAIEMENT = "https://kgpqinxc.mychariow.shop/prd_iiq2laak/checkout";
     .then(function (c) {
       if (!c || !Array.isArray(c.objections)) return;
       if (c.actif !== true && !test) return;
+      var s = Number(c.attente_secondes);
       config = {
         objections: c.objections.filter(function (o) {
           return o && o.cle && o.bouton && o.fichiers && o.fichiers.length;
-        })
+        }),
+        attente: isFinite(s) && s >= 0 && s <= 60 ? s : 15
       };
       if (!config.objections.length) return;
       bouton.hidden = false;

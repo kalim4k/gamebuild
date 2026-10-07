@@ -6,19 +6,29 @@ Ce dossier contient tes vocaux et la liste des objections. La bulle
 que "actif" vaut false dans objections.json.
 
 
-1. LES FICHIERS À DÉPOSER ICI
+1. LES FICHIERS DE CE DOSSIER
 -----------------------------
+
+  Enregistrés le 7 octobre 2026 :
 
   serieux-1.mp3      « Comment je sais que c'est sérieux ? »
   coder-1.mp3        « Je ne sais pas coder »
-  telephone-1.mp3    « Je n'ai qu'un téléphone »
+  telephone-1.mp3    « Je n'ai qu'un téléphone »  → la réponse est OUI,
+                     un téléphone suffit (la page le dit aussi).
+  prix-1.mp3         « Je n'ai pas les moyens »
   gains-1.mp3        « Combien je peux gagner ? »
+  comment-1.mp3      « Comment ça marche ? »
   reception-1.mp3    « Comment je reçois la formation ? »
   generale-1.mp3     La réponse générale (« J'ai une autre question »)
+  avatar.jpg         Ta photo, CARRÉE, 400 x 400 px. Elle s'affiche dans
+                     la bulle ronde et dans chaque vocal.
 
-  avatar.jpg         Ta photo, CARRÉE, environ 400 x 400 px. Elle
-                     s'affiche dans la bulle ronde et dans chaque vocal.
-                     Sans elle, la page montre un « R » sur fond bleu.
+  Un bouton dont "fichiers" est vide ([]) dans objections.json est
+  masqué, et ses questions reçoivent la réponse générale.
+
+  Tes originaux WhatsApp restent dans « Mes vocaux » et « Ma photo de
+  profil », à la racine du projet : ces deux dossiers ne partent jamais
+  en ligne (voir .gitignore).
 
 
 2. LE FORMAT
@@ -47,6 +57,21 @@ que "actif" vaut false dans objections.json.
   - Termine par une action : « appuie sur le bouton juste en dessous ».
   - Même micro, même pièce que les échantillons de ton clone ElevenLabs,
     sinon la jonction entre le salut et ton vocal s'entend.
+  - Tu peux tutoyer ou vouvoyer : le salut s'accorde (voir 3 bis).
+
+
+3 bis. TU OU VOUS
+-----------------
+
+  Par défaut, ta voix dit « Salut Kossi, j'espère que tu vas bien ».
+  Si tu dis « vous » dans un vocal, mets son nom dans la liste
+  "vouvoiement" d'objections.json :
+
+      "vouvoiement": ["prix-1.mp3"],
+
+  Avant ce vocal-là, ta voix dira « Salut Kossi, j'espère que vous
+  allez bien ». Aujourd'hui, seul prix-1.mp3 vouvoie. Si tu le
+  réenregistres en tutoyant, vide la liste : "vouvoiement": [].
 
 
 4. PLUSIEURS VERSIONS D'UNE MÊME RÉPONSE
@@ -81,6 +106,26 @@ que "actif" vaut false dans objections.json.
 
   Attention aux virgules : chaque bloc est suivi d'une virgule, sauf le
   dernier. Une virgule en trop et toute la bulle disparaît.
+
+
+5 bis. CE QUE VOIT LE VISITEUR AVANT TON VOCAL
+---------------------------------------------
+
+  Rien n'arrive d'un coup, comme avec une vraie personne :
+
+  1. « écrit… » sous ton nom, une seconde environ, puis un petit mot
+     écrit : « Bonsoir Kossi, bien reçu ! Un instant, je t'envoie un
+     vocal pour tout t'expliquer. » (jamais d'emoji) (Bonjour avant 17 h, Bonsoir après ;
+     plus court aux questions suivantes ; au « vous » si le vocal vouvoie).
+  2. « enregistre un audio… » avec un micro qui pulse, puis ton vocal.
+
+  Le vocal arrive au bout d'environ 15 secondes (entre 12 et 16,5 au
+  hasard). Pour changer, dans objections.json :
+
+      "attente_secondes": 10,
+
+  Les phrases du petit mot sont dans index.html (cherche « MOTS ») :
+  demande à Claude si tu veux les changer.
 
 
 6. ACTIVER, TESTER

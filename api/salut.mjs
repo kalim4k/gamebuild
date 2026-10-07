@@ -1,7 +1,9 @@
-/* Sert « Salut Kossi, j'espère que tu vas bien. » dans ta voix clonée.
+/* Sert « Salut Kossi, j'espère que tu vas bien. » dans ta voix clonée,
+   ou « … j'espère que vous allez bien. » avec ?r=vous, quand le vocal
+   qui suit vouvoie.
 
-   Chaque prénom n'est généré qu'UNE fois chez ElevenLabs, puis rangé dans
-   Neon et resservi : le millième Kossi ne coûte plus rien.
+   Chaque prénom n'est généré qu'UNE fois par forme chez ElevenLabs, puis
+   rangé dans Neon et resservi : le millième Kossi ne coûte plus rien.
 
    Garde-fous :
    - le prénom passe par le même filtre que dans /api/vocal ; tout ce qui
@@ -18,21 +20,22 @@ import { chargeConfig, normalisePrenom, texteSalut, elevenLabsPret, synthese, ve
 const sql = process.env.DATABASE_URL ? neon(process.env.DATABASE_URL) : null;
 const MAX_NOUVEAUX_PAR_JOUR = Math.max(0, parseInt(process.env.SALUT_MAX_JOUR || "300", 10) || 300);
 
-/* Stocké sous « kossi|<version de voix> » : un salut fait avec une autre
-   voix ou un autre modèle n'est jamais resservi. */
-function stockage(cle) { return cle + "|" + versionVoix(); }
+/* Stocké sous « kossi|<version de voix> », ou « kossi|vous|<version> » :
+   un salut fait avec une autre voix ou un autre modèle n'est jamais
+   resservi, et le tutoiement ne prend jamais la place du vouvoiement. */
+function stockage(cle, vous) { return cle + (vous ? "|vous" : "") + "|" + versionVoix(); }
 
-async function lit(cle) {
-  const [l] = await sql`select encode(audio, 'base64') as b64 from saluts where cle = ${stockage(cle)}`;
+async function lit(cle, vous) {
+  const [l] = await sql`select encode(audio, 'base64') as b64 from saluts where cle = ${stockage(cle, vous)}`;
   return l ? Buffer.from(l.b64, "base64") : null;
 }
 
-async function genere(cle) {
-  const texte = texteSalut(cle);
+async function genere(cle, vous) {
+  const texte = texteSalut(cle, vous);
   const audio = await synthese(texte);
   await sql`
     insert into saluts (cle, texte, audio)
-    values (${stockage(cle)}, ${texte}, decode(${audio.toString("base64")}, 'base64'))
+    values (${stockage(cle, vous)}, ${texte}, decode(${audio.toString("base64")}, 'base64'))
     on conflict (cle) do nothing`;
   return audio;
 }
@@ -78,9 +81,10 @@ export default async function handler(req, res) {
   try { interdits = (await chargeConfig(req)).interdits; } catch { /* filtre de base seulement */ }
   const demande = String((req.query && req.query.p) || "_");
   const cle = demande === "_" ? "_" : (normalisePrenom(demande, interdits) || "_");
+  const vous = Boolean(req.query && req.query.r === "vous");
 
   try {
-    let audio = await lit(cle);
+    let audio = await lit(cle, vous);
     let cache = "public, max-age=604800";
 
     if (!audio) {
@@ -92,7 +96,7 @@ export default async function handler(req, res) {
           cache = "no-store";   // ne pas figer un salut anonyme à l'adresse d'un prénom
         }
       }
-      audio = (cible !== cle && await lit(cible)) || await genere(cible);
+      audio = (cible !== cle && await lit(cible, vous)) || await genere(cible, vous);
     }
 
     envoieAudio(req, res, audio, cache);
