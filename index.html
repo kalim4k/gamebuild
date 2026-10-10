@@ -568,20 +568,21 @@ html:not([data-promo]) .promo, html:not([data-promo]) .timer,
 .media-video:not(.joue) video{ display: none; }
 .media-video.joue img, .media-video.joue .video-play{ display: none; }
 .media-video video{ background: #000; object-fit: contain; }
+/* Le bouton lecture se place sous le titre de la vignette, pas dessus. */
 .video-play{
   position: absolute; inset: 0; z-index: 3;
-  display: grid; place-content: center; justify-items: center; gap: 10px;
-  border: 0; padding: 0; margin: 0; cursor: pointer; font: inherit; color: #fff;
-  background: radial-gradient(closest-side, rgba(0,0,0,.22), rgba(0,0,0,0));
+  display: grid; align-content: end; justify-content: center;
+  border: 0; padding: 0 0 9%; margin: 0; cursor: pointer; font: inherit; color: #fff;
+  background: none;
 }
 .video-rond{
   display: grid; place-items: center; width: 72px; height: 72px; border-radius: 50%;
-  background: rgba(0,0,0,.55); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
-  box-shadow: 0 10px 30px rgba(0,0,0,.25);
+  background: var(--blue);
+  box-shadow: 0 10px 30px rgba(0,113,227,.35);
   transition: transform .25s var(--ease), background-color .25s;
 }
 .video-rond svg{ width: 30px; height: 30px; margin-left: 4px; }
-.video-play:hover .video-rond, .video-play:focus-visible .video-rond{ transform: scale(1.06); background-color: rgba(0,113,227,.92); }
+.video-play:hover .video-rond, .video-play:focus-visible .video-rond{ transform: scale(1.06); background-color: #0077ed; }
 /* La durée en bas à droite, comme une vignette YouTube : elle ne cache
    pas le texte de la bannière. */
 .video-duree{
@@ -601,8 +602,9 @@ html:not([data-promo]) .promo, html:not([data-promo]) .timer,
 }
 .media-video.sans-video .video-play{ display: none; }
 @media (max-width: 699px){
-  .video-rond{ width: 60px; height: 60px; }
-  .video-rond svg{ width: 25px; height: 25px; }
+  .video-play{ padding-bottom: 8%; }
+  .video-rond{ width: 56px; height: 56px; }
+  .video-rond svg{ width: 23px; height: 23px; }
   .video-duree{ right: 8px; bottom: 8px; font-size: 12px; }
 }
 
@@ -1237,13 +1239,13 @@ src="https://www.facebook.com/tr?id=4451955808377862&ev=PageView&noscript=1"
         </ul>
       </div>
 
-      <!-- La vidéo de présentation prend la place de la bannière, qui lui
-           sert de vignette. preload="none" : rien n'est téléchargé avant
-           l'appui sur lecture. À la fin, le bouton d'achat apparaît. -->
+      <!-- La vidéo de présentation. Sa vignette est son propre carton titre
+           (media/presentation.jpg, 58 Ko). preload="none" : rien n'est
+           téléchargé avant l'appui sur lecture. À la fin, le bouton d'achat. -->
       <div class="hero-visual">
         <figure class="media media-16x9 media-video" id="presentation">
-          <img src="media/hero.png" width="1672" height="941" fetchpriority="high"
-               alt="Rémialde Zomond — Créer un jeu vidéo mobile avec l'IA, sans coder, et le monétiser sur le Play Store.">
+          <img src="media/presentation.jpg" width="1280" height="720" fetchpriority="high"
+               alt="Vidéo de présentation de Game Build : comment ton jeu te rapporte de l'argent.">
           <video src="media/presentation.mp4" preload="none" playsinline controls></video>
           <button type="button" class="video-play" aria-label="Regarder la présentation, 1 minute 52">
             <span class="video-rond"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M8 5.14v13.72c0 .79.87 1.27 1.54.84l10.8-6.86a1 1 0 0 0 0-1.69L9.54 4.3A1 1 0 0 0 8 5.14z"/></svg></span>
@@ -1255,7 +1257,7 @@ src="https://www.facebook.com/tr?id=4451955808377862&ev=PageView&noscript=1"
           </div>
           <div class="media-ph">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="4.5" width="19" height="15" rx="2.5"/><circle cx="8.5" cy="10" r="1.5"/><path d="m4 17 5-4.5 4 3.5 3-2.5 4 3.5"/></svg>
-            <b>Ta bannière de présentation</b><code>media/hero.png</code>
+            <b>La vignette de ta vidéo</b><code>media/presentation.jpg</code>
           </div>
         </figure>
       </div>

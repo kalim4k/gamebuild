@@ -11,21 +11,18 @@ avec le nom attendu. Rien ne casse.
 CE QU'IL FAUT DÉPOSER
 ---------------------
 
-  hero.png             TA BANNIÈRE DE PRÉSENTATION  [DÉJÀ EN PLACE]
-                       Elle s’affiche juste sous le titre et l’offre.
-                       Format PAYSAGE 16:9 (celle en place fait 1672 x 941).
-                       La page affiche maintenant son propre titre et son
-                       offre AU-DESSUS de la bannière. Si la bannière
-                       répète le même texte, refais-en une plus simple
-                       (une image du jeu, ou toi) : lire deux fois la
-                       même promesse affaiblit les deux.
-                       Si tu la remplaces, garde le 16:9, sinon elle sera
-                       recadrée et du texte sera coupé.
+  hero.png             TA BANNIÈRE  [RETIRÉE DE LA PAGE le 10/10/2026]
+                       Elle n'est plus affichée : la vidéo a pris sa place.
+                       Elle sert encore d'image d'aperçu quand quelqu'un
+                       partage le lien sur WhatsApp ou Facebook (og:image).
+                       Ne la supprime pas sans prévenir Claude.
 
   presentation.mp4     [EN PLACE] TA VIDÉO DE PRÉSENTATION (1 min 52).
-                       Elle remplace la bannière dans le héros : la
-                       bannière (hero.png) sert de vignette, avec un bouton
-                       lecture. Rien n'est téléchargé avant l'appui. À la
+                       En haut de page, sous le prix. Sa vignette est
+                       presentation.jpg : le carton « Comment ton jeu te
+                       rapporte de l'argent », tiré de la vidéo et recadré
+                       sans sous-titre, avec un bouton lecture.
+                       Rien n'est téléchargé avant l'appui. À la
                        fin, le bouton d'achat s'affiche par-dessus.
                        Format PAYSAGE 16:9. Pour la remplacer, envoie la
                        nouvelle à Claude : il la réduit pour le mobile
@@ -99,18 +96,13 @@ POIDS
 
 ORIENTATION
   Les gameplays et les témoignages doivent être filmés EN VERTICAL.
-  La bannière hero.png doit rester EN PAYSAGE 16:9.
+  La vidéo de présentation doit rester EN PAYSAGE 16:9.
   Un média dans le mauvais sens sera recadré, et mal recadré.
 
-LE CAS DE hero.png
-  Elle pèse actuellement 1,68 Mo, ce qui est lourd pour une première
-  image — sur une connexion mobile lente, c'est plusieurs secondes
-  d'écran vide avant qu'elle apparaisse.
-  Passe-la sur https://squoosh.app (gratuit, dans le navigateur) :
-  choisis MozJPEG en qualité 80, tu tomberas autour de 250 Ko sans
-  différence visible. Enregistre le résultat sous media/hero.jpg,
-  puis remplace hero.png par hero.jpg dans index.html (une seule ligne,
-  dans le <header>).
+LA PREMIÈRE IMAGE DE LA PAGE
+  C'est la vignette de la vidéo, presentation.jpg : 58 Ko. L'ancienne
+  bannière (hero.png, 1,68 Mo) mettait plusieurs secondes à s'afficher
+  en connexion mobile lente ; ce problème a disparu avec elle.
 
 SON
   Les gameplays (jeu-*.mp4 et eleve-*.mp4) démarrent tout seuls, donc
