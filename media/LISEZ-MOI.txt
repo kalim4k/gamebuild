@@ -22,6 +22,16 @@ CE QU'IL FAUT DÉPOSER
                        Si tu la remplaces, garde le 16:9, sinon elle sera
                        recadrée et du texte sera coupé.
 
+  presentation.mp4     [EN PLACE] TA VIDÉO DE PRÉSENTATION (1 min 52).
+                       Elle remplace la bannière dans le héros : la
+                       bannière (hero.png) sert de vignette, avec un bouton
+                       lecture. Rien n'est téléchargé avant l'appui. À la
+                       fin, le bouton d'achat s'affiche par-dessus.
+                       Format PAYSAGE 16:9. Pour la remplacer, envoie la
+                       nouvelle à Claude : il la réduit pour le mobile
+                       (720p, ~4 Mo au lieu de 16) avant de la déposer.
+                       L'admin montre qui la lance et jusqu'où on la regarde.
+
   jeu-1.mp4            [EN PLACE] Gameplay de TES jeux, en vertical.
   jeu-2.mp4            Elles tournent en boucle, sans son.
   jeu-3.mp4

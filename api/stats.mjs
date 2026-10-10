@@ -35,7 +35,7 @@ export default async function handler(req, res) {
   const j = Math.min(365, Math.max(1, parseInt(req.query.jours, 10) || 7));
 
   try {
-    const [resume, parJour, entonnoir, boutons, sources, pays, appareils, parHeure, paliers, objections, questions] =
+    const [resume, parJour, entonnoir, boutons, sources, pays, appareils, parHeure, paliers, objections, questions, video] =
       await Promise.all([
 
       sql`
@@ -128,11 +128,28 @@ export default async function handler(req, res) {
         select cree_le, prenom, canal, objection, texte
         from questions
         where texte is not null and cree_le > now() - make_interval(days => ${j})
-        order by cree_le desc limit 50`).catch(() => [])
+        order by cree_le desc limit 50`).catch(() => []),
+
+      /* Vidéo de présentation : qui la lance, jusqu'où on la regarde, et
+         qui clique sur un bouton d'achat après l'avoir lancée. */
+      sql`
+        select
+          count(distinct v.session) filter (where v.libelle = 'lecture')                      as lectures,
+          count(distinct v.session) filter (where v.libelle = 'palier' and v.valeur >= 25)    as p25,
+          count(distinct v.session) filter (where v.libelle = 'palier' and v.valeur >= 50)    as p50,
+          count(distinct v.session) filter (where v.libelle = 'palier' and v.valeur >= 75)    as p75,
+          count(distinct v.session) filter (where v.libelle = 'palier' and v.valeur >= 100)   as p100,
+          count(distinct v.session) filter (where v.libelle = 'lecture' and exists (
+            select 1 from evenements c
+            where c.session = v.session and c.type = 'clic' and c.vu_le > v.vu_le
+          )) as clics_apres
+        from evenements v
+        where v.type = 'video' and v.vu_le > now() - make_interval(days => ${j})`
     ]);
 
     const r = resume[0] || {};
     const e = entonnoir[0] || {};
+    const vd = video[0] || {};
     const nb = (v) => Number(v || 0);
 
     res.status(200).json({
@@ -151,6 +168,12 @@ export default async function handler(req, res) {
         scroll_moyen: nb(r.scroll_moyen),
         sessions_bulle: nb(r.sessions_bulle),
         part_bulle: nb(r.sessions) ? +(nb(r.sessions_bulle) / nb(r.sessions) * 100).toFixed(1) : 0
+      },
+      video: {
+        lectures: nb(vd.lectures),
+        part: nb(r.sessions) ? +(nb(vd.lectures) / nb(r.sessions) * 100).toFixed(1) : 0,
+        p25: nb(vd.p25), p50: nb(vd.p50), p75: nb(vd.p75), p100: nb(vd.p100),
+        clics_apres: nb(vd.clics_apres)
       },
       objections: objections.map(l => ({ objection: l.objection, questions: nb(l.questions), clics_apres: nb(l.clics_apres) })),
       questions: questions.map(l => ({

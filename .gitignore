@@ -24,3 +24,6 @@ essais-voix/
 # Originaux déposés par Rémialde (convertis dans media/vocaux/)
 Ma photo de profil/
 Mes vocaux/
+
+# Vidéos brutes déposées à la racine (la version web est dans media/)
+/video_*.mp4

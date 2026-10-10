@@ -320,6 +320,13 @@ a:hover{ text-decoration: underline; }
         </section>
 
         <section class="carte large">
+          <h2>Ta vidéo de présentation</h2>
+          <p>Combien de visites la lancent, jusqu'où elles la regardent, et combien cliquent sur acheter ensuite.</p>
+          <div class="graph" id="g-video"></div>
+          <div class="tableau" id="t-video" hidden></div>
+        </section>
+
+        <section class="carte large">
           <h2>Ce que tes visiteurs demandent</h2>
           <p>Questions posées dans la bulle vocale, par objection. Au survol : combien ont cliqué sur acheter juste après avoir écouté.</p>
           <div class="graph" id="g-objections"></div>
@@ -801,6 +808,27 @@ a:hover{ text-decoration: underline; }
       { etiquette: 130, vide: "Aucun clic sur un bouton d'achat pour l'instant." });
     tableau($("t-boutons"), ["Bouton", "Clics"],
       d.boutons.map(function (b) { return [b.libelle, nb(b.clics)]; }));
+
+    /* Vidéo de présentation : chaque étape en part de ceux qui l'ont lancée */
+    var vi = d.video || {}, vBase = vi.lectures || 1;
+    var vEtapes = [
+      ["L'ont lancée", vi.lectures],
+      ["Ont vu un quart", vi.p25],
+      ["Ont vu la moitié", vi.p50],
+      ["Ont vu les trois quarts", vi.p75],
+      ["L'ont vue jusqu'au bout", vi.p100],
+      ["Ont cliqué sur acheter ensuite", vi.clics_apres]
+    ];
+    function partVideo(x, i) {
+      return i === 0
+        ? (vi.part || 0).toFixed(1).replace(".", ",") + " % des visites"
+        : Math.round((x[1] || 0) / vBase * 100) + " % de ceux qui l'ont lancée";
+    }
+    barres($("g-video"), vEtapes.map(function (x, i) {
+      return { nom: x[0], valeur: x[1] || 0, affiche: nb(x[1]), extra: partVideo(x, i) };
+    }), { etiquette: 210, vide: "Personne n'a encore lancé la vidéo." });
+    tableau($("t-video"), ["Étape", "Visites", "Part"],
+      vEtapes.map(function (x, i) { return [x[0], nb(x[1]), partVideo(x, i)]; }));
 
     /* Réponses vocales */
     var objs = d.objections || [], qs = d.questions || [];
