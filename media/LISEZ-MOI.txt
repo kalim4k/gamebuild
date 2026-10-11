@@ -13,9 +13,9 @@ CE QU'IL FAUT DÉPOSER
 
   hero.png             TA BANNIÈRE  [RETIRÉE DE LA PAGE le 10/10/2026]
                        Elle n'est plus affichée : la vidéo a pris sa place.
-                       Elle sert encore d'image d'aperçu quand quelqu'un
-                       partage le lien sur WhatsApp ou Facebook (og:image).
-                       Ne la supprime pas sans prévenir Claude.
+                       Plus utilisée nulle part : l'aperçu affiché quand on
+                       partage le lien (WhatsApp, Facebook) est apercu.jpg,
+                       la même image en JPEG (188 Ko au lieu de 1,7 Mo).
 
   presentation.mp4     [EN PLACE] TA VIDÉO DE PRÉSENTATION (1 min 52).
                        En haut de page, sous le prix. Sa vignette est
@@ -30,6 +30,8 @@ CE QU'IL FAUT DÉPOSER
                        L'admin montre qui la lance et jusqu'où on la regarde.
 
   jeu-1.mp4            [EN PLACE] Gameplay de TES jeux, en vertical.
+                       Chaque vidéo a sa vignette (jeu-1.jpg…), affichée
+                       tant que la vidéo n'est pas à l'écran.
   jeu-2.mp4            Elles tournent en boucle, sans son.
   jeu-3.mp4
 
@@ -40,11 +42,11 @@ CE QU'IL FAUT DÉPOSER
   eleve-5.mp4
   eleve-6.mp4
 
-  revenu-1.png         [EN PLACE] Les 5 captures de revenus.
-  revenu-2.png         Elles se balayent horizontalement, et chacune
-  revenu-3.png         s'ouvre en taille réelle d'un clic, pour que le
-  revenu-4.png         visiteur puisse lire les montants lui-même.
-  revenu-5.png
+  revenu-1.jpg         [EN PLACE] Les 5 captures de revenus.
+  revenu-2.jpg         Elles se balayent horizontalement, et chacune
+  revenu-3.jpg         s'ouvre en taille réelle d'un clic, pour que le
+  revenu-4.jpg         visiteur puisse lire les montants lui-même.
+  revenu-5.jpg
 
   (Les témoignages vidéo ont été abandonnés : la section a été retirée.)
 
@@ -88,11 +90,16 @@ FORMAT
   téléphones par défaut, tu n'as normalement rien à convertir.
   Images : .jpg
 
-POIDS
-  Vise 3 Mo maximum par vidéo. Tes acheteurs sont souvent en données
-  mobiles : une page à 60 Mo ne se chargera jamais chez eux.
-  Pour alléger : coupe court (10 à 20 secondes suffisent) et exporte
-  en 720p plutôt qu'en 1080p.
+POIDS — IMPORTANT
+  Chaque octet servi par Vercel compte dans ta bande passante. Le
+  11/10/2026, la page faisait télécharger 19,5 Mo à chaque visiteur qui
+  la parcourait : avec le trafic de la pub, le quota a été dépassé et
+  tes sites ont été mis en pause. Après allègement : 3,3 Mo.
+  Ne dépose donc JAMAIS une vidéo brute sortie du téléphone. Envoie-la
+  à Claude : il la réduit (720p, sans son pour les gameplays, prête pour
+  le web) et crée sa vignette. Un gameplay de 15 s passe de ~3 Mo à
+  ~300 Ko sans différence visible. Photos et captures : en .jpg, jamais en .png.
+  Les originaux d'avant allègement sont dans l'historique Git.
 
 ORIENTATION
   Les gameplays et les témoignages doivent être filmés EN VERTICAL.
