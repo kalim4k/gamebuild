@@ -36,7 +36,7 @@ var LIEN_PAIEMENT = "https://kgpqinxc.mychariow.shop/prd_iiq2laak/checkout";
 Les 5 boutons d'achat de la page pointent tous dessus, dans un nouvel onglet. Si tu vides cette
 ligne, ils affichent un rappel au lieu de rediriger vers une page morte.
 
-Le prix affiché sur Chariow doit correspondre aux **2 990 F CFA** de la page (prix barré : 10 000 F) : sinon le visiteur
+Le prix affiché sur Chariow doit correspondre aux **1 990 F CFA** de la page (prix barré : 10 000 F) : sinon le visiteur
 voit un montant à l'arrivée sur le paiement, et il abandonne.
 
 ### L'offre de lancement et son compte à rebours
@@ -60,14 +60,14 @@ alors que 11:07:43 ressemble à une échéance déjà entamée. Garde la fourche
 13 heures, sinon l'effet disparaît.
 
 **L'offre ne s'arrête jamais toute seule.** Quand le compte à rebours d'un visiteur est
-épuisé, il en reçoit un nouveau au chargement suivant — le prix, lui, reste à 2 990 F.
+épuisé, il en reçoit un nouveau au chargement suivant — le prix, lui, reste à 1 990 F.
 
 **Pour fermer l'offre**, un seul geste : `ACTIVE = false`. La page bascule alors
 **entièrement** au prix normal — le bandeau disparaît, le compte à rebours aussi, et les
 six prix repassent à 10 000 F. Il n'y a rien d'autre à modifier.
 
-**Le prix Chariow doit suivre.** La page annonce 2 990 F au lieu de 10 000 F : sur Chariow, le
-prix normal est 10 000 F et le prix promotionnel 2 990 F. Si les deux ne correspondent pas,
+**Le prix Chariow doit suivre.** La page annonce 1 990 F au lieu de 10 000 F : sur Chariow, le
+prix normal est 10 000 F et le prix promotionnel 1 990 F. Si les deux ne correspondent pas,
 l'acheteur voit un montant sur la page et un autre au paiement — il abandonne.
 
 ### Tes vidéos et tes images
