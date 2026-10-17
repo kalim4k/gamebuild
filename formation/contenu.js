@@ -4,6 +4,10 @@
    lien de vidéo ou un prompt. Les pages se construisent toutes
    seules à partir d'ici.
 
+   adresse : l'adresse de la page de la vidéo.
+   cache   : true = la vidéo n'apparaît ni dans le sommaire ni dans
+             « vidéo précédente / suivante » : on n'y accède que par
+             son adresse (elle n'est pas non plus proposée à Google).
    youtube : le lien de la vidéo, sous n'importe quelle forme
              (youtu.be/…, youtube.com/watch?v=…, /shorts/…).
              Vide = « Vidéo bientôt disponible ».
@@ -18,10 +22,12 @@
 
 window.FORMATION = {
   titre: "Formation gratuite",
-  sousTitre: "Quatre vidéos pour créer avec l'IA et en tirer de l'argent. Regarde-les dans l'ordre, ou va directement à celle qui t'intéresse.",
+  sousTitre: "Trois vidéos pour créer avec l'IA et en tirer de l'argent. Regarde-les dans l'ordre, ou va directement à celle qui t'intéresse.",
 
   videos: [
     {
+      adresse: "/gamebuild",
+      cache: true,
       titre: "Crée ton jeu avec Claude et gagne de l'argent avec la pub",
       duree: "12 min",
       youtube: "https://youtu.be/2ZkIOQSL2Jk",
@@ -29,6 +35,7 @@ window.FORMATION = {
       prompts: []
     },
     {
+      adresse: "/formation/influenceur-ia",
       titre: "Crée ton influenceur IA bizarre et fais-le percer sur TikTok",
       duree: "9 min",
       youtube: "https://youtu.be/QGUQmvaGzGM",
@@ -41,6 +48,7 @@ window.FORMATION = {
       ]
     },
     {
+      adresse: "/formation/dessins-animes-ia",
       titre: "Des dessins animés IA sur TikTok, comme Télétoon",
       duree: "8 min",
       youtube: "https://youtu.be/fAISLfSDOKU",
@@ -53,6 +61,7 @@ window.FORMATION = {
       ]
     },
     {
+      adresse: "/formation/influenceuse-ia",
       titre: "Ton influenceuse IA qui vend ses contenus sur Momolink",
       duree: "20 min",
       youtube: "https://youtu.be/ht3LHiLuqTs",

@@ -2,7 +2,22 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "cleanUrls": true,
   "trailingSlash": false,
+  "redirects": [
+    { "source": "/formation/1", "destination": "/formation", "permanent": false },
+    { "source": "/formation/2", "destination": "/formation/influenceur-ia", "permanent": false },
+    { "source": "/formation/3", "destination": "/formation/dessins-animes-ia", "permanent": false },
+    { "source": "/formation/4", "destination": "/formation/influenceuse-ia", "permanent": false }
+  ],
   "headers": [
+    {
+      "source": "/gamebuild",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
     {
       "source": "/(.*)",
       "headers": [

@@ -1,7 +1,9 @@
 /* ══════════════════════════════════════════════════════════
    FORMATION GRATUITE — construit les pages à partir de contenu.js
-   <body data-page="liste">        → le sommaire
-   <body data-page="video" data-n="2"> → la vidéo n° 2
+   <body data-page="liste">                                  → le sommaire
+   <body data-page="video" data-adresse="/formation/xxx">   → une vidéo
+   Une vidéo « cache: true » n'est ni dans le sommaire ni dans la
+   navigation : sa page ne s'ouvre que par son adresse.
    Le lecteur YouTube n'est chargé qu'au clic : la page reste
    légère, et rien ne passe par la bande passante de Vercel.
    ══════════════════════════════════════════════════════════ */
@@ -11,6 +13,7 @@
   var F = window.FORMATION || { videos: [] };
   var app = document.getElementById("app");
   var page = document.body.getAttribute("data-page");
+  var visibles = F.videos.filter(function (v) { return !v.cache; });
 
   function el(tag, classe, texte) {
     var e = document.createElement(tag);
@@ -111,14 +114,15 @@
   }
 
   /* ---------- Page d'une vidéo ---------- */
-  function pageVideo(n) {
-    var v = F.videos[n - 1];
+  function pageVideo(adresse) {
+    var v = F.videos.filter(function (x) { return x.adresse === adresse; })[0];
     if (!v) { location.replace("/formation"); return; }
-    var total = F.videos.length;
-    document.title = v.titre + " — " + (F.titre || "Formation");
+    var pos = visibles.indexOf(v);          // -1 pour une vidéo cachée
+    document.title = v.titre + (v.cache ? "" : " — " + (F.titre || "Formation"));
 
     var entete = el("header", "entete");
-    entete.appendChild(el("p", "surtitre", "Vidéo " + n + " sur " + total + (v.duree ? " · " + v.duree : "")));
+    var sur = v.cache ? (v.duree || "") : "Vidéo " + (pos + 1) + " sur " + visibles.length + (v.duree ? " · " + v.duree : "");
+    if (sur) entete.appendChild(el("p", "surtitre", sur));
     entete.appendChild(el("h1", null, v.titre));
     if (v.resume) entete.appendChild(el("p", "chapo", v.resume));
     app.appendChild(entete);
@@ -133,33 +137,34 @@
       app.appendChild(sec);
     }
 
+    if (v.cache) return;                     // page seule : pas de vidéo voisine
     var suite = el("nav", "suite");
     suite.setAttribute("aria-label", "Autres vidéos");
-    if (n > 1) suite.appendChild(lienVoisin(n - 1, "Vidéo précédente", "precedente"));
-    if (n < total) suite.appendChild(lienVoisin(n + 1, "Vidéo suivante", "suivante"));
+    if (pos > 0) suite.appendChild(lienVoisin(visibles[pos - 1], "Vidéo précédente", "precedente"));
+    if (pos < visibles.length - 1) suite.appendChild(lienVoisin(visibles[pos + 1], "Vidéo suivante", "suivante"));
     app.appendChild(suite);
   }
-  function lienVoisin(n, libelle, classe) {
+  function lienVoisin(v, libelle, classe) {
     var a = el("a", classe);
-    a.href = "/formation/" + n;
+    a.href = v.adresse;
     a.appendChild(el("small", null, libelle));
-    a.appendChild(el("span", null, F.videos[n - 1].titre));
+    a.appendChild(el("span", null, v.titre));
     return a;
   }
 
   /* ---------- Sommaire ---------- */
   function pageListe() {
     var entete = el("header", "entete");
-    entete.appendChild(el("p", "surtitre", F.videos.length + " vidéos · gratuit"));
+    entete.appendChild(el("p", "surtitre", visibles.length + " vidéos · gratuit"));
     entete.appendChild(el("h1", null, F.titre || "Formation"));
     if (F.sousTitre) entete.appendChild(el("p", "chapo", F.sousTitre));
     app.appendChild(entete);
 
     var ul = el("ul", "liste");
-    F.videos.forEach(function (v, i) {
+    visibles.forEach(function (v, i) {
       var li = el("li");
       var a = el("a", "carte");
-      a.href = "/formation/" + (i + 1);
+      a.href = v.adresse;
       var image = el("div", "carte-image");
       var id = idYoutube(v.youtube);
       if (id) { var img = el("img"); img.src = vignette(id); img.alt = ""; img.loading = "lazy"; img.decoding = "async"; image.appendChild(img); }
@@ -175,6 +180,6 @@
     app.appendChild(ul);
   }
 
-  if (page === "video") pageVideo(parseInt(document.body.getAttribute("data-n"), 10));
+  if (page === "video") pageVideo(document.body.getAttribute("data-adresse"));
   else pageListe();
 })();
