@@ -27,3 +27,7 @@ Mes vocaux/
 
 # Vidéos brutes déposées à la racine (la version web est dans media/)
 /video_*.mp4
+
+# Vidéos de formation : produit payant, hébergées ailleurs que sur Vercel.
+# Ne JAMAIS les mettre dans le dépôt (public) ni dans le site.
+FORMATIONS/
