@@ -31,9 +31,9 @@
    Le visiteur arrive de la pub. Il n'a qu'une chose à faire :
    rejoindre la chaîne. Rien à vendre ici, pas de prix.
    Même système visuel que la page de vente (index.html), en
-   version courte et légère : environ 1,5 Mo en allant jusqu'en
-   bas, dont les vidéos et les captures, qui n'arrivent qu'au
-   défilement.
+   version courte et légère : environ 1,7 Mo en allant jusqu'en
+   bas, dont les illustrations, les vidéos et les captures, qui
+   n'arrivent qu'au défilement.
    ══════════════════════════════════════════════════════════ */
 
 :root{
@@ -154,6 +154,35 @@ a{ color: var(--blue-ink); text-decoration: none; }
 .recoit span{ grid-column: 2; grid-row: 2; color: var(--ink-2); }
 
 .rassure{ max-width: 36ch; }
+
+/* ---------- Idées de jeux ----------
+   Des illustrations (media/idees/), pas des captures : la section le
+   dit. Tuiles arrondies façon icône d'application, comme sur Jouable. */
+.idees{
+  list-style: none; margin: clamp(28px, 4vw, 40px) 0 0; padding: 0 0 8px;
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; width: 100%;
+}
+.idees li{
+  display: grid; gap: 10px; justify-items: center;
+  font-size: 15px; font-weight: 500; letter-spacing: -.01em; color: var(--ink);
+}
+.idees img{
+  width: 100%; aspect-ratio: 1; height: auto;
+  border-radius: 22%; background: #e8e8ed;
+  box-shadow: 0 10px 24px rgba(0,0,0,.12);
+}
+/* Sur mobile, on balaye : la tuile qui dépasse montre qu'il y en a d'autres. */
+@media (max-width: 733px){
+  .idees{
+    display: flex; gap: 14px; overflow-x: auto;
+    scroll-snap-type: x mandatory; scrollbar-width: none;
+    margin-inline: calc(var(--gut) * -1);
+    padding: 4px var(--gut) 22px; scroll-padding-inline: var(--gut);
+    width: auto; align-self: stretch;
+  }
+  .idees::-webkit-scrollbar{ display: none; }
+  .idees li{ flex: none; width: 38vw; max-width: 170px; scroll-snap-align: start; font-size: 14px; }
+}
 
 /* ---------- Médias ---------- */
 
@@ -305,8 +334,27 @@ src="https://www.facebook.com/tr?id=4451955808377862&ev=PageView&noscript=1"
   </div>
 </section>
 
-<!-- ═══════════════ LES JEUX ═══════════════ -->
+<!-- ═══════════════ LES IDÉES DE JEUX ═══════════════ -->
 <section class="band-alt">
+  <div class="wrap stack">
+    <p class="eyebrow">Des idées</p>
+    <h2 class="t-head">Des jeux simples<br>et satisfaisants.</h2>
+    <p class="t-body measure">Ceux qu'on ne lâche plus. Tu décris ton idée à l'IA, elle fabrique le jeu.</p>
+
+    <ul class="idees">
+      <li><img src="media/idees/tri-billes.jpg" width="480" height="480" loading="lazy" alt="Illustration d'un jeu de tri des billes"><span>Tri des billes</span></li>
+      <li><img src="media/idees/tranche-fruits.jpg" width="480" height="480" loading="lazy" alt="Illustration d'un jeu où l'on tranche des fruits"><span>Tranche les fruits</span></li>
+      <li><img src="media/idees/pop-it.jpg" width="480" height="480" loading="lazy" alt="Illustration d'un jeu de pop-it"><span>Pop-it</span></li>
+      <li><img src="media/idees/glacage.jpg" width="480" height="480" loading="lazy" alt="Illustration d'un jeu de glaçage de beignet"><span>Glaçage</span></li>
+      <li><img src="media/idees/vis-boulons.jpg" width="480" height="480" loading="lazy" alt="Illustration d'un jeu de vis et de planches"><span>Vis et boulons</span></li>
+    </ul>
+
+    <p class="t-caption">Des illustrations, pour te donner des idées. Le tien, c'est toi qui l'inventes.</p>
+  </div>
+</section>
+
+<!-- ═══════════════ LES JEUX ═══════════════ -->
+<section>
   <div class="wrap stack">
     <p class="eyebrow">En vrai</p>
     <h2 class="t-head">Des jeux qui tournent,<br>pas des promesses.</h2>
@@ -327,7 +375,7 @@ src="https://www.facebook.com/tr?id=4451955808377862&ev=PageView&noscript=1"
 </section>
 
 <!-- ═══════════════ CE QUE ÇA RAPPORTE ═══════════════ -->
-<section>
+<section class="band-alt">
   <div class="wrap stack">
     <p class="eyebrow">Les gains</p>
     <h2 class="t-head">Et ce que ça rapporte<br>à mes élèves.</h2>
@@ -355,7 +403,7 @@ src="https://www.facebook.com/tr?id=4451955808377862&ev=PageView&noscript=1"
 </section>
 
 <!-- ═══════════════ CLÔTURE ═══════════════ -->
-<section class="band-alt">
+<section>
   <div class="wrap stack">
     <h2 class="t-head">La vidéo gratuite<br>t'attend dans la chaîne.</h2>
     <p class="t-body measure">Un clic, et WhatsApp s'ouvre sur la chaîne. Tu appuies sur «&nbsp;Suivre&nbsp;», c'est tout.</p>

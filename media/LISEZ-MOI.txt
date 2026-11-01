@@ -60,6 +60,14 @@ DÉJÀ EN PLACE — RIEN À FAIRE
   pay/orange.png       n'avaient ni le même fond ni le même format.
   pay/wave.png
 
+  idees/tri-billes.jpg      Les 5 idées de jeux de la page /chaine
+  idees/tranche-fruits.jpg  (chaine.html). Ce sont des ILLUSTRATIONS
+  idees/pop-it.jpg          générées par IA (Kie AI, modèle Nano
+  idees/glacage.jpg         Banana 2, 01/11/2026) dans le style des
+  idees/vis-boulons.jpg     icônes de jouable.app, pas des captures
+                            de vrais jeux : la page le dit. 480 x 480,
+                            JPEG, de 22 à 37 Ko chacune.
+
 
 FACULTATIF — LES LOGOS DU BANDEAU DÉFILANT
 ------------------------------------------
