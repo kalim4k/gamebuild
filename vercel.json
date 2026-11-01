@@ -3,6 +3,7 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "redirects": [
+    { "source": "/", "destination": "/chaine", "permanent": false },
     { "source": "/formation/1", "destination": "/formation", "permanent": false },
     { "source": "/formation/2", "destination": "/formation/influenceur-ia", "permanent": false },
     { "source": "/formation/3", "destination": "/formation/dessins-animes-ia", "permanent": false },

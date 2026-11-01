@@ -4,7 +4,8 @@ Site statique d'une seule page. Aucune dépendance à installer, aucun build à 
 
 ```
 GAME BUILD/
-├── index.html         ← la page de vente (HTML + CSS + JS)
+├── index.html         ← l'ancienne page de vente ; depuis le 01/11/2026, l'accueil redirige vers /chaine (vercel.json)
+├── chaine.html        ← la page d'entrée de la pub : un bouton vers la chaîne WhatsApp, servie sur /chaine
 ├── admin.html         ← l'espace admin, servi sur /admin
 ├── api/
 │   ├── track.mjs      ← reçoit les événements et les range dans Neon
