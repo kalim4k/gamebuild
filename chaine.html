@@ -203,11 +203,13 @@ a{ color: var(--blue-ink); text-decoration: none; }
   margin-top: clamp(32px, 5vw, 48px); width: 100%;
 }
 .reel-shots .reel-item{ max-width: 240px; justify-self: center; width: 100%; }
+.reel-4{ grid-template-columns: repeat(4, 1fr); }
 
-/* Sur mobile, les trois gameplays tiennent côte à côte ; les captures
+/* Sur mobile, les quatre gameplays passent sur deux colonnes ; les captures
    gardent une largeur lisible et se balayent. */
 @media (max-width: 733px){
   .reel{ gap: 10px; }
+  .reel-4{ grid-template-columns: repeat(2, 1fr); }
   .reel:not(.reel-shots) .media{ border-radius: 13px; }
   .reel-shots{
     display: flex; gap: 14px; overflow-x: auto;
@@ -360,15 +362,18 @@ src="https://www.facebook.com/tr?id=4451955808377862&ev=PageView&noscript=1"
     <h2 class="t-head">Des jeux qui tournent,<br>pas des promesses.</h2>
     <p class="t-body measure">Faits avec l'IA, sans une ligne de code écrite à la main.</p>
 
-    <div class="reel">
+    <div class="reel reel-4">
       <figure class="media media-phone reel-item">
         <video src="media/jeu-1.mp4" poster="media/jeu-1.jpg" data-autoloop muted loop playsinline preload="none"></video>
       </figure>
       <figure class="media media-phone reel-item">
-        <video src="media/jeu-2.mp4" poster="media/jeu-2.jpg" data-autoloop muted loop playsinline preload="none"></video>
+        <video src="media/remialde-coin.mp4" poster="media/remialde-coin.jpg" data-autoloop muted loop playsinline preload="none"></video>
       </figure>
       <figure class="media media-phone reel-item">
-        <video src="media/jeu-3.mp4" poster="media/jeu-3.jpg" data-autoloop muted loop playsinline preload="none"></video>
+        <video src="media/eleve-2.mp4" poster="media/eleve-2.jpg" data-autoloop muted loop playsinline preload="none"></video>
+      </figure>
+      <figure class="media media-phone reel-item">
+        <video src="media/eleve-3.mp4" poster="media/eleve-3.jpg" data-autoloop muted loop playsinline preload="none"></video>
       </figure>
     </div>
   </div>

@@ -35,6 +35,12 @@ CE QU'IL FAUT DÉPOSER
   jeu-2.mp4            Elles tournent en boucle, sans son.
   jeu-3.mp4
 
+  remialde-coin.mp4    [EN PLACE] Gameplay de Rémialde Coin, filmé en
+                       format mobile (01/11/2026), avec sa vignette
+                       remialde-coin.jpg.
+                       La page /chaine montre 4 gameplays : jeu-1,
+                       remialde-coin, eleve-2 et eleve-3.
+
   eleve-1.mp4          [EN PLACE] Gameplay des jeux DE TES ÉLÈVES.
   eleve-2.mp4          Six vidéos, qu'on balaye horizontalement.
   eleve-3.mp4
