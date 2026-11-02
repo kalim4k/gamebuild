@@ -98,6 +98,19 @@
       ]
     },
     {
+      "source": "/bienvenue-r8m4t",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
+      ]
+    },
+    {
       "source": "/api/diagnostic",
       "headers": [
         {

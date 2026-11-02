@@ -7,6 +7,7 @@ GAME BUILD/
 ├── index.html         ← l'ancienne page de vente ; depuis le 01/11/2026, l'accueil redirige vers /chaine (vercel.json)
 ├── chaine.html        ← la page d'entrée de la pub : un bouton vers la chaîne WhatsApp, servie sur /chaine
 ├── diagnostic.html    ← le questionnaire posté dans la chaîne (10 questions, verdict, idées, offre), servi sur /diagnostic
+├── bienvenue-r8m4t.html ← la page après paiement (URL de redirection Chariow) : bouton vers le groupe, via /api/groupe
 ├── video/             ← les 4 vidéos de la chaîne (/video/presentation, adsense-adsterra, creer-ton-jeu, accompagnement) ;
 │                        leur contenu est dans formation/contenu.js (série « chaine »), lu depuis YouTube
 ├── admin.html         ← l'espace admin, servi sur /admin (le diagnostic en haut, l'ancienne page de vente ensuite)
@@ -14,6 +15,7 @@ GAME BUILD/
 │   ├── track.mjs      ← reçoit les événements et les range dans Neon
 │   ├── stats.mjs      ← renvoie les statistiques à l'espace admin
 │   ├── diagnostic.mjs ← range les réponses du diagnostic dans Neon, et les renvoie à l'admin
+│   ├── groupe.mjs     ← envoie vers le groupe WhatsApp ; le lien d'invitation est dans LIEN_GROUPE (jamais dans le code)
 │   ├── conseil.mjs    ← fait rédiger le diagnostic par Claude (ANTHROPIC_API_KEY), avec des limites par jour
 │   ├── vocal.mjs      ← reçoit une question, choisit le vocal à jouer
 │   ├── salut.mjs      ← « Salut Kossi… » dans ta voix, généré une fois puis resservi
@@ -179,6 +181,7 @@ voir sans la montrer : ajoute `?vocal=test` à l'adresse de ta page.
 | `ELEVENLABS_API_KEY` | pour le salut et les questions dictées | ta clé ElevenLabs |
 | `ELEVENLABS_VOICE_ID` | pour le salut | l'identifiant de ta voix clonée |
 | `ANTHROPIC_API_KEY` | pour le diagnostic rédigé par l'IA | faire écrire chaque diagnostic par Claude (`/api/conseil`) ; trier aussi les questions écrites de la bulle. Sans elle, le diagnostic affiche le texte de ses règles |
+| `LIEN_GROUPE` | pour la page après paiement | le lien d'invitation du groupe d'accompagnement (`https://chat.whatsapp.com/…`). Le dépôt est public : il ne doit jamais être écrit dans le code |
 | `ELEVENLABS_MODELE` | non | `eleven_multilingual_v2` par défaut, choisi à l'oreille face à `eleven_v4` |
 | `SALUT_MAX_JOUR` | non | nouveaux prénoms générés par jour, 300 par défaut |
 

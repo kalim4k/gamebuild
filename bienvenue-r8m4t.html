@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bienvenue dans l'accompagnement</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#ffffff">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ccircle cx=%2750%27 cy=%2750%27 r=%2750%27 fill=%27%230071e3%27/%3E%3Cpath d=%27M40 30v40l32-20z%27 fill=%27white%27/%3E%3C/svg%3E">
+
+<style>
+/* ══════════════════════════════════════════════════════════
+   GAME BUILD — la page de bienvenue, après le paiement Chariow
+   Chariow redirige ici (« URL de redirection » du produit). La
+   personne comprend ce qu'elle a acheté, puis rejoint le groupe
+   d'un appui : le bouton passe par /api/groupe, qui lit le lien
+   d'invitation dans LIEN_GROUPE sur Vercel (jamais dans le code :
+   le dépôt est public). Adresse peu devinable et non indexée ;
+   la vraie protection reste l'approbation des membres du groupe.
+   ══════════════════════════════════════════════════════════ */
+
+:root{
+  color-scheme: light;
+  --ink:      #1d1d1f;
+  --ink-2:    #6e6e73;
+  --ink-3:    #86868b;
+  --bg:       #ffffff;
+  --bg-alt:   #f5f5f7;
+  --blue:     #0071e3;
+  --blue-ink: #0066cc;
+  --orange:   #bf4800;
+  --green:    #1d7d38;
+  --whatsapp: #1a7f45;
+  --col: 600px;
+  --gut: max(22px, env(safe-area-inset-left));
+  --ease: cubic-bezier(.28,.11,.32,1);
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+          "Helvetica Neue", "Inter", "Segoe UI", Roboto, Arial, sans-serif;
+}
+*, *::before, *::after{ box-sizing: border-box; }
+html{ -webkit-text-size-adjust: 100%; }
+body{
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: var(--font); font-size: 17px; line-height: 1.47059; letter-spacing: -.022em;
+  -webkit-font-smoothing: antialiased; overflow-x: hidden;
+}
+h1, h2{ margin: 0; font-weight: 600; }
+p{ margin: 0; }
+a{ color: var(--blue-ink); text-decoration: none; }
+[hidden]{ display: none !important; }
+
+.colonne{ width: 100%; max-width: var(--col); margin-inline: auto; padding-inline: var(--gut); }
+
+.top{
+  position: sticky; top: 0; z-index: 10; height: 48px;
+  background: rgba(255,255,255,.8);
+  backdrop-filter: saturate(180%) blur(20px); -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 1px solid rgba(0,0,0,.08);
+}
+.top .colonne{ height: 100%; display: flex; align-items: center; }
+.top b{ font-size: 15px; font-weight: 600; letter-spacing: -.01em; }
+
+main{ padding-block: clamp(36px, 7vw, 64px) 56px; }
+
+.tete{ text-align: center; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.coche{
+  width: 64px; height: 64px; border-radius: 50%; background: var(--green);
+  display: grid; place-items: center; margin-bottom: 6px;
+}
+.coche svg{ width: 32px; height: 32px; fill: none; stroke: #fff; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.eyebrow{ font-size: 17px; font-weight: 600; color: var(--green); letter-spacing: -.01em; }
+h1{ font-size: clamp(32px, 7.4vw, 48px); line-height: 1.08; letter-spacing: -.015em; max-width: 16ch; text-wrap: balance; }
+.chapo{ font-size: clamp(19px, 2.4vw, 21px); line-height: 1.38; color: var(--ink-2); max-width: 32ch; }
+
+.alerte{
+  margin-top: 28px; padding: 18px 20px; border-radius: 16px;
+  background: #fff4ec; color: #7a2e00; font-size: 16px; line-height: 1.45;
+}
+.alerte b{ display: block; margin-bottom: 4px; color: var(--orange); }
+
+.etapes{ list-style: none; margin: 32px 0 0; padding: 0; display: grid; gap: 14px; counter-reset: etape; }
+.etape{
+  counter-increment: etape; padding: 22px 20px 22px 66px; border-radius: 20px;
+  background: var(--bg-alt); position: relative;
+}
+.etape::before{
+  content: counter(etape); position: absolute; left: 20px; top: 20px;
+  width: 32px; height: 32px; border-radius: 50%; background: var(--ink); color: #fff;
+  display: grid; place-items: center; font-size: 16px; font-weight: 600;
+}
+.etape h2{ font-size: 19px; line-height: 1.25; letter-spacing: -.015em; }
+.etape p{ margin-top: 6px; color: var(--ink-2); font-size: 16px; line-height: 1.45; }
+.etape p b{ color: var(--ink); font-weight: 600; }
+
+.btn{
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  min-height: 56px; padding: 14px 26px; border: 0; border-radius: 980px;
+  background: var(--whatsapp); color: #fff;
+  font-family: var(--font); font-size: 19px; line-height: 1.2; letter-spacing: -.022em;
+  cursor: pointer; width: 100%; margin-top: 16px;
+  transition: background-color .2s var(--ease), transform .12s var(--ease);
+}
+.btn:hover{ background: #156b3a; }
+.btn:active{ transform: scale(.97); }
+.btn svg{ width: 24px; height: 24px; flex: none; fill: currentColor; }
+.btn-second{ background: #fff; color: var(--whatsapp); box-shadow: inset 0 0 0 2px var(--whatsapp); font-size: 17px; min-height: 50px; }
+.btn-second:hover{ background: #f0f8f3; }
+:where(a, button):focus-visible{ outline: 4px solid rgba(0,125,250,.6); outline-offset: 2px; border-radius: 12px; }
+
+.aide{ margin-top: 36px; text-align: center; display: grid; gap: 10px; justify-items: center; }
+.aide h2{ font-size: 21px; letter-spacing: -.015em; }
+.aide p{ color: var(--ink-2); font-size: 16px; max-width: 36ch; }
+.aide .btn{ max-width: 360px; }
+
+.note{ margin-top: 28px; font-size: 14px; line-height: 1.45; color: var(--ink-3); text-align: center; }
+
+footer{ background: var(--bg-alt); padding-block: 26px calc(26px + env(safe-area-inset-bottom)); font-size: 12px; color: var(--ink-3); }
+
+@media (prefers-reduced-motion: reduce){ *{ transition: none !important; } }
+@media (prefers-reduced-transparency: reduce){ .top{ background: var(--bg); backdrop-filter: none; -webkit-backdrop-filter: none; } }
+</style>
+
+<!-- Meta Pixel Code : la visite sert à reconnaître les acheteurs (audiences
+     à exclure). L'achat lui-même est compté par Chariow, pas ici. -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '4451955808377862');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=4451955808377862&ev=PageView&noscript=1"
+/></noscript>
+<!-- End Meta Pixel Code -->
+</head>
+<body>
+
+<header class="top"><div class="colonne"><b>Game&nbsp;Build</b></div></header>
+
+<main class="colonne">
+  <div class="tete">
+    <div class="coche" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+    <p class="eyebrow">Paiement reçu</p>
+    <h1>Bienvenue dans l'accompagnement.</h1>
+    <p class="chapo">Il te reste une étape pour entrer dans le groupe WhatsApp. Elle prend 30&nbsp;secondes.</p>
+  </div>
+
+  <div class="alerte" id="indisponible" hidden role="alert">
+    <b>Le lien du groupe n'est pas disponible pour le moment.</b>
+    Écris-moi sur WhatsApp avec la capture de ton paiement, avec le bouton en bas de la page&nbsp;: je t'ajoute moi-même.
+  </div>
+
+  <ol class="etapes">
+    <li class="etape">
+      <h2>Ouvre le groupe</h2>
+      <p>Appuie sur le bouton&nbsp;: WhatsApp s'ouvre sur le groupe d'accompagnement.</p>
+      <a class="btn" id="rejoindre" href="/api/groupe">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.9 11.9 0 0 0 4.6 4c1.7.7 2.4.8 3.2.7.5-.1 1.5-.6 1.8-1.2.2-.6.2-1.1.1-1.2l-.5-.3z"/></svg>
+        Rejoindre le groupe
+      </a>
+    </li>
+    <li class="etape">
+      <h2>Appuie sur «&nbsp;Demander à rejoindre&nbsp;»</h2>
+      <p>Fais-le <b>avec le même numéro que celui donné au paiement</b>&nbsp;: c'est comme ça que je vérifie ton achat. J'accepte les demandes à la main, en général dans la journée.</p>
+    </li>
+    <li class="etape">
+      <h2>Récupère ton pack Game Build</h2>
+      <p>Les 2 guides et la vidéo pas à pas t'attendent dans l'e-mail de confirmation de Chariow et sur ta page de téléchargement.</p>
+    </li>
+  </ol>
+
+  <p class="note">Une fois dans le groupe, commence par la première vidéo de formation. Quand ton jeu sera prêt, tu le mettras en ligne avec Jouable (3&nbsp;000&nbsp;F, une seule fois)&nbsp;: je te montre tout dans le groupe.</p>
+
+  <div class="aide">
+    <h2>Un souci&nbsp;?</h2>
+    <p>Demande refusée, lien qui ne s'ouvre pas, pack introuvable&nbsp;: écris-moi avec la capture de ton paiement.</p>
+    <a class="btn btn-second" id="ecrire" href="https://wa.me/22897222373?text=Bonjour%2C%20j%27ai%20pay%C3%A9%20l%27accompagnement%20et%20j%27ai%20besoin%20d%27aide%20pour%20rejoindre%20le%20groupe.">M'écrire sur WhatsApp</a>
+  </div>
+</main>
+
+<footer><div class="colonne">© <span id="annee">2026</span> IA TOOL · Lomé, Togo</div></footer>
+
+<script>
+(function () {
+  "use strict";
+  document.getElementById("annee").textContent = new Date().getFullYear();
+
+  /* /api/groupe renvoie ici avec ?groupe=indisponible quand LIEN_GROUPE
+     n'est pas réglé sur Vercel. */
+  if (/[?&]groupe=indisponible/.test(location.search)) {
+    document.getElementById("indisponible").hidden = false;
+  }
+
+  /* Le clic est envoyé au pixel avant de partir vers WhatsApp (1 s au
+     plus), dans le même onglet : c'est ce lien qui ouvre l'application. */
+  var bouton = document.getElementById("rejoindre"), parti = false;
+  bouton.addEventListener("click", function (e) {
+    e.preventDefault();
+    if (parti) return;
+    parti = true;
+    try { if (window.fbq) fbq("trackCustom", "RejoindreGroupe"); } catch (err) {}
+    var debut = Date.now();
+    (function attends() {
+      var pret = window.fbq && window.fbq.callMethod;
+      if (pret || Date.now() - debut > 1000) setTimeout(function () { location.href = bouton.href; }, pret ? 250 : 0);
+      else setTimeout(attends, 100);
+    })();
+    setTimeout(function () { parti = false; }, 3000);
+  });
+})();
+</script>
+</body>
+</html>
