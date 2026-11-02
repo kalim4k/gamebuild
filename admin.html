@@ -1024,11 +1024,11 @@ a:hover{ text-decoration: underline; }
     if (!liste.length) {
       vide($("d-liste"), "Aucun diagnostic terminé sur cette période.");
     } else {
-      tableau($("d-liste"), ["Quand", "Prénom", "Pays", "Âge", "Temps", "Budget", "Espère", "Verdict", "Paiement", "Son idée"],
+      tableau($("d-liste"), ["Quand", "Prénom", "Pays", "Âge", "Temps", "Budget", "Espère", "Verdict", "Rédigé par", "Paiement", "Son idée"],
         liste.map(function (l) {
           return [quand(l.cree_le), l.prenom || "—", libDiag("pays", l.pays), libDiag("age", l.age),
                   libDiag("temps", l.temps), libDiag("budget", l.budget), libDiag("objectif", l.objectif),
-                  libDiag("verdict", l.verdict), l.clic_offre ? "a cliqué" : "", l.idee_texte || ""];
+                  libDiag("verdict", l.verdict), l.ia ? "l'IA" : "les règles", l.clic_offre ? "a cliqué" : "", l.idee_texte || ""];
         }), true);
     }
   }

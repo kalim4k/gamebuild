@@ -181,7 +181,7 @@ async function statistiques(req, res) {
 
       sql`
         select cree_le, prenom, pays, age, situation, temps, objectif, delai, budget,
-               passions, idee_texte, verdict, clic_offre
+               passions, idee_texte, verdict, clic_offre, conseil is not null as ia
         from diagnostics
         where fini and cree_le > now() - make_interval(days => ${j})
         order by cree_le desc limit 50`

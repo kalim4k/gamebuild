@@ -287,13 +287,16 @@ a{ color: var(--blue-ink); text-decoration: none; }
 .idee.sienne .pourquoi{ color: var(--orange); }
 
 .plan{ list-style: none; margin: 18px 0 0; padding: 0; display: grid; gap: 14px; counter-reset: etape; }
-.plan li{ counter-increment: etape; display: grid; grid-template-columns: 30px 1fr; gap: 12px; align-items: start; line-height: 1.4; }
+.plan li{ counter-increment: etape; display: grid; grid-template-columns: 30px 1fr; column-gap: 12px; row-gap: 2px; align-items: start; line-height: 1.4; }
 .plan li::before{
-  content: counter(etape); display: grid; place-items: center;
-  width: 30px; height: 30px; border-radius: 50%; margin-top: -3px;
+  content: counter(etape); display: grid; place-items: center; grid-row: 1 / span 2;
+  width: 30px; height: 30px; border-radius: 50%; margin-top: -2px;
   background: var(--ink); color: #fff; font-size: 15px; font-weight: 600;
 }
-.rythme{ margin-top: 16px !important; font-size: 15px; }
+.plan li b{ grid-column: 2; font-size: 13px; font-weight: 600; letter-spacing: .02em; text-transform: uppercase; color: var(--orange); }
+.plan li span{ grid-column: 2; }
+
+.r-accroche{ margin-top: 14px; font-size: clamp(19px, 2.4vw, 21px); line-height: 1.4; color: var(--ink-2); letter-spacing: .005em; }
 
 .offre{
   margin-top: 48px; padding: 30px 24px; border-radius: 24px;
@@ -302,6 +305,7 @@ a{ color: var(--blue-ink); text-decoration: none; }
 }
 .offre h2{ font-size: clamp(26px, 5.6vw, 34px); line-height: 1.12; letter-spacing: -.01em; max-width: 18ch; text-wrap: balance; }
 .offre .o-condition{ font-size: 17px; color: var(--orange); font-weight: 500; max-width: 34ch; }
+.offre .o-invitation{ font-size: 17px; color: var(--ink-2); max-width: 36ch; }
 .offre .recoit{ margin-top: 4px; }
 .prix{ display: flex; flex-direction: column; align-items: center; gap: 2px; margin-top: 4px; }
 .prix b{ font-size: 40px; line-height: 1.1; font-weight: 600; letter-spacing: -.02em; }
@@ -407,7 +411,7 @@ src="https://www.facebook.com/tr?id=4451955808377862&ev=PageView&noscript=1"
 
 <footer>
   <div class="colonne">
-    <p>Ce diagnostic donne un avis à partir de tes réponses, pas une promesse. Rien ne garantit un revenu&nbsp;: ce qu'un jeu rapporte dépend du nombre de joueurs qu'il attire et de ce que tu en fais. Game Build n'est affilié ni à Google ni à aucune régie publicitaire.</p>
+    <p>Ce diagnostic est rédigé avec l'IA à partir de tes réponses&nbsp;: c'est un avis, pas une promesse. Rien ne garantit un revenu&nbsp;: ce qu'un jeu rapporte dépend du nombre de joueurs qu'il attire et de ce que tu en fais. Game Build n'est affilié ni à Google ni à aucune régie publicitaire.</p>
     <p>© <span id="annee">2026</span> IA TOOL · Lomé, Togo</p>
   </div>
 </footer>
@@ -795,14 +799,18 @@ var VALEUR_PIXEL  = 1990;     /* le prix du groupe, en F CFA, pour le pixel */
     var s = ev.state;
     if (!s || s.ecran === "intro") { afficheIntro(); return; }
     if (s.ecran === "q" && QUESTIONS[s.i]) { montre(s.i, -1); return; }
-    if (s.ecran === "r" && etat.fini) { afficheResultat(diagnostique(etat.r), false); }
+    if (s.ecran === "r" && etat.fini) { afficheResultat(diagnostique(etat.r), etat.conseil, false); }
   });
 
-  /* ══════════════ Fin du questionnaire ══════════════ */
+  /* ══════════════ Fin du questionnaire ══════════════
+     Le verdict vient des règles ci-dessous. Pendant l'écran d'analyse,
+     on demande à Claude (/api/conseil) d'écrire le diagnostic ; s'il ne
+     répond pas à temps, on affiche celui des règles. */
   function termine() {
     var d = diagnostique(etat.r);
     etat.fini = true;
     etat.verdict = d.verdict;
+    etat.conseil = null;
     sauve();
     envoie({ fini: true, verdict: d.verdict });
     if (!etat.pixel) {
@@ -810,129 +818,175 @@ var VALEUR_PIXEL  = 1990;     /* le prix du groupe, en F CFA, pour le pixel */
       etat.pixel = true; sauve();
     }
     pousse({ ecran: "r" });
-    analyse(function () {
+
+    var analyseFinie = false, reponse = false, conseil = null;
+    function suite() {
       /* Retour pendant l'analyse : on ne saute pas au résultat. */
-      if (history.state && history.state.ecran === "r") afficheResultat(d, true);
+      if (analyseFinie && reponse && history.state && history.state.ecran === "r") afficheResultat(d, conseil, true);
+    }
+    demandeConseil(d, function (c) {
+      conseil = c;
+      if (c) { etat.conseil = c; sauve(); }
+      reponse = true; suite();
     });
+    analyse(function () { analyseFinie = true; suite(); });
   }
 
-  /* Un court temps de calcul visible : le résultat arrive après qu'on a
-     vu ses réponses passer en revue, pas comme une page de plus. */
+  function conseilValide(c) {
+    return c && typeof c === "object" && c.verdict_titre && c.verdict_texte && c.gains &&
+      Array.isArray(c.idees) && c.idees.length >= 2 && Array.isArray(c.plan) && c.plan.length >= 3;
+  }
+
+  function demandeConseil(d, fini) {
+    var rendu = false;
+    function rend(c) { if (rendu) return; rendu = true; fini(conseilValide(c) ? c : null); }
+    var ctrl = window.AbortController ? new AbortController() : null;
+    setTimeout(function () { if (ctrl) ctrl.abort(); rend(null); }, 45000);
+    try {
+      fetch("/api/conseil", {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=UTF-8" },
+        body: JSON.stringify({ session: etat.session, r: etat.r, verdict: d.verdict, conditions: d.cles }),
+        signal: ctrl ? ctrl.signal : undefined
+      })
+        .then(function (rep) { return rep.ok ? rep.json() : null; })
+        .then(function (j) { rend(j && j.conseil); })
+        ["catch"](function () { rend(null); });
+    } catch (e) { rend(null); }
+  }
+
+  /* L'écran d'analyse : les trois lignes se cochent, puis le titre suit
+     l'écriture du diagnostic, qui prend quelques secondes. */
+  var minuteursAnalyse = [];
   function analyse(apres) {
     ecran("analyse");
     progression(1, "");
     $("retour").hidden = true;
+    minuteursAnalyse.forEach(clearTimeout);
+    var titre = $("a-titre");
+    titre.textContent = "J'analyse tes réponses…";
     var lis = $("a-etapes").children;
     Array.prototype.forEach.call(lis, function (li) { li.classList.remove("ok"); });
     var reduit = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
     var pas = reduit ? 250 : 650;
     Array.prototype.forEach.call(lis, function (li, k) {
-      setTimeout(function () { li.classList.add("ok"); }, pas * (k + 1));
+      minuteursAnalyse.push(setTimeout(function () { li.classList.add("ok"); }, pas * (k + 1)));
     });
-    setTimeout(apres, pas * (lis.length + 1));
+    minuteursAnalyse.push(setTimeout(function () { titre.textContent = typo("J'écris ton diagnostic…"); }, pas * (lis.length + 1)));
+    minuteursAnalyse.push(setTimeout(function () { titre.textContent = typo("Encore quelques secondes…"); }, 15000));
+    minuteursAnalyse.push(setTimeout(apres, pas * (lis.length + 1)));
   }
 
-  /* ══════════════ Le diagnostic ══════════════
-     Des règles simples, écrites pour être vraies : le verdict peut
-     dire non, et il dit pourquoi avec les réponses de la personne. */
+  /* ══════════════ Le diagnostic par les règles ══════════════
+     Il décide du verdict, et sert de texte de secours quand l'IA ne
+     répond pas. Aucun objectif n'y est « irréaliste » : on dit ce qu'il
+     demande et comment s'en approcher. Un seul cas dit « pas tout de
+     suite » : pas de budget du tout. */
   var NIV_TEMPS = { "-30": 0, "30-60": 1, "1-2h": 2, "2h+": 3 };
   var NIV_DELAI = { semaine: 0, mois: 1, "3mois": 2, patient: 3 };
   var NIV_OBJ = { "-25k": 0, "25-100k": 1, "100-300k": 2, "300k+": 3 };
   var NIV_BUDGET = { "0": 0, "-5k": 1, "5-20k": 2, "20k+": 3 };
   var TEMPS_TXT = { "-30": "moins de 30 minutes", "30-60": "30 minutes à 1 heure", "1-2h": "1 à 2 heures", "2h+": "plus de 2 heures" };
-  var OBJ_TXT = { "100-300k": "100 000 à 300 000 F par mois", "300k+": "plus de 300 000 F par mois" };
+
+  /* Ce que chaque objectif demande, à 1 000 F pour 1 000 parties (le
+     milieu de la fourchette affichée). Mêmes repères que /api/conseil. */
+  var GAINS = [
+    "Pour un petit complément, il faut quelques centaines de parties par jour : par exemple 200 joueurs qui font 3 ou 4 parties. Un jeu simple, montré sur TikTok, peut y arriver.",
+    "Pour 25 000 à 100 000 F par mois, il faut de l'ordre de 800 à 3 300 parties par jour : par exemple 300 à 1 000 joueurs qui reviennent chaque jour. Pour y aller : un jeu qui donne envie de rejouer, et une vidéo TikTok par jour.",
+    "Pour 100 000 à 300 000 F par mois, il faut de l'ordre de 3 300 à 10 000 parties par jour : par exemple 1 000 à 2 000 joueurs qui font 5 parties chaque jour. Ça arrive quand une vidéo TikTok décolle et que le jeu fait revenir les joueurs. Une vidéo qui explose ne se prévoit pas, mais plus tu publies, plus tu as de chances.",
+    "Pour plus de 300 000 F par mois, il faut plus de 10 000 parties par jour : par exemple 2 000 joueurs qui font 5 parties chaque jour. C'est ce qui peut arriver quand une vidéo fait des centaines de milliers de vues. Personne ne peut la prévoir, mais tu peux multiplier tes chances : publier tous les jours, et sortir plusieurs jeux."
+  ];
 
   function diagnostique(r) {
     var T = NIV_TEMPS[r.temps] || 0, P = NIV_DELAI[r.delai] || 0;
     var O = NIV_OBJ[r.objectif] || 0, B = NIV_BUDGET[r.budget] || 0;
-    var mineur = r.age === "-18";
-    var forts = [], freins = [], conditions = [], attendre = [];
+    var mineur = r.age === "-18", vite = P === 0;
+    var forts = [], ajuster = [], conditions = [], cles = [];
 
-    /* Ce qui freine */
+    /* Ce qu'il faut ajuster, formulé comme des actions */
     if (B === 0) {
-      freins.push("Tu n'as pas de budget pour l'instant. L'accompagnement coûte " + PRIX_GROUPE + ", puis il faut " + PRIX_JOUABLE + " pour Jouable, qui met ton jeu en ligne.");
-      attendre.push("quand tu auras mis 5 000 F de côté");
+      ajuster.push("Mets 5 000 F de côté avant de te lancer : l'accompagnement coûte " + PRIX_GROUPE + ", puis " + PRIX_JOUABLE + " pour Jouable, qui met ton jeu en ligne.");
     }
     if (T === 0) {
-      freins.push("Moins de 30 minutes par jour, c'est juste. Créer le jeu, ça passe. Mais pour le faire connaître, il faut un peu de temps chaque jour : une vidéo, des réponses aux commentaires.");
-      conditions.push("trouver au moins 30 minutes par jour");
+      ajuster.push("Avec moins de 30 minutes par jour, tu avanceras lentement. Vise au moins 1 heure : une partie pour ton jeu, une partie pour publier tes vidéos.");
+      conditions.push("passer à au moins 1 heure par jour"); cles.push("temps");
     }
-    if (P === 0) {
-      freins.push("Des gains dès la première semaine, ça n'arrive presque jamais. Il faut créer le jeu, le mettre en ligne, puis attirer des joueurs : compte plutôt quelques mois.");
-      conditions.push("accepter que les premiers gains prennent quelques mois");
-    } else if (O >= 2 && P === 1) {
-      freins.push("Viser " + OBJ_TXT[r.objectif] + " dès le premier mois n'est pas réaliste. Ce genre de montant demande beaucoup de joueurs, donc du temps, et souvent plusieurs jeux.");
-      conditions.push("commencer avec un objectif plus modeste");
-    } else if (O === 3) {
-      freins.push("Plus de 300 000 F par mois, certains y arrivent, mais c'est un objectif sur le long terme, pas un point de départ.");
+    if (vite) {
+      ajuster.push("Pour des premiers gains dès la première semaine, il faut aller vite : ton jeu créé en deux jours, en ligne avec la publicité le troisième, puis 2 ou 3 vidéos TikTok par jour jusqu'à la fin de la semaine.");
+      if (T <= 1) { conditions.push("y passer environ 2 heures par jour la première semaine"); cles.push("rythme"); }
     }
     if (mineur) {
-      freins.push("Tu as moins de 18 ans. Tu peux apprendre et créer ton jeu dès maintenant, mais les régies de publicité ne paient que des adultes : fais-le avec un parent.");
-      conditions.push("le faire avec un parent pour la partie argent");
+      ajuster.push("Tu as moins de 18 ans. Tu peux apprendre et créer ton jeu dès maintenant, mais les régies de publicité ne paient que des adultes : fais la partie argent avec un parent, sur son compte.");
+      conditions.push("faire la partie argent avec un parent"); cles.push("parent");
     }
     if (r.situation === "recherche") {
-      freins.push("Tu cherches du travail : ne compte pas sur ton jeu pour payer les dépenses du mois. Vois-le comme un projet qui grandit à côté.");
+      ajuster.push("Tu cherches du travail : garde ton jeu comme un projet qui grandit à côté, sans compter sur lui pour les dépenses du mois au début.");
     }
 
     /* Ce qui joue pour toi */
     if (T === 1) forts.push("30 minutes à 1 heure par jour, c'est suffisant pour avancer régulièrement.");
     if (T >= 2) forts.push("Avec " + TEMPS_TXT[r.temps] + " par jour, tu peux sortir ton premier jeu rapidement.");
     if (P >= 2) forts.push("Tu acceptes que ça prenne du temps : c'est le bon état d'esprit.");
+    if (vite && T >= 2) forts.push("Tu veux aller vite, et tu as le temps pour : c'est la bonne combinaison.");
     if (r.idee === "oui") forts.push("Tu as déjà une idée de jeu. C'est souvent là que les débutants bloquent.");
     if (r.situation === "etudes") forts.push("Tu étudies : c'est le bon moment pour apprendre une compétence qui peut rapporter.");
     if (r.situation === "salarie") forts.push("Tu as un salaire : tu peux construire ça à côté, sans pression.");
     if (r.situation === "compte") forts.push("Tu travailles à ton compte : tu sais déjà ce que c'est de faire connaître ce que tu vends.");
     if (B === 1) forts.push("Moins de 5 000 F, c'est juste mais ça suffit pour commencer : l'accompagnement d'abord, Jouable quand ton jeu sera prêt.");
     if (B >= 2) forts.push("Ton budget couvre l'accompagnement et la mise en ligne de ton jeu, sans te mettre en difficulté.");
-    if (O <= 1 && P >= 1) forts.push("Ton objectif de gains est raisonnable pour un premier jeu.");
 
     /* Le verdict */
-    if (T === 0 && P === 0) attendre.push("quand tu pourras y consacrer au moins 30 minutes par jour, pendant quelques mois");
-    var verdict = attendre.length ? "pas-encore" : conditions.length ? "condition" : "oui";
-
+    var verdict = B === 0 ? "pas-encore" : conditions.length ? "condition" : "oui";
     var titre, phrase;
     if (verdict === "oui") {
       titre = "C'est fait pour toi.";
-      phrase = "Ton temps, tes attentes et ton budget collent avec ce business. Ce qui te manque, c'est la méthode, et c'est exactement ce que je t'apprends.";
+      phrase = "Ton temps, tes envies et ton budget collent avec ce business. Ce qui te manque, c'est la méthode, et c'est exactement ce que je t'apprends.";
     } else if (verdict === "condition") {
       titre = conditions.length === 1 ? "C'est possible, à une condition."
-        : "C'est possible, à " + (["deux", "trois", "quatre"][conditions.length - 2]) + " conditions.";
-      phrase = "Ton profil peut marcher. Mais il faudra " + listeFr(conditions) + ".";
+        : "C'est possible, à " + (["deux", "trois"][conditions.length - 2]) + " conditions.";
+      phrase = "Ton profil peut marcher, à condition " + listeFr(conditions.map(function (c) {
+        return (/^[aeiouyéèh]/i.test(c) ? "d'" : "de ") + c;
+      })) + ".";
     } else {
       titre = "Pas tout de suite.";
-      phrase = "Je préfère te le dire franchement : aujourd'hui, ce n'est pas le bon moment pour toi. Reviens refaire ce diagnostic " + listeFr(attendre) + ".";
+      phrase = "Je préfère te le dire franchement : aujourd'hui, ce n'est pas le bon moment, parce que tu n'as pas encore de budget pour démarrer. Reviens refaire ce diagnostic quand tu auras mis 5 000 F de côté.";
     }
 
-    /* Ce que ça peut rapporter */
-    var gains;
-    if (O === 0) gains = "Un petit complément, c'est un objectif raisonnable pour un premier jeu, si tu attires des joueurs régulièrement.";
-    else if (O === 1) gains = "Pour 25 000 à 100 000 F par mois, il faut un jeu que les gens ont envie de rejouer, et des vidéos régulières pour en attirer de nouveaux. Vois-le comme un objectif à plusieurs mois.";
-    else gains = "Ton objectif est possible, mais pas au départ : il demande souvent plusieurs jeux et beaucoup de joueurs. Fixe-toi d'abord une étape plus proche : tes premiers 10 000 F.";
-
     var idees = choisitIdees(r);
+    var nomIdee = r.idee_texte ? "ton idée." : "« " + idees[0].nom + " », par exemple.";
 
-    /* Le plan */
-    var plan = [
-      "Rejoins l'accompagnement et regarde la première vidéo.",
-      "Crée ton premier jeu avec l'IA, depuis ton téléphone : " +
-        (r.idee_texte ? "ton idée." : "« " + idees[0].nom + " », par exemple."),
-      "Mets-le en ligne avec Jouable.",
-      "Publie une première vidéo de ton jeu sur TikTok pour attirer tes premiers joueurs."
-    ];
-    var rythme = T === 0 ? "À ton rythme, compte deux à trois semaines pour ces quatre étapes."
-      : T === 1 ? "Avec 30 minutes à 1 heure par jour, compte environ deux semaines."
-      : "Avec " + TEMPS_TXT[r.temps] + " par jour, ces quatre étapes tiennent en une semaine.";
-    var enAttendant = [
-      "Reste dans la chaîne : les vidéos, les preuves et les lives sont gratuits.",
-      "Garde tes idées de jeux de côté : celles ci-dessus sont un bon début.",
-      "Le moment venu, refais ce diagnostic : ton plan sera prêt."
-    ];
+    /* Le plan, daté selon la vitesse voulue et le temps disponible */
+    var plan;
+    if (verdict === "pas-encore") {
+      plan = [
+        { quand: "Dès aujourd'hui", action: "Reste dans la chaîne : les vidéos, les preuves et les lives sont gratuits." },
+        { quand: "Cette semaine", action: "Garde tes idées de jeux de côté : celles ci-dessus sont un bon début." },
+        { quand: "Avec 5 000 F de côté", action: "Refais ce diagnostic : ton plan sera prêt." }
+      ];
+    } else if (vite) {
+      plan = [
+        { quand: "Jour 1", action: "Rejoins l'accompagnement et regarde la première vidéo." },
+        { quand: "Jours 1 et 2", action: "Crée ton jeu avec l'IA, depuis ton téléphone : " + nomIdee },
+        { quand: "Jour 3", action: "Mets-le en ligne avec Jouable et ajoute la publicité Adsterra, qui accepte vite." },
+        { quand: "Jours 3 à 7", action: "Publie 2 ou 3 vidéos TikTok de ton jeu par jour, et regarde laquelle ramène le plus de joueurs." }
+      ];
+    } else {
+      var q = T === 0 ? ["Semaine 1", "Semaines 1 et 2", "Semaine 3", "Ensuite"]
+        : T === 1 ? ["Jour 1", "Semaine 1", "Semaine 2", "Ensuite"]
+        : ["Jour 1", "Jours 2 à 4", "Jour 5", "Ensuite"];
+      plan = [
+        { quand: q[0], action: "Rejoins l'accompagnement et regarde la première vidéo." },
+        { quand: q[1], action: "Crée ton premier jeu avec l'IA, depuis ton téléphone : " + nomIdee },
+        { quand: q[2], action: "Mets-le en ligne avec Jouable, et ajoute la publicité." },
+        { quand: q[3], action: "Publie une vidéo TikTok de ton jeu chaque jour pour attirer tes premiers joueurs." }
+      ];
+    }
 
     return {
-      verdict: verdict, titre: titre, phrase: phrase, conditions: conditions,
-      forts: forts, freins: freins, gains: gains, idees: idees,
-      plan: verdict === "pas-encore" ? enAttendant : plan,
-      rythme: verdict === "pas-encore" ? null : rythme
+      verdict: verdict, titre: titre, phrase: phrase, conditions: conditions, cles: cles,
+      accroche: null, forts: forts, ajuster: ajuster, idees: idees,
+      gains: "D'après mes chiffres, 1 000 parties rapportent environ 500 à 1 500 F, selon le pays des joueurs et la régie. " + GAINS[O],
+      plan: plan, invitation: null
     };
   }
 
@@ -956,11 +1010,38 @@ var VALEUR_PIXEL  = 1990;     /* le prix du groupe, en F CFA, pour le pixel */
         out.push({ nom: idee.nom, texte: idee.texte, img: idee.img, pourquoi: "Un jeu satisfaisant, simple à créer pour un premier essai." });
       }
     });
+    if (r.idee_texte) {
+      out.unshift({ nom: "Ton idée", texte: "« " + r.idee_texte + " »", sienne: true,
+        pourquoi: "On peut partir de la tienne : dans l'accompagnement, je te montre comment la décrire à l'IA." });
+    }
     return out;
   }
 
+  /* Le texte de Claude remplace celui des règles, champ par champ ; le
+     verdict, les conditions et les prix restent ceux de la page. */
+  var VISUEL_IMG = { billes: "tri-billes", fruits: "tranche-fruits", "pop-it": "pop-it", glacage: "glacage", vis: "vis-boulons" };
+  function fusionne(d, c) {
+    if (!c) return d;
+    var m = {};
+    for (var k in d) m[k] = d[k];
+    m.accroche = c.accroche || null;
+    m.titre = c.verdict_titre;
+    m.phrase = c.verdict_texte;
+    m.forts = c.forces || [];
+    m.ajuster = c.a_ajuster || [];
+    m.idees = c.idees.map(function (i) {
+      return { nom: i.nom, texte: i.description, pourquoi: i.pourquoi, sienne: i.sienne, img: VISUEL_IMG[i.visuel] || null };
+    });
+    m.gains = c.gains;
+    m.plan = c.plan;
+    m.invitation = c.invitation || null;
+    m.ia = true;
+    return m;
+  }
+
   /* ══════════════ Le résultat ══════════════ */
-  function afficheResultat(d, nouveau) {
+  function afficheResultat(base, conseil, nouveau) {
+    var d = fusionne(base, conseil);
     var boite = $("r-boite");
     boite.textContent = "";
     ecran("resultat");
@@ -969,6 +1050,7 @@ var VALEUR_PIXEL  = 1990;     /* le prix du groupe, en F CFA, pour le pixel */
 
     boite.appendChild(el("p", "eyebrow", "Ton diagnostic"));
     boite.appendChild(el("h1", "r-titre", etat.r.prenom ? etat.r.prenom + ", voici ce que j'en pense." : "Voici ce que j'en pense."));
+    if (d.accroche) boite.appendChild(el("p", "r-accroche", d.accroche));
 
     var v = el("div", "verdict v-" + d.verdict);
     v.appendChild(el("p", "pastille", "Mon verdict"));
@@ -990,17 +1072,16 @@ var VALEUR_PIXEL  = 1990;     /* le prix du groupe, en F CFA, pour le pixel */
     }
 
     if (d.forts.length) points(bloc("Ce qui joue pour toi"), "forts", d.forts);
-    if (d.freins.length) points(bloc("Ce qui peut te freiner"), "freins", d.freins);
+    if (d.ajuster.length) points(bloc("Ce qu'il faut ajuster"), "freins", d.ajuster);
 
     /* Les idées de jeux */
-    var bi = bloc(etat.r.idee_texte ? "Ton idée, et deux autres pour toi" : "3 idées de jeux pour toi");
+    var sienne = d.idees.some(function (c) { return c.sienne; });
+    var bi = bloc(sienne ? "Ton idée, et deux autres pour toi" : "3 idées de jeux pour toi");
     var ul = el("ul", "idees");
-    var cartes = d.idees.slice();
-    if (etat.r.idee_texte) cartes.unshift({ nom: "Ton idée", texte: "« " + etat.r.idee_texte + " »", pourquoi: "On peut partir de la tienne : dans l'accompagnement, je te montre comment la décrire à l'IA.", sienne: true });
-    cartes.forEach(function (c, k) {
+    d.idees.forEach(function (c, k) {
       var li = el("li", "idee" + (c.sienne ? " sienne" : ""));
       var vignette = el("div", "idee-img");
-      if (c.img) {
+      if (c.img && !c.sienne) {
         var img = document.createElement("img");
         img.src = "media/idees/" + c.img + ".jpg";
         img.alt = "";
@@ -1013,25 +1094,27 @@ var VALEUR_PIXEL  = 1990;     /* le prix du groupe, en F CFA, pour le pixel */
       var corps = el("div");
       corps.appendChild(el("b", null, c.nom));
       corps.appendChild(el("p", null, c.texte));
-      corps.appendChild(el("span", "pourquoi", c.pourquoi));
+      if (c.pourquoi) corps.appendChild(el("span", "pourquoi", c.pourquoi));
       li.appendChild(vignette);
       li.appendChild(corps);
       ul.appendChild(li);
     });
     bi.appendChild(ul);
 
-    /* Ce que ça peut rapporter */
-    var bg = bloc("Ce que ça peut rapporter",
-      "Un jeu gratuit gagne de l'argent grâce à la publicité vue par les joueurs. Ce qu'il rapporte dépend donc du nombre de parties : quelques centaines de joueurs rapportent presque rien, il en faut beaucoup, et tous les jours, pour des montants qui comptent.");
-    bg.appendChild(el("p", null, d.gains));
+    /* Ce que l'objectif demande */
+    var bg = bloc("Ce que ton objectif demande", d.gains);
     bg.appendChild(el("p", null, "Personne ne peut te garantir un montant, moi compris."));
 
     /* Le plan */
     var bp = bloc(d.verdict === "pas-encore" ? "En attendant" : "Ton plan pour démarrer");
     var ol = el("ol", "plan");
-    d.plan.forEach(function (l) { ol.appendChild(el("li", null, l)); });
+    d.plan.forEach(function (e) {
+      var li = el("li");
+      li.appendChild(el("b", null, e.quand));
+      li.appendChild(el("span", null, e.action));
+      ol.appendChild(li);
+    });
     bp.appendChild(ol);
-    if (d.rythme) bp.appendChild(el("p", "rythme", d.rythme));
 
     /* L'offre : visible tout de suite, sauf si le verdict est « pas
        tout de suite » ; elle reste alors accessible d'un appui. */
@@ -1081,7 +1164,9 @@ var VALEUR_PIXEL  = 1990;     /* le prix du groupe, en F CFA, pour le pixel */
     o.id = "offre";
     o.appendChild(el("p", "eyebrow", "L'accompagnement"));
     o.appendChild(el("h2", null, "Je t'accompagne pour créer ton premier jeu."));
-    if (d.verdict === "condition") {
+    if (d.invitation) {
+      o.appendChild(el("p", "o-invitation", d.invitation));
+    } else if (d.verdict === "condition") {
       o.appendChild(el("p", "o-condition", "Si tu es d'accord pour " + listeFr(d.conditions) + ", c'est pour toi."));
     }
     var ul = el("ul", "recoit");
@@ -1145,7 +1230,7 @@ var VALEUR_PIXEL  = 1990;     /* le prix du groupe, en F CFA, pour le pixel */
   etat = charge();
   if (etat && etat.fini) {
     history.replaceState({ ecran: "r" }, "");
-    afficheResultat(diagnostique(etat.r), false);
+    afficheResultat(diagnostique(etat.r), etat.conseil, false);
   } else if (etat && etat.i >= 0 && QUESTIONS[etat.i] && estVisible(QUESTIONS[etat.i])) {
     history.replaceState({ ecran: "q", i: etat.i }, "");
     montre(etat.i, 1);

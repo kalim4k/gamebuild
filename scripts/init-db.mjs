@@ -109,7 +109,14 @@ const etapes = [
       delai        text,
       budget       text
     )`],
-  ["index diagnostics par date", `create index if not exists diagnostics_date_idx on diagnostics (cree_le desc)`]
+  ["index diagnostics par date", `create index if not exists diagnostics_date_idx on diagnostics (cree_le desc)`],
+  /* Le texte rédigé par Claude (/api/conseil), gardé pour être resservi
+     et pour compter les rédactions du jour. */
+  ["colonnes du conseil", `
+    alter table diagnostics
+      add column if not exists conseil     jsonb,
+      add column if not exists conseil_le  timestamptz`],
+  ["index diagnostics par rédaction", `create index if not exists diagnostics_conseil_idx on diagnostics (conseil_le desc)`]
 ];
 
 console.log("Connexion à Neon…");
