@@ -490,10 +490,10 @@ var VALEUR_PIXEL  = 1990;     /* le prix du groupe, en F CFA, pour le pixel */
   };
   var IDEES = {
     foot: [
-      { nom: "Tirs au but", texte: "Tu vises un coin, le gardien plonge. Une partie dure trente secondes : facile à créer, facile à montrer en vidéo." },
+      { nom: "Tirs au but", texte: "Tu vises un coin, le gardien plonge. Une partie dure trente secondes : facile à créer, et on rejoue sans s'en rendre compte." },
       { nom: "Jongles", texte: "Tape pour garder le ballon en l'air le plus longtemps possible, et bats ton record." }],
     cuisine: [
-      { nom: "Glaçage parfait", img: "glacage", texte: "Recouvre le beignet sans déborder. Très satisfaisant à regarder, donc facile à montrer sur TikTok." },
+      { nom: "Glaçage parfait", img: "glacage", texte: "Recouvre le beignet sans déborder. Très satisfaisant : on en fait un, puis un autre." },
       { nom: "Le maquis express", texte: "Les clients commandent, tu sers le bon plat avant qu'ils s'impatientent. Plus ça va, plus ça va vite." }],
     musique: [
       { nom: "Tape en rythme", texte: "Les notes descendent, tu tapes au bon moment. Avec tes propres sons, ou des musiques libres de droits." },
@@ -894,10 +894,10 @@ var VALEUR_PIXEL  = 1990;     /* le prix du groupe, en F CFA, pour le pixel */
   /* Ce que chaque objectif demande, à 1 000 F pour 1 000 parties (le
      milieu de la fourchette affichée). Mêmes repères que /api/conseil. */
   var GAINS = [
-    "Pour un petit complément, il faut quelques centaines de parties par jour : par exemple 200 joueurs qui font 3 ou 4 parties. Un jeu simple, montré sur TikTok, peut y arriver.",
-    "Pour 25 000 à 100 000 F par mois, il faut de l'ordre de 800 à 3 300 parties par jour : par exemple 300 à 1 000 joueurs qui reviennent chaque jour. Pour y aller : un jeu qui donne envie de rejouer, et une vidéo TikTok par jour.",
-    "Pour 100 000 à 300 000 F par mois, il faut de l'ordre de 3 300 à 10 000 parties par jour : par exemple 1 000 à 2 000 joueurs qui font 5 parties chaque jour. Ça arrive quand une vidéo TikTok décolle et que le jeu fait revenir les joueurs. Une vidéo qui explose ne se prévoit pas, mais plus tu publies, plus tu as de chances.",
-    "Pour plus de 300 000 F par mois, il faut plus de 10 000 parties par jour : par exemple 2 000 joueurs qui font 5 parties chaque jour. C'est ce qui peut arriver quand une vidéo fait des centaines de milliers de vues. Personne ne peut la prévoir, mais tu peux multiplier tes chances : publier tous les jours, et sortir plusieurs jeux."
+    "Pour un petit complément, il faut quelques centaines de parties par jour : par exemple 200 joueurs qui font 3 ou 4 parties. Un jeu simple, qui donne envie de rejouer, peut y arriver.",
+    "Pour 25 000 à 100 000 F par mois, il faut de l'ordre de 800 à 3 300 parties par jour : par exemple 300 à 1 000 joueurs qui reviennent chaque jour. Pour y aller : un jeu qui donne envie de rejouer, et de nouveaux joueurs chaque jour, avec la méthode que je montre dans l'accompagnement.",
+    "Pour 100 000 à 300 000 F par mois, il faut de l'ordre de 3 300 à 10 000 parties par jour : par exemple 1 000 à 2 000 joueurs qui font 5 parties chaque jour. Ça arrive quand le jeu se fait connaître d'un coup et qu'il fait revenir les joueurs. Ce genre de décollage ne se prévoit pas, mais plus tu fais venir de joueurs, plus tu as de chances.",
+    "Pour plus de 300 000 F par mois, il faut plus de 10 000 parties par jour : par exemple 2 000 joueurs qui font 5 parties chaque jour. C'est ce qui peut arriver quand un jeu se fait connaître d'un coup. Personne ne peut le prévoir, mais tu peux multiplier tes chances : faire venir des joueurs chaque jour, et sortir plusieurs jeux."
   ];
 
   function diagnostique(r) {
@@ -911,11 +911,11 @@ var VALEUR_PIXEL  = 1990;     /* le prix du groupe, en F CFA, pour le pixel */
       ajuster.push("Mets 5 000 F de côté avant de te lancer : l'accompagnement coûte " + PRIX_GROUPE + ", puis " + PRIX_JOUABLE + " pour Jouable, qui met ton jeu en ligne.");
     }
     if (T === 0) {
-      ajuster.push("Avec moins de 30 minutes par jour, tu avanceras lentement. Vise au moins 1 heure : une partie pour ton jeu, une partie pour publier tes vidéos.");
+      ajuster.push("Avec moins de 30 minutes par jour, tu avanceras lentement. Vise au moins 1 heure : une partie pour ton jeu, une partie pour faire venir des joueurs.");
       conditions.push("passer à au moins 1 heure par jour"); cles.push("temps");
     }
     if (vite) {
-      ajuster.push("Pour des premiers gains dès la première semaine, il faut aller vite : ton jeu créé en deux jours, en ligne avec la publicité le troisième, puis 2 ou 3 vidéos TikTok par jour jusqu'à la fin de la semaine.");
+      ajuster.push("Pour des premiers gains dès la première semaine, il faut aller vite : ton jeu créé en deux jours, en ligne avec la publicité le troisième, puis de nouveaux joueurs à faire venir chaque jour jusqu'à la fin de la semaine.");
       if (T <= 1) { conditions.push("y passer environ 2 heures par jour la première semaine"); cles.push("rythme"); }
     }
     if (mineur) {
@@ -971,7 +971,7 @@ var VALEUR_PIXEL  = 1990;     /* le prix du groupe, en F CFA, pour le pixel */
         { quand: "Jour 1", action: "Rejoins l'accompagnement et regarde la première vidéo." },
         { quand: "Jours 1 et 2", action: "Crée ton jeu avec l'IA, depuis ton téléphone : " + nomIdee },
         { quand: "Jour 3", action: "Mets-le en ligne avec Jouable et ajoute la publicité Adsterra, qui accepte vite." },
-        { quand: "Jours 3 à 7", action: "Publie 2 ou 3 vidéos TikTok de ton jeu par jour, et regarde laquelle ramène le plus de joueurs." }
+        { quand: "Jours 3 à 7", action: "Fais venir tes premiers joueurs chaque jour, avec la méthode de l'accompagnement, et regarde ce qui marche le mieux." }
       ];
     } else {
       var q = T === 0 ? ["Semaine 1", "Semaines 1 et 2", "Semaine 3", "Ensuite"]
@@ -981,7 +981,7 @@ var VALEUR_PIXEL  = 1990;     /* le prix du groupe, en F CFA, pour le pixel */
         { quand: q[0], action: "Rejoins l'accompagnement et regarde la première vidéo." },
         { quand: q[1], action: "Crée ton premier jeu avec l'IA, depuis ton téléphone : " + nomIdee },
         { quand: q[2], action: "Mets-le en ligne avec Jouable, et ajoute la publicité." },
-        { quand: q[3], action: "Publie une vidéo TikTok de ton jeu chaque jour pour attirer tes premiers joueurs." }
+        { quand: q[3], action: "Fais venir tes premiers joueurs avec la méthode de l'accompagnement, un peu chaque jour." }
       ];
     }
 
