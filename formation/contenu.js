@@ -89,8 +89,8 @@ https://influenceuseia.vercel.app/etape-video.html`
       adresse: "/video/presentation",
       cache: true, serie: "chaine",
       titre: "Comment ton jeu peut te rapporter de l'argent",
-      duree: "5 min",
-      youtube: "https://youtu.be/5u0nUVpzADY",
+      duree: "10 min",
+      youtube: "https://www.youtube.com/watch?v=vAq5BxefzBo",
       resume: "La présentation : comment on crée un jeu avec l'IA depuis son téléphone, et comment la publicité affichée dans le jeu le fait payer.",
       prompts: [],
       appel: {
@@ -134,8 +134,8 @@ https://influenceuseia.vercel.app/etape-video.html`
       adresse: "/video/accompagnement",
       cache: true, serie: "chaine",
       titre: "À voir avant de rejoindre le groupe d'accompagnement",
-      duree: "",
-      youtube: "",
+      duree: "5 min",
+      youtube: "https://www.youtube.com/watch?v=5u0nUVpzADY",
       resume: "Ce que tu reçois dans le groupe WhatsApp d'accompagnement, et comment savoir s'il est fait pour toi.",
       prompts: [],
       appel: {
