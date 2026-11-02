@@ -92,7 +92,7 @@ const SCHEMA = {
   additionalProperties: false,
   required: ["accroche", "verdict_titre", "verdict_texte", "forces", "a_ajuster", "idees", "gains", "plan", "invitation"],
   properties: {
-    accroche: { type: "string", description: "2 phrases qui commencent par son prénom et montrent qu'on a vraiment lu ses réponses." },
+    accroche: { type: "string", description: "2 phrases qui montrent qu'on a vraiment lu ses réponses. Son prénom est déjà dans le titre juste au-dessus : ne commence pas par lui." },
     verdict_titre: { type: "string", description: "Le verdict en une phrase courte, 8 mots au plus." },
     verdict_texte: { type: "string", description: "2 ou 3 phrases qui expliquent le verdict avec ses réponses." },
     forces: { type: "array", items: { type: "string" }, description: "2 ou 3 points forts, une phrase courte chacun." },
