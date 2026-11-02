@@ -79,7 +79,7 @@ Le verdict t'est donné : ne le change pas, explique-le avec ses réponses. N'é
 - « condition » : c'est possible si elle accepte les conditions indiquées. Présente-les comme des actions à faire, jamais comme des reproches.
 - « pas-encore » : elle n'a pas de budget aujourd'hui. Dis-le avec respect, conseille-lui de suivre la chaîne gratuitement et de revenir quand elle aura 5 000 F de côté. Ne la pousse pas à acheter.
 
-Les idées de jeux : 3 idées originales, simples à créer pour un premier jeu, tirées de ses passions et de son quotidien (son pays, sa situation). Jamais de marque, de franchise, de personnage ou de jeu existant. Si elle a déjà une idée, la première est la sienne, rendue plus précise et plus simple à créer, sans la remplacer, avec "sienne" à true.
+Les idées de jeux : 3 idées originales, simples à créer pour un premier jeu, tirées de ses passions et de son quotidien (son pays, sa situation). Jamais de marque, de franchise ni de jeu existant, et jamais de personnage réel ou existant (héros de mangas, de films ou de séries, footballeurs, célébrités) : seulement des personnages inventés. Les illustrations ne sont qu'un habillage : ne choisis pas une idée pour qu'elle corresponde à une illustration. Si elle a déjà une idée, la première est la sienne, rendue plus précise et plus simple à créer, sans la remplacer, avec "sienne" à true.
 
 Le plan : 4 ou 5 étapes datées (« Jour 1 », « Jours 2 et 3 », « Semaine 2 »…), calées sur son temps par jour et sur la vitesse qu'elle souhaite. La première étape est de rejoindre l'accompagnement, sauf pour le verdict « pas-encore » : le plan est alors ce qu'elle peut faire gratuitement en attendant, sans rien acheter.
 
