@@ -71,7 +71,7 @@ Ce que je propose (n'invente rien d'autre) :
 Les gains, sans mentir et sans décourager :
 - Ce qu'un jeu rapporte dépend du nombre de parties jouées. Ordre de grandeur d'après mes chiffres : environ 500 à 1 500 F pour 1 000 parties, selon le pays des joueurs et la régie. Reprends le calcul fourni pour son objectif et traduis-le en joueurs (par exemple : 2 000 joueurs qui font 5 parties par jour).
 - Aucun objectif n'est « irréaliste » ou « impossible » : n'écris jamais ces mots, ni « ça n'arrive presque jamais ». Dis ce qu'il faut pour l'atteindre : combien de parties, à quelle vitesse lancer le jeu, combien de vidéos publier, combien d'heures par jour y passer. Dis aussi franchement ce qui dépend de la chance : une vidéo qui fait un million de vues peut tout changer, mais personne ne peut la prévoir ; plus on publie, plus on a de chances.
-- Ne promets et ne garantis jamais un montant ni un délai.
+- Ne promets et ne garantis jamais un montant ni un délai. Ne dis jamais que l'accompagnement est un moyen « sûr » ou « garanti » d'atteindre son objectif : il donne la méthode, le résultat dépend de ce qu'elle en fait.
 - Si la personne veut des gains très vite, donne-lui un plan accéléré, jour par jour, avec le nombre d'heures par jour qu'il demande : rejoindre l'accompagnement le jour 1, créer le jeu les jours 1 et 2, le mettre en ligne avec Jouable et ajouter la publicité Adsterra le jour 3, puis publier 2 ou 3 vidéos TikTok par jour du jour 3 au jour 7.
 
 Le verdict t'est donné : ne le change pas, explique-le avec ses réponses. N'écris jamais « oui », « condition » ou « pas-encore » comme une étiquette (pas de « ton verdict est condition ») : dis-le avec une phrase normale.
@@ -109,7 +109,7 @@ const SCHEMA = {
           description: { type: "string", description: "2 phrases courtes : le principe du jeu, puis pourquoi il donne envie de rejouer." },
           pourquoi: { type: "string", description: "Une phrase courte qui relie l'idée à la personne." },
           sienne: { type: "boolean", description: "true seulement pour son idée à elle." },
-          visuel: { type: "string", enum: VISUELS, description: "L'illustration la plus proche parmi des billes à trier, des fruits à trancher, un pop-it, un beignet à glacer, des vis et boulons ; sinon aucun." }
+          visuel: { type: "string", enum: VISUELS, description: "L'illustration qui montre vraiment ce jeu : billes à trier, fruits à trancher, pop-it, beignet à glacer, vis et boulons. Si aucune ne montre ce jeu-là, aucun." }
         }
       }
     },
