@@ -12,6 +12,7 @@ GAME BUILD/
 │   ├── track.mjs      ← reçoit les événements et les range dans Neon
 │   ├── stats.mjs      ← renvoie les statistiques à l'espace admin
 │   ├── diagnostic.mjs ← range les réponses du diagnostic dans Neon, et les renvoie à l'admin
+│   ├── conseil.mjs    ← fait rédiger le diagnostic par Claude (ANTHROPIC_API_KEY), avec des limites par jour
 │   ├── vocal.mjs      ← reçoit une question, choisit le vocal à jouer
 │   ├── salut.mjs      ← « Salut Kossi… » dans ta voix, généré une fois puis resservi
 │   └── _vocaux.mjs    ← outils partagés (filtre des prénoms, tri, ElevenLabs)
@@ -175,7 +176,7 @@ voir sans la montrer : ajoute `?vocal=test` à l'adresse de ta page.
 | --- | --- | --- |
 | `ELEVENLABS_API_KEY` | pour le salut et les questions dictées | ta clé ElevenLabs |
 | `ELEVENLABS_VOICE_ID` | pour le salut | l'identifiant de ta voix clonée |
-| `ANTHROPIC_API_KEY` | non | trier les questions écrites avec Claude plutôt qu'aux mots-clés |
+| `ANTHROPIC_API_KEY` | pour le diagnostic rédigé par l'IA | faire écrire chaque diagnostic par Claude (`/api/conseil`) ; trier aussi les questions écrites de la bulle. Sans elle, le diagnostic affiche le texte de ses règles |
 | `ELEVENLABS_MODELE` | non | `eleven_multilingual_v2` par défaut, choisi à l'oreille face à `eleven_v4` |
 | `SALUT_MAX_JOUR` | non | nouveaux prénoms générés par jour, 300 par défaut |
 
