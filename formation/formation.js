@@ -3,7 +3,10 @@
    <body data-page="liste">                                  → le sommaire
    <body data-page="video" data-adresse="/formation/xxx">   → une vidéo
    Une vidéo « cache: true » n'est ni dans le sommaire ni dans la
-   navigation : sa page ne s'ouvre que par son adresse.
+   navigation : sa page ne s'ouvre que par son adresse. Une vidéo qui
+   a une « serie » est numérotée et reliée aux autres vidéos de la même
+   série (les vidéos de la chaîne WhatsApp), et « appel » ajoute un
+   appel à l'action sous le lecteur.
    Le lecteur YouTube n'est chargé qu'au clic : la page reste
    légère, et rien ne passe par la bande passante de Vercel.
    ══════════════════════════════════════════════════════════ */
@@ -72,6 +75,9 @@
     bouton.appendChild(img); bouton.appendChild(rond);
     if (v.duree) bouton.appendChild(el("span", "lecteur-duree", v.duree));
     bouton.addEventListener("click", function () {
+      /* Seules les pages de la chaîne chargent le pixel : ailleurs, fbq
+         n'existe pas et rien n'est envoyé. */
+      try { if (window.fbq) fbq("trackCustom", "LectureVideo", { content_name: v.adresse }); } catch (e) {}
       var f = document.createElement("iframe");
       f.src = "https://www.youtube-nocookie.com/embed/" + id + "?autoplay=1&rel=0&playsinline=1";
       f.title = v.titre;
@@ -113,20 +119,48 @@
     return carte;
   }
 
+  /* ---------- L'appel à l'action sous la vidéo ---------- */
+  function blocAppel(a) {
+    var s = el("section", "appel");
+    if (a.titre) s.appendChild(el("h2", null, a.titre));
+    if (a.texte) s.appendChild(el("p", null, a.texte));
+    if (a.bouton) {
+      var b = el("a", "btn btn-grand", a.bouton.texte);
+      b.href = a.bouton.lien;
+      s.appendChild(b);
+    }
+    if (a.secondaire) {
+      var l = el("a", "appel-lien", a.secondaire.texte);
+      l.href = a.secondaire.lien;
+      s.appendChild(l);
+    }
+    return s;
+  }
+
+  /* Les vidéos avec lesquelles celle-ci est numérotée et reliée. */
+  function groupeDe(v) {
+    if (v.serie) return F.videos.filter(function (x) { return x.serie === v.serie; });
+    return v.cache ? [] : visibles;
+  }
+
   /* ---------- Page d'une vidéo ---------- */
   function pageVideo(adresse) {
     var v = F.videos.filter(function (x) { return x.adresse === adresse; })[0];
     if (!v) { location.replace("/formation"); return; }
-    var pos = visibles.indexOf(v);          // -1 pour une vidéo cachée
+    var groupe = groupeDe(v);
+    var pos = groupe.indexOf(v);             // -1 pour une vidéo cachée seule
     document.title = v.titre + (v.cache ? "" : " — " + (F.titre || "Formation"));
+    try { if (window.fbq) fbq("track", "ViewContent", { content_name: v.adresse }); } catch (e) {}
 
     var entete = el("header", "entete");
-    var sur = v.cache ? (v.duree || "") : "Vidéo " + (pos + 1) + " sur " + visibles.length + (v.duree ? " · " + v.duree : "");
+    var sur = pos < 0 || groupe.length < 2 ? (v.duree || "")
+      : "Vidéo " + (pos + 1) + " sur " + groupe.length + (v.duree ? " · " + v.duree : "");
     if (sur) entete.appendChild(el("p", "surtitre", sur));
     entete.appendChild(el("h1", null, v.titre));
     if (v.resume) entete.appendChild(el("p", "chapo", v.resume));
     app.appendChild(entete);
     app.appendChild(lecteur(v));
+    if (v.appel) app.appendChild(blocAppel(v.appel));
 
     var liste = (v.prompts || []).filter(function (p) { return p && String(p.texte || "").trim(); });
     if (liste.length) {
@@ -137,11 +171,11 @@
       app.appendChild(sec);
     }
 
-    if (v.cache) return;                     // page seule : pas de vidéo voisine
+    if (pos < 0 || groupe.length < 2) return;   // page seule : pas de vidéo voisine
     var suite = el("nav", "suite");
     suite.setAttribute("aria-label", "Autres vidéos");
-    if (pos > 0) suite.appendChild(lienVoisin(visibles[pos - 1], "Vidéo précédente", "precedente"));
-    if (pos < visibles.length - 1) suite.appendChild(lienVoisin(visibles[pos + 1], "Vidéo suivante", "suivante"));
+    if (pos > 0) suite.appendChild(lienVoisin(groupe[pos - 1], "Vidéo précédente", "precedente"));
+    if (pos < groupe.length - 1) suite.appendChild(lienVoisin(groupe[pos + 1], "Vidéo suivante", "suivante"));
     app.appendChild(suite);
   }
   function lienVoisin(v, libelle, classe) {

@@ -7,6 +7,8 @@ GAME BUILD/
 ├── index.html         ← l'ancienne page de vente ; depuis le 01/11/2026, l'accueil redirige vers /chaine (vercel.json)
 ├── chaine.html        ← la page d'entrée de la pub : un bouton vers la chaîne WhatsApp, servie sur /chaine
 ├── diagnostic.html    ← le questionnaire posté dans la chaîne (10 questions, verdict, idées, offre), servi sur /diagnostic
+├── video/             ← les 4 vidéos de la chaîne (/video/presentation, adsense-adsterra, creer-ton-jeu, accompagnement) ;
+│                        leur contenu est dans formation/contenu.js (série « chaine »), lu depuis YouTube
 ├── admin.html         ← l'espace admin, servi sur /admin (le diagnostic en haut, l'ancienne page de vente ensuite)
 ├── api/
 │   ├── track.mjs      ← reçoit les événements et les range dans Neon

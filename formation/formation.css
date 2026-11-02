@@ -111,6 +111,16 @@ h1{
 .btn.copie{ background: #1d8a3b; }
 .lien-claude{ font-size: 16px; }
 
+/* ---------- Appel à l'action sous la vidéo (vidéos de la chaîne) ---------- */
+.appel{
+  margin-top: 24px; padding: 28px 22px; border-radius: 22px; background: var(--bg-alt);
+  display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center;
+}
+.appel h2{ margin: 0; font-size: clamp(24px, 5.6vw, 32px); line-height: 1.12; letter-spacing: -.03em; max-width: 20ch; }
+.appel p{ margin: 0; color: var(--ink-2); font-size: 17px; line-height: 1.45; max-width: 36ch; }
+.btn-grand{ min-height: 56px; padding: 14px 30px; font-size: 18px; width: 100%; max-width: 380px; margin-top: 4px; }
+.appel-lien{ font-size: 16px; padding: 4px; }
+
 /* ---------- Vidéo précédente / suivante ---------- */
 .suite{ display: grid; grid-template-columns: 1fr; gap: 12px; padding: 36px 0 56px; }
 @media (min-width: 640px){ .suite{ grid-template-columns: 1fr 1fr; } .suite .suivante{ grid-column: 2; } }

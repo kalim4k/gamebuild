@@ -77,6 +77,73 @@ https://influenceuseia.vercel.app/etape-image.html
 https://influenceuseia.vercel.app/etape-video.html`
         }
       ]
+    },
+
+    /* ══════════════ Les vidéos de la chaîne WhatsApp ══════════════
+       Une série à part (serie: "chaine") : cachées du sommaire de la
+       formation, numérotées et reliées entre elles (1 sur 4…), avec un
+       appel à l'action sous chaque vidéo (appel). Pages dans video/.
+       appel.bouton : le bouton bleu ; appel.secondaire : le lien en
+       dessous. Le diagnostic garde la vidéo d'origine dans « src ». */
+    {
+      adresse: "/video/presentation",
+      cache: true, serie: "chaine",
+      titre: "Comment ton jeu peut te rapporter de l'argent",
+      duree: "",
+      youtube: "",
+      resume: "La présentation : comment on crée un jeu avec l'IA depuis son téléphone, et comment la publicité affichée dans le jeu le fait payer.",
+      prompts: [],
+      appel: {
+        titre: "Et toi, c'est fait pour toi ?",
+        texte: "Réponds à 10 questions. En 2 minutes, je te dis franchement si ce business te correspond, avec 3 idées de jeux choisies pour toi.",
+        bouton: { texte: "Faire mon diagnostic gratuit", lien: "/diagnostic?src=video-presentation" },
+        secondaire: { texte: "Retourner à la chaîne", lien: "https://www.whatsapp.com/channel/0029Vb8XIsmFnSzD0G0r5a2G" }
+      }
+    },
+    {
+      adresse: "/video/adsense-adsterra",
+      cache: true, serie: "chaine",
+      titre: "Comment Adsterra et Google AdSense te paient",
+      duree: "11 min",
+      youtube: "https://www.youtube.com/watch?v=w9IMvoareuI",
+      resume: "Comment la publicité affichée dans ton jeu te rapporte de l'argent, la différence entre Adsterra et Google AdSense, et comment créer tes deux comptes.",
+      prompts: [],
+      appel: {
+        titre: "Il te reste le jeu qui affiche la pub",
+        texte: "Fais le diagnostic gratuit : en 2 minutes, je te dis si ce business est fait pour toi, et quel jeu tu pourrais créer.",
+        bouton: { texte: "Faire mon diagnostic gratuit", lien: "/diagnostic?src=video-adsense" },
+        secondaire: { texte: "Retourner à la chaîne", lien: "https://www.whatsapp.com/channel/0029Vb8XIsmFnSzD0G0r5a2G" }
+      }
+    },
+    {
+      adresse: "/video/creer-ton-jeu",
+      cache: true, serie: "chaine",
+      titre: "Crée ton jeu avec Claude et mets-le en ligne sur Jouable",
+      duree: "11 min",
+      youtube: "https://www.youtube.com/watch?v=QmQGbcJgCzY",
+      resume: "Tu crées ton jeu avec l'application Claude, tu le mets en ligne sur Jouable, puis tu ajoutes la publicité Adsterra pour qu'il commence à te rapporter.",
+      prompts: [],
+      appel: {
+        titre: "Tu veux le faire avec moi ?",
+        texte: "Dans l'accompagnement, je crée mes jeux devant toi, étape par étape, et je réponds quand tu bloques. Fais d'abord le diagnostic : il te dit si c'est fait pour toi.",
+        bouton: { texte: "Faire mon diagnostic gratuit", lien: "/diagnostic?src=video-creer" },
+        secondaire: { texte: "Retourner à la chaîne", lien: "https://www.whatsapp.com/channel/0029Vb8XIsmFnSzD0G0r5a2G" }
+      }
+    },
+    {
+      adresse: "/video/accompagnement",
+      cache: true, serie: "chaine",
+      titre: "À voir avant de rejoindre le groupe d'accompagnement",
+      duree: "5 min",
+      youtube: "https://www.youtube.com/watch?v=5u0nUVpzADY",
+      resume: "Ce que tu reçois dans le groupe WhatsApp d'accompagnement, et comment savoir s'il est fait pour toi.",
+      prompts: [],
+      appel: {
+        titre: "Le test, avant de rejoindre",
+        texte: "Réponds à 10 questions. En 2 minutes, je te dis franchement si l'accompagnement est fait pour toi. Si c'est le cas, tu peux le rejoindre juste après.",
+        bouton: { texte: "Faire le test de qualification", lien: "/diagnostic?src=video-accompagnement" },
+        secondaire: { texte: "Retourner à la chaîne", lien: "https://www.whatsapp.com/channel/0029Vb8XIsmFnSzD0G0r5a2G" }
+      }
     }
   ]
 };
