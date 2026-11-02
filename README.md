@@ -6,10 +6,12 @@ Site statique d'une seule page. Aucune dépendance à installer, aucun build à 
 GAME BUILD/
 ├── index.html         ← l'ancienne page de vente ; depuis le 01/11/2026, l'accueil redirige vers /chaine (vercel.json)
 ├── chaine.html        ← la page d'entrée de la pub : un bouton vers la chaîne WhatsApp, servie sur /chaine
-├── admin.html         ← l'espace admin, servi sur /admin
+├── diagnostic.html    ← le questionnaire posté dans la chaîne (10 questions, verdict, idées, offre), servi sur /diagnostic
+├── admin.html         ← l'espace admin, servi sur /admin (le diagnostic en haut, l'ancienne page de vente ensuite)
 ├── api/
 │   ├── track.mjs      ← reçoit les événements et les range dans Neon
 │   ├── stats.mjs      ← renvoie les statistiques à l'espace admin
+│   ├── diagnostic.mjs ← range les réponses du diagnostic dans Neon, et les renvoie à l'admin
 │   ├── vocal.mjs      ← reçoit une question, choisit le vocal à jouer
 │   ├── salut.mjs      ← « Salut Kossi… » dans ta voix, généré une fois puis resservi
 │   └── _vocaux.mjs    ← outils partagés (filtre des prénoms, tri, ElevenLabs)

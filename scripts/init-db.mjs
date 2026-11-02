@@ -78,7 +78,38 @@ const etapes = [
       texte    text         not null,
       audio    bytea        not null,
       cree_le  timestamptz  not null default now()
-    )`]
+    )`],
+
+  /* ---------- Le diagnostic (diagnostic.html) ----------
+     Une ligne par visite, complétée à chaque réponse : « etape » est le
+     nombre de questions répondues, sur 10. */
+  ["table diagnostics", `
+    create table if not exists diagnostics (
+      session      text         primary key,
+      cree_le      timestamptz  not null default now(),
+      maj_le       timestamptz  not null default now(),
+      visiteur     text         not null,
+      pays_ip      text,
+      appareil     text,
+      source       text,
+      etape        integer      not null default 0,
+      fini         boolean      not null default false,
+      verdict      text,                  -- oui | condition | pas-encore
+      clic_offre   boolean      not null default false,
+      clic_chaine  boolean      not null default false,
+      prenom       text,
+      pays         text,
+      age          text,
+      situation    text,
+      temps        text,
+      idee         text,
+      idee_texte   text,
+      passions     text[],
+      objectif     text,
+      delai        text,
+      budget       text
+    )`],
+  ["index diagnostics par date", `create index if not exists diagnostics_date_idx on diagnostics (cree_le desc)`]
 ];
 
 console.log("Connexion à Neon…");
@@ -87,7 +118,7 @@ for (const [nom, ddl] of etapes) {
   console.log("  ✓ " + nom);
 }
 
-for (const table of ["questions", "saluts"]) {
+for (const table of ["questions", "saluts", "diagnostics"]) {
   const [{ n }] = await sql(`select count(*)::int as n from ${table}`);
   console.log("  table " + table + " : " + n + " lignes");
 }

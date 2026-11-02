@@ -276,6 +276,43 @@ a:hover{ text-decoration: underline; }
     <div id="contenu">
       <div class="grille">
 
+        <!-- ─────────── Le diagnostic (/diagnostic) ─────────── -->
+        <section class="carte large">
+          <h2>Le diagnostic</h2>
+          <p>Le questionnaire de /diagnostic : combien le commencent, le finissent, et cliquent ensuite sur l'accompagnement.</p>
+          <div class="tuiles" id="d-tuiles"></div>
+          <h2 style="margin-top:22px">Où ils abandonnent</h2>
+          <p>Nombre de visites qui ont répondu au moins à chaque question.</p>
+          <div class="graph" id="d-etapes"></div>
+          <div class="tableau" id="dt-etapes" hidden></div>
+        </section>
+
+        <section class="carte">
+          <h2>Leur verdict</h2>
+          <p>Au survol : combien ont cliqué sur l'accompagnement ensuite.</p>
+          <div class="graph" id="d-verdict"></div>
+        </section>
+        <section class="carte">
+          <h2>Temps par jour</h2>
+          <p>Parmi ceux qui sont allés au bout, comme les cartes suivantes.</p>
+          <div class="graph" id="d-temps"></div>
+        </section>
+        <section class="carte"><h2>Budget pour démarrer</h2><div class="graph" id="d-budget"></div></section>
+        <section class="carte"><h2>Gains espérés par mois</h2><div class="graph" id="d-objectif"></div></section>
+        <section class="carte"><h2>Premiers gains attendus</h2><div class="graph" id="d-delai"></div></section>
+        <section class="carte"><h2>Passions</h2><div class="graph" id="d-passions"></div></section>
+        <section class="carte"><h2>Âge</h2><div class="graph" id="d-age"></div></section>
+        <section class="carte"><h2>Situation</h2><div class="graph" id="d-situation"></div></section>
+        <section class="carte"><h2>Pays déclaré</h2><div class="graph" id="d-pays"></div></section>
+        <section class="carte"><h2>Idée de jeu</h2><div class="graph" id="d-idee"></div></section>
+
+        <section class="carte large">
+          <h2>Leurs réponses, une par une</h2>
+          <p>Les 50 derniers diagnostics terminés sur la période.</p>
+          <div class="tableau" id="d-liste"></div>
+        </section>
+
+        <!-- ─────────── L'ancienne page de vente (index.html) ─────────── -->
         <section class="carte large">
           <h2>Visiteurs</h2>
           <p id="periode-txt"></p>
@@ -890,13 +927,114 @@ a:hover{ text-decoration: underline; }
     tableau($("t-pays"), ["Pays", "Visites"],
       d.pays.map(function (p) { return [nomPays(p.pays), nb(p.sessions)]; }));
 
+    dessineDiag();
     appliqueTableaux();
     $("maj").textContent = "Mis à jour à " +
       new Date(d.genere_le).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
   }
 
+  /* ══════════════ Le diagnostic ══════════════
+     Les clés sont celles de diagnostic.html. L'ordre des libellés
+     sert aussi d'ordre d'affichage pour les questions à tranches. */
+  var LIB_DIAG = {
+    temps: { "-30": "Moins de 30 min", "30-60": "30 min à 1 h", "1-2h": "1 à 2 h", "2h+": "Plus de 2 h" },
+    budget: { "0": "Rien", "-5k": "Moins de 5 000 F", "5-20k": "5 000 à 20 000 F", "20k+": "Plus de 20 000 F" },
+    objectif: { "-25k": "Moins de 25 000 F", "25-100k": "25 000 à 100 000 F", "100-300k": "100 000 à 300 000 F", "300k+": "Plus de 300 000 F" },
+    delai: { semaine: "Première semaine", mois: "Dans le mois", "3mois": "D'ici 3 mois", patient: "Pas pressé" },
+    age: { "-18": "Moins de 18 ans", "18-24": "18 à 24 ans", "25-34": "25 à 34 ans", "35-44": "35 à 44 ans", "45+": "45 ans et plus" },
+    passions: { foot: "Football", cuisine: "Cuisine", musique: "Musique", mangas: "Mangas", mode: "Mode, beauté",
+                vehicules: "Voitures, motos", business: "Argent, business", animaux: "Animaux", reflexion: "Réflexion", dessin: "Dessin" },
+    situation: { etudes: "Étudie", salarie: "Salarié", compte: "À son compte", recherche: "Cherche du travail", autre: "Autre" },
+    pays: { ci: "Côte d'Ivoire", bj: "Bénin", tg: "Togo", sn: "Sénégal", cm: "Cameroun", bf: "Burkina Faso", ml: "Mali", autre: "Autre pays" },
+    idee: { oui: "A une idée", non: "Pas encore" },
+    verdict: { oui: "Fait pour toi", condition: "À une condition", "pas-encore": "Pas tout de suite" }
+  };
+  var DANS_L_ORDRE = { temps: 1, budget: 1, objectif: 1, delai: 1, age: 1 };
+  var QUESTIONS_DIAG = ["Prénom", "Pays", "Âge", "Situation", "Temps par jour", "Idée de jeu",
+                        "Passions", "Gains espérés", "Premiers gains", "Budget"];
+  var diag = null;
+
+  function libDiag(q, v) { return (LIB_DIAG[q] && LIB_DIAG[q][v]) || v || "—"; }
+
+  function chargeDiag() {
+    return fetch("/api/diagnostic?jours=" + jours, { headers: { "x-mdp": mdp() } })
+      .then(function (rep) { return rep.ok ? rep.json() : null; })
+      .then(function (j) { diag = j; dessineDiag(); })
+      ["catch"](function () {});
+  }
+
+  function dessineDiag() {
+    if (!diag || board.hidden) return;
+    var d = diag, r = d.resume || {};
+    var commences = r.commences || 0, finis = r.finis || 0, clics = r.clics_offre || 0;
+
+    var zt = $("d-tuiles");
+    zt.textContent = "";
+    [
+      [nb(commences), commences === 1 ? "a commencé" : "ont commencé"],
+      [nb(finis), "sont allés au bout" + (commences ? " (" + Math.round(finis / commences * 100) + " %)" : "")],
+      [nb(clics), "ont cliqué sur l'accompagnement"],
+      [(finis ? (clics / finis * 100).toFixed(1).replace(".", ",") : "0") + " %", "des diagnostics finis mènent au paiement"]
+    ].forEach(function (t) {
+      var div = document.createElement("div");
+      div.className = "tuile";
+      var b = document.createElement("b"); b.textContent = t[0];
+      var s = document.createElement("span"); s.textContent = t[1];
+      div.appendChild(b); div.appendChild(s);
+      zt.appendChild(div);
+    });
+
+    if (d.absent) {
+      vide($("d-etapes"), "La table du diagnostic n'existe pas encore : lance « npm run init-db ».");
+      return;
+    }
+
+    var etapes = d.etapes || [];
+    var base = commences || 1;
+    barres($("d-etapes"), etapes.map(function (e) {
+      return {
+        nom: e.question + ". " + (QUESTIONS_DIAG[e.question - 1] || ""), valeur: e.visites,
+        extra: Math.round(e.visites / base * 100) + " % de ceux qui ont commencé"
+      };
+    }), { etiquette: 150, vide: "Personne n'a encore commencé le diagnostic." });
+    tableau($("dt-etapes"), ["Question", "Visites", "Part"], etapes.map(function (e) {
+      return [e.question + ". " + (QUESTIONS_DIAG[e.question - 1] || ""), nb(e.visites), Math.round(e.visites / base * 100) + " %"];
+    }));
+
+    barres($("d-verdict"), (d.verdicts || []).map(function (v) {
+      return {
+        nom: libDiag("verdict", v.verdict), valeur: v.visites,
+        extra: nb(v.clics_offre) + " ont cliqué sur l'accompagnement (" + Math.round(v.clics_offre / (v.visites || 1) * 100) + " %)"
+      };
+    }), { etiquette: 130, vide: "Aucun diagnostic terminé." });
+
+    ["temps", "budget", "objectif", "delai", "passions", "age", "situation", "pays", "idee"].forEach(function (q) {
+      var lignes = ((d.profil || {})[q] || []).slice();
+      if (DANS_L_ORDRE[q]) {
+        var ordre = Object.keys(LIB_DIAG[q]);
+        lignes.sort(function (a, b) { return ordre.indexOf(a.valeur) - ordre.indexOf(b.valeur); });
+      }
+      var total = q === "passions" ? finis : lignes.reduce(function (s, l) { return s + l.n; }, 0);
+      barres($("d-" + q), lignes.map(function (l) {
+        return { nom: libDiag(q, l.valeur), valeur: l.n, extra: Math.round(l.n / (total || 1) * 100) + " %" };
+      }), { etiquette: 130, vide: "Aucun diagnostic terminé." });
+    });
+
+    var liste = d.dernieres || [];
+    if (!liste.length) {
+      vide($("d-liste"), "Aucun diagnostic terminé sur cette période.");
+    } else {
+      tableau($("d-liste"), ["Quand", "Prénom", "Pays", "Âge", "Temps", "Budget", "Espère", "Verdict", "Paiement", "Son idée"],
+        liste.map(function (l) {
+          return [quand(l.cree_le), l.prenom || "—", libDiag("pays", l.pays), libDiag("age", l.age),
+                  libDiag("temps", l.temps), libDiag("budget", l.budget), libDiag("objectif", l.objectif),
+                  libDiag("verdict", l.verdict), l.clic_offre ? "a cliqué" : "", l.idee_texte || ""];
+        }), true);
+    }
+  }
+
   function appliqueTableaux() {
-    ["t-jours", "t-entonnoir", "t-boutons", "t-objections", "t-sources", "t-heures", "t-appareils", "t-pays"]
+    ["t-jours", "t-entonnoir", "t-boutons", "t-objections", "t-sources", "t-heures", "t-appareils", "t-pays", "dt-etapes"]
       .forEach(function (id) { $(id).hidden = !voirTableaux; });
   }
 
@@ -906,6 +1044,7 @@ a:hover{ text-decoration: underline; }
   function charge() {
     var contenu = $("contenu");
     contenu.classList.add("is-charge");        /* on garde l'image précédente */
+    chargeDiag();                              /* à part : sa panne ne bloque rien */
     return fetch("/api/stats?jours=" + jours, { headers: { "x-mdp": mdp() } })
       .then(function (rep) {
         if (rep.status === 401) { var err = new Error("401"); err.code = 401; throw err; }

@@ -95,6 +95,15 @@
       ]
     },
     {
+      "source": "/api/diagnostic",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store"
+        }
+      ]
+    },
+    {
       "source": "/api/vocal",
       "headers": [
         {
