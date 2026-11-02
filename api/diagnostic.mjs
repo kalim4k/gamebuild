@@ -140,7 +140,7 @@ async function statistiques(req, res) {
   const j = Math.min(365, Math.max(1, parseInt(req.query.jours, 10) || 7));
 
   try {
-    const [resume, etapes, verdicts, profil, dernieres] = await Promise.all([
+    const [resume, etapes, verdicts, profil, dernieres, sources] = await Promise.all([
       sql`
         select count(*)::int                                    as commences,
                count(*) filter (where fini)::int                as finis,
@@ -181,10 +181,21 @@ async function statistiques(req, res) {
 
       sql`
         select cree_le, prenom, pays, age, situation, temps, objectif, delai, budget,
-               passions, idee_texte, verdict, clic_offre, conseil is not null as ia
+               passions, idee_texte, verdict, clic_offre, conseil is not null as ia, source
         from diagnostics
         where fini and cree_le > now() - make_interval(days => ${j})
-        order by cree_le desc limit 50`
+        order by cree_le desc limit 50`,
+
+      /* D'où ils arrivent : le « src » du lien (chaine, video-…). Compté
+         dès le début du questionnaire, pas seulement à la fin. */
+      sql`
+        select coalesce(nullif(source, ''), 'sans source') as source,
+               count(*)::int                           as commences,
+               count(*) filter (where fini)::int       as finis,
+               count(*) filter (where clic_offre)::int as clics_offre
+        from diagnostics
+        where cree_le > now() - make_interval(days => ${j})
+        group by 1 order by 2 desc limit 15`
     ]);
 
     const profilPar = {};
@@ -200,7 +211,8 @@ async function statistiques(req, res) {
       etapes,
       verdicts,
       profil: profilPar,
-      dernieres
+      dernieres,
+      sources
     });
   } catch (err) {
     /* Table absente : le reste de l'admin doit continuer à marcher. */

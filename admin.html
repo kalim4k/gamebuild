@@ -287,6 +287,12 @@ a:hover{ text-decoration: underline; }
           <div class="tableau" id="dt-etapes" hidden></div>
         </section>
 
+        <section class="carte large">
+          <h2>D'où ils arrivent</h2>
+          <p>Le lien par lequel ils ont ouvert le diagnostic. Au survol : combien sont allés au bout et ont cliqué sur l'accompagnement.</p>
+          <div class="graph" id="d-sources"></div>
+        </section>
+
         <section class="carte">
           <h2>Leur verdict</h2>
           <p>Au survol : combien ont cliqué sur l'accompagnement ensuite.</p>
@@ -947,7 +953,13 @@ a:hover{ text-decoration: underline; }
     situation: { etudes: "Étudie", salarie: "Salarié", compte: "À son compte", recherche: "Cherche du travail", autre: "Autre" },
     pays: { ci: "Côte d'Ivoire", bj: "Bénin", tg: "Togo", sn: "Sénégal", cm: "Cameroun", bf: "Burkina Faso", ml: "Mali", autre: "Autre pays" },
     idee: { oui: "A une idée", non: "Pas encore" },
-    verdict: { oui: "Fait pour toi", condition: "À une condition", "pas-encore": "Pas tout de suite" }
+    verdict: { oui: "Fait pour toi", condition: "À une condition", "pas-encore": "Pas tout de suite" },
+    /* Les « src » des liens postés ; une source inconnue s'affiche telle quelle. */
+    source: { chaine: "Chaîne WhatsApp", "chaine-videos": "Chaîne : message des vidéos",
+              "chaine-live": "Chaîne : annonce du live", "chaine-rappel": "Chaîne : rappel du test",
+              "video-presentation": "Vidéo 1 : présentation", "video-adsense": "Vidéo 2 : AdSense et Adsterra",
+              "video-creer": "Vidéo 3 : créer ton jeu", "video-accompagnement": "Vidéo 4 : accompagnement",
+              whatsapp: "WhatsApp (sans src)", "sans source": "Sans source" }
   };
   var DANS_L_ORDRE = { temps: 1, budget: 1, objectif: 1, delai: 1, age: 1 };
   var QUESTIONS_DIAG = ["Prénom", "Pays", "Âge", "Situation", "Temps par jour", "Idée de jeu",
@@ -1001,6 +1013,13 @@ a:hover{ text-decoration: underline; }
       return [e.question + ". " + (QUESTIONS_DIAG[e.question - 1] || ""), nb(e.visites), Math.round(e.visites / base * 100) + " %"];
     }));
 
+    barres($("d-sources"), (d.sources || []).map(function (s) {
+      return {
+        nom: libDiag("source", s.source), valeur: s.commences,
+        extra: nb(s.finis) + " allés au bout, " + nb(s.clics_offre) + " clics sur l'accompagnement"
+      };
+    }), { etiquette: 210, vide: "Personne n'a encore commencé le diagnostic." });
+
     barres($("d-verdict"), (d.verdicts || []).map(function (v) {
       return {
         nom: libDiag("verdict", v.verdict), valeur: v.visites,
@@ -1024,9 +1043,9 @@ a:hover{ text-decoration: underline; }
     if (!liste.length) {
       vide($("d-liste"), "Aucun diagnostic terminé sur cette période.");
     } else {
-      tableau($("d-liste"), ["Quand", "Prénom", "Pays", "Âge", "Temps", "Budget", "Espère", "Verdict", "Rédigé par", "Paiement", "Son idée"],
+      tableau($("d-liste"), ["Quand", "Prénom", "Arrivé par", "Pays", "Âge", "Temps", "Budget", "Espère", "Verdict", "Rédigé par", "Paiement", "Son idée"],
         liste.map(function (l) {
-          return [quand(l.cree_le), l.prenom || "—", libDiag("pays", l.pays), libDiag("age", l.age),
+          return [quand(l.cree_le), l.prenom || "—", libDiag("source", l.source || "sans source"), libDiag("pays", l.pays), libDiag("age", l.age),
                   libDiag("temps", l.temps), libDiag("budget", l.budget), libDiag("objectif", l.objectif),
                   libDiag("verdict", l.verdict), l.ia ? "l'IA" : "les règles", l.clic_offre ? "a cliqué" : "", l.idee_texte || ""];
         }), true);
