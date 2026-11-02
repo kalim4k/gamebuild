@@ -531,7 +531,10 @@ var VALEUR_PIXEL  = 1990;     /* le prix du groupe, en F CFA, pour le pixel */
 
   /* Espaces insécables devant ? ! : ; comme le veut le français. */
   function typo(s) {
-    return String(s).replace(/ ([?!:;])/g, " $1").replace(/« /g, "« ").replace(/ »/g, " »");
+    return String(s).replace(/ ([?!:;])/g, " $1").replace(/« /g, "« ").replace(/ »/g, " »")
+      /* Les montants ne se coupent pas : « 300 000 F » reste d'un bloc,
+         y compris dans les textes rédigés par l'IA. */
+      .replace(/(\d) (?=\d{3}(?!\d))/g, "$1 ").replace(/(\d) F\b/g, "$1 F");
   }
   function el(nom, classe, texte) {
     var e = document.createElement(nom);
