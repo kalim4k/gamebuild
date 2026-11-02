@@ -17,7 +17,9 @@
 import { neon } from "@neondatabase/serverless";
 import { createHash } from "node:crypto";
 
-const MODELE = "claude-opus-5-5";
+/* Haiku 5.5 : choisi le 02/11 pour le coût (environ 1 F par diagnostic,
+   contre 20 à 27 F avec Opus 5.5) et pour la vitesse. */
+const MODELE = "claude-haiku-5-5";
 const LIMITE_JOUR = 300;
 const LIMITE_APPAREIL = 3;
 const MAX_CORPS = 4000;
@@ -194,17 +196,16 @@ function propre(c) {
 async function redige(r, verdict, conditions) {
   const { default: Anthropic } = await import("@anthropic-ai/sdk");
   const client = new Anthropic({ maxRetries: 1 });
-  const rep = await client.beta.messages.create({
+  const rep = await client.messages.create({
     model: MODELE,
     max_tokens: 8000,
     output_config: { effort: "low", format: { type: "json_schema", schema: SCHEMA } },
-    /* Si un filtre de sécurité refusait, un autre modèle reprend la main. */
-    betas: ["server-side-fallback-2026-07-01"],
-    fallbacks: "default",
     system: SYSTEME,
     messages: [{ role: "user", content: decrit(r, verdict, conditions) }]
   }, { timeout: 45000 });
 
+  /* Haiku n'a pas de modèle de repli côté serveur : un refus du filtre de
+     sécurité, comme une réponse coupée, renvoie la page à ses règles. */
   if (rep.stop_reason === "refusal" || rep.stop_reason === "max_tokens") return null;
   const brut = rep.content.filter(b => b.type === "text").map(b => b.text).join("");
   let json;
