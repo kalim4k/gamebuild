@@ -13,10 +13,10 @@
    GAME BUILD — la page de bienvenue, après le paiement Chariow
    Chariow redirige ici (« URL de redirection » du produit). La
    personne comprend ce qu'elle a acheté, puis rejoint le groupe
-   d'un appui : le bouton passe par /api/groupe, qui lit le lien
-   d'invitation dans LIEN_GROUPE sur Vercel (jamais dans le code :
-   le dépôt est public). Adresse peu devinable et non indexée ;
-   la vraie protection reste l'approbation des membres du groupe.
+   d'un appui. Le lien d'invitation est la constante LIEN_GROUPE en
+   bas du fichier : il est donc lisible dans le dépôt public, ce que
+   l'utilisateur accepte, parce qu'il approuve chaque demande à la
+   main. Adresse peu devinable et non indexée.
    ══════════════════════════════════════════════════════════ */
 
 :root{
@@ -160,7 +160,7 @@ src="https://www.facebook.com/tr?id=4451955808377862&ev=PageView&noscript=1"
     <li class="etape">
       <h2>Ouvre le groupe</h2>
       <p>Appuie sur le bouton&nbsp;: WhatsApp s'ouvre sur le groupe d'accompagnement.</p>
-      <a class="btn" id="rejoindre" href="/api/groupe">
+      <a class="btn" id="rejoindre" href="#">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.9 11.9 0 0 0 4.6 4c1.7.7 2.4.8 3.2.7.5-.1 1.5-.6 1.8-1.2.2-.6.2-1.1.1-1.2l-.5-.3z"/></svg>
         Rejoindre le groupe
       </a>
@@ -187,19 +187,28 @@ src="https://www.facebook.com/tr?id=4451955808377862&ev=PageView&noscript=1"
 <footer><div class="colonne">© <span id="annee">2026</span> IA TOOL · Lomé, Togo</div></footer>
 
 <script>
+/* ══════════════════════════════════════════════════════════
+   LIEN DU GROUPE — le lien d'invitation du groupe WhatsApp
+   d'accompagnement : WhatsApp → le groupe → Inviter via un lien
+   → Copier le lien. Tant que c'est vide, la page affiche le
+   message d'aide au lieu d'un bouton qui ne mène nulle part.
+   ══════════════════════════════════════════════════════════ */
+var LIEN_GROUPE = "";
+
 (function () {
   "use strict";
   document.getElementById("annee").textContent = new Date().getFullYear();
 
-  /* /api/groupe renvoie ici avec ?groupe=indisponible quand LIEN_GROUPE
-     n'est pas réglé sur Vercel. */
-  if (/[?&]groupe=indisponible/.test(location.search)) {
+  var bouton = document.getElementById("rejoindre"), parti = false;
+  if (/^https:\/\/chat\.whatsapp\.com\//.test(LIEN_GROUPE)) {
+    bouton.href = LIEN_GROUPE;
+  } else {
     document.getElementById("indisponible").hidden = false;
+    bouton.hidden = true;
   }
 
   /* Le clic est envoyé au pixel avant de partir vers WhatsApp (1 s au
      plus), dans le même onglet : c'est ce lien qui ouvre l'application. */
-  var bouton = document.getElementById("rejoindre"), parti = false;
   bouton.addEventListener("click", function (e) {
     e.preventDefault();
     if (parti) return;
