@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rejoins le groupe d'accompagnement Game Build</title>
+<meta name="description" content="Le groupe WhatsApp où je t'accompagne pour créer ton jeu avec l'IA depuis ton téléphone, étape par étape.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#ffffff">
+<link rel="canonical" href="https://gamebuild-delta.vercel.app/rejoindre">
+
+<meta property="og:type" content="website">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="Rejoins le groupe d'accompagnement Game Build">
+<meta property="og:description" content="Je t'accompagne pour créer ton jeu avec l'IA depuis ton téléphone, étape par étape.">
+<meta property="og:url" content="https://gamebuild-delta.vercel.app/rejoindre">
+<meta property="og:image" content="https://gamebuild-delta.vercel.app/media/apercu.jpg">
+<meta property="og:image:width" content="1672">
+<meta property="og:image:height" content="941">
+<meta property="og:image:alt" content="Game Build — créer un jeu vidéo avec l'IA, sans coder.">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ccircle cx=%2750%27 cy=%2750%27 r=%2750%27 fill=%27%230071e3%27/%3E%3Cpath d=%27M40 30v40l32-20z%27 fill=%27white%27/%3E%3C/svg%3E">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+
+<style>
+/* ══════════════════════════════════════════════════════════
+   GAME BUILD — la page de paiement de la relance
+   Le visiteur arrive de la pub de relance : il connaît déjà la
+   chaîne, ou il tombe ici sans la connaître. Une seule chose à
+   faire : payer pour rejoindre le groupe. Le nombre de places
+   vient de Chariow (/api/places) : sans réponse, la page n'en
+   affiche aucun. Même système visuel que chaine.html.
+   ══════════════════════════════════════════════════════════ */
+
+:root{
+  color-scheme: light;
+
+  --ink:      #1d1d1f;
+  --ink-2:    #6e6e73;
+  --ink-3:    #86868b;
+  --bg:       #ffffff;
+  --bg-alt:   #f5f5f7;
+  --blue:     #0071e3;
+  --blue-ink: #0066cc;
+  --orange:   #bf4800;
+  --hair:     #d2d2d7;
+
+  --content: 980px;
+  --gut: max(22px, env(safe-area-inset-left));
+  --ease: cubic-bezier(.28,.11,.32,1);
+
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+          "Helvetica Neue", "Inter", "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+*, *::before, *::after{ box-sizing: border-box; }
+html{ -webkit-text-size-adjust: 100%; }
+
+body{
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 17px;
+  line-height: 1.47059;
+  letter-spacing: -.022em;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+img{ max-width: 100%; display: block; }
+[hidden]{ display: none !important; }
+
+h1, h2{ margin: 0; font-weight: 600; }
+.t-hero{
+  font-size: clamp(32px, 7vw, 56px); line-height: 1.07; letter-spacing: -.015em;
+  max-width: 18ch; text-wrap: balance;
+}
+.t-head{ font-size: clamp(28px, 5vw, 44px); line-height: 1.08; letter-spacing: -.005em; text-wrap: balance; }
+.t-body{ font-size: clamp(17px, 2vw, 21px); line-height: 1.381; letter-spacing: .011em; color: var(--ink-2); margin: 0; }
+.t-caption{ font-size: 14px; line-height: 1.43; letter-spacing: -.016em; color: var(--ink-3); margin: 0; }
+.eyebrow{
+  font-size: clamp(17px, 2.2vw, 21px); line-height: 1.19; letter-spacing: .011em;
+  font-weight: 600; color: var(--orange); margin: 0;
+}
+.measure{ max-width: 40ch; }
+
+.wrap{ width: 100%; max-width: var(--content); margin-inline: auto; padding-inline: var(--gut); }
+section{ padding-block: clamp(56px, 10vw, 104px); }
+.band-alt{ background: var(--bg-alt); }
+.stack{ display: flex; flex-direction: column; align-items: center; gap: 18px; text-align: center; }
+
+a{ color: var(--blue-ink); text-decoration: none; }
+
+.btn{
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  min-height: 44px; padding: 12px 23px;
+  border: 0; border-radius: 980px;
+  background: var(--blue); color: #fff;
+  font-family: var(--font); font-size: 17px; line-height: 1.2;
+  font-weight: 400; letter-spacing: -.022em; text-align: center;
+  cursor: pointer;
+  transition: background-color .2s var(--ease), transform .12s var(--ease);
+}
+.btn:hover{ background: #0077ed; text-decoration: none; }
+.btn:active{ transform: scale(.97); }
+.btn-lg{ font-size: 19px; padding: 16px 30px; min-height: 56px; width: 100%; max-width: 380px; }
+
+:where(a, button, summary):focus-visible{
+  outline: 4px solid rgba(0,125,250,.6);
+  outline-offset: 2px; border-radius: 6px;
+}
+
+/* ---------- Barre du haut ---------- */
+
+.top{
+  position: sticky; top: 0; z-index: 60; height: 48px;
+  background: rgba(255,255,255,.72);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 1px solid rgba(0,0,0,.08);
+}
+.top .wrap{ height: 100%; display: flex; align-items: center; }
+.top b{ font-size: 15px; font-weight: 600; letter-spacing: -.01em; }
+
+/* ---------- Héros et places ---------- */
+
+.hero{ padding-block: clamp(36px, 6vw, 72px) clamp(56px, 8vw, 96px); }
+.hero .stack{ gap: 20px; }
+
+.prix-carte{
+  width: 100%; max-width: 420px; margin-top: 4px; padding: 24px 22px 26px;
+  border-radius: 22px; background: var(--bg-alt);
+  display: flex; flex-direction: column; align-items: center; gap: 14px;
+}
+.prix{ display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.prix b{ font-size: 44px; line-height: 1.1; font-weight: 600; letter-spacing: -.02em; }
+.prix span{ font-size: 15px; color: var(--ink-2); }
+
+.places{ width: 100%; display: grid; gap: 8px; }
+.places-t{ font-size: 17px; line-height: 1.3; font-weight: 600; color: var(--orange); margin: 0; }
+.places-s{ font-size: 15px; line-height: 1.35; color: var(--ink-2); margin: 0; }
+.jauge{ height: 8px; border-radius: 8px; background: rgba(0,0,0,.08); overflow: hidden; }
+.jauge i{ display: block; height: 100%; width: 0; border-radius: 8px; background: var(--orange); transition: width .7s var(--ease); }
+
+.o-jouable{ font-size: 15px; line-height: 1.4; color: var(--ink-2); max-width: 38ch; margin: 0; }
+
+/* ---------- Ce qu'on reçoit ---------- */
+
+.recoit{
+  list-style: none; margin: 8px 0 0; padding: 0;
+  display: grid; gap: 16px;
+  max-width: 44ch; text-align: left;
+  font-size: clamp(15px, 1.9vw, 17px); line-height: 1.35;
+}
+.recoit li{
+  display: grid; grid-template-columns: 21px 1fr;
+  column-gap: 11px; row-gap: 2px; align-items: start;
+}
+.recoit li::before{
+  content: "✓"; grid-column: 1; grid-row: 1;
+  display: grid; place-items: center;
+  width: 21px; height: 21px; border-radius: 50%;
+  background: var(--blue); color: #fff;
+  font-size: 12px; font-weight: 700; line-height: 1;
+}
+.recoit b{ grid-column: 2; grid-row: 1; font-weight: 600; color: var(--ink); }
+.recoit span{ grid-column: 2; grid-row: 2; color: var(--ink-2); }
+
+/* ---------- La vidéo : YouTube ne se charge qu'à l'appui ---------- */
+
+.video{
+  position: relative; width: 100%; max-width: 640px; aspect-ratio: 16 / 9; margin-top: 8px;
+  border-radius: 18px; overflow: hidden; background: #000;
+}
+.video button{
+  position: absolute; inset: 0; width: 100%; height: 100%; padding: 0;
+  border: 0; background: none; cursor: pointer;
+}
+.video img, .video iframe{ width: 100%; height: 100%; object-fit: cover; border: 0; display: block; }
+.video button::after{
+  content: ""; position: absolute; left: 50%; top: 50%;
+  width: 68px; height: 68px; margin: -34px 0 0 -34px; border-radius: 50%;
+  background: rgba(0,113,227,.92) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9 6.5v11l9-5.5z' fill='white'/%3E%3C/svg%3E") center/38px no-repeat;
+}
+
+/* ---------- Les jeux ---------- */
+
+.reel{
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;
+  margin-top: clamp(24px, 4vw, 40px); width: 100%;
+}
+.media{ position: relative; margin: 0; border-radius: 18px; overflow: hidden; background: #e8e8ed; aspect-ratio: 9 / 19.5; }
+.media video{ width: 100%; height: 100%; object-fit: cover; display: block; }
+/* Sur mobile, on balaye sur une seule ligne, comme les idées de jeux de
+   chaine.html : la vidéo qui dépasse montre qu'il y en a d'autres. */
+@media (max-width: 733px){
+  .reel{
+    display: flex; gap: 14px; overflow-x: auto;
+    scroll-snap-type: x mandatory; scrollbar-width: none;
+    margin-inline: calc(var(--gut) * -1);
+    padding: 4px var(--gut) 8px; scroll-padding-inline: var(--gut);
+    width: auto; align-self: stretch;
+  }
+  .reel::-webkit-scrollbar{ display: none; }
+  .media{ flex: none; width: 38vw; max-width: 170px; border-radius: 13px; scroll-snap-align: start; }
+}
+
+/* ---------- Questions ---------- */
+
+.faq{ width: 100%; max-width: 640px; margin-top: 8px; text-align: left; }
+.faq details{ border-top: 1px solid var(--hair); }
+.faq details:last-child{ border-bottom: 1px solid var(--hair); }
+.faq summary{
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding: 16px 2px; cursor: pointer; list-style: none;
+  font-size: 17px; line-height: 1.3; font-weight: 500;
+}
+.faq summary::-webkit-details-marker{ display: none; }
+.faq summary::after{ content: "+"; flex: none; font-size: 22px; line-height: 1; color: var(--ink-3); }
+.faq details[open] summary::after{ content: "−"; }
+.faq p{ margin: 0; padding: 0 2px 18px; color: var(--ink-2); }
+
+/* ---------- Pied de page ---------- */
+
+footer{
+  background: var(--bg-alt); padding-block: 34px calc(96px + env(safe-area-inset-bottom));
+  font-size: 12px; line-height: 1.33; letter-spacing: -.01em; color: var(--ink-3);
+}
+footer p{ margin: 0 0 14px; }
+.foot-rule{ border-top: 1px solid var(--hair); padding-top: 16px; display: flex; flex-wrap: wrap; gap: 6px 18px; }
+@media (min-width: 900px){ footer{ padding-bottom: 46px; } }
+
+/* ---------- Barre mobile ----------
+   Elle monte quand le bouton du héros sort de l'écran, et redescend
+   quand le bouton du bas est visible : jamais deux boutons à la fois. */
+.dock{
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 55;
+  padding: 10px var(--gut) calc(10px + env(safe-area-inset-bottom));
+  background: rgba(255,255,255,.82);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-top: 1px solid rgba(0,0,0,.1);
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  transform: translateY(105%); transition: transform .4s var(--ease);
+}
+.dock.is-up{ transform: translateY(0); }
+.dock-l{ display: flex; flex-direction: column; line-height: 1.25; }
+.dock-l b{ font-size: 16px; font-weight: 600; }
+.dock-l span{ font-size: 12px; color: var(--ink-3); }
+@media (min-width: 900px){ .dock{ display: none; } }
+
+@media (prefers-reduced-motion: reduce){
+  *, *::before, *::after{ transition-duration: .001ms !important; }
+}
+@media (prefers-reduced-transparency: reduce){
+  .top, .dock{ background: var(--bg); backdrop-filter: none; -webkit-backdrop-filter: none; }
+}
+</style>
+
+<!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '4451955808377862');
+fbq('track', 'PageView');
+fbq('track', 'ViewContent', { content_name: 'page rejoindre' });
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=4451955808377862&ev=PageView&noscript=1"
+/></noscript>
+<!-- End Meta Pixel Code -->
+</head>
+<body>
+
+<header class="top"><div class="wrap"><b>Game&nbsp;Build</b></div></header>
+
+<main>
+<!-- ═══════════════ HÉROS ═══════════════ -->
+<section class="hero">
+  <div class="wrap stack">
+    <p class="eyebrow">Le groupe d'accompagnement</p>
+    <h1 class="t-hero">Crée ton jeu avec moi, au lieu de chercher seul.</h1>
+    <p class="t-body measure">
+      Dans mon groupe WhatsApp, je te montre chaque étape en vidéo, et je réponds
+      quand tu bloques. Tout se fait depuis ton téléphone.
+    </p>
+
+    <div class="prix-carte">
+      <div class="prix">
+        <b class="js-prix">1&nbsp;990&nbsp;F</b>
+        <span>une seule fois, pour rejoindre le groupe</span>
+      </div>
+      <div class="places" id="places" hidden>
+        <p class="places-t" id="places-t"></p>
+        <div class="jauge" aria-hidden="true"><i id="jauge"></i></div>
+        <p class="places-s" id="places-s"></p>
+      </div>
+      <p class="places-s" id="places-repli">Le prix passe à 2&nbsp;500&nbsp;F quand le groupe atteint 50&nbsp;membres.</p>
+      <a class="btn btn-lg js-payer" id="cta-haut" data-mesure="héros" href="https://kgpqinxc.mychariow.shop/prd_iiq2laak/checkout">Rejoindre le groupe</a>
+      <p class="t-caption">Paiement par Mobile Money. Après le paiement, tu reçois le lien du groupe.</p>
+    </div>
+
+    <p class="o-jouable">
+      À prévoir ensuite&nbsp;: Jouable, 3&nbsp;000&nbsp;F une seule fois, pour mettre ton jeu
+      en ligne. Je te le dis maintenant, pour qu'il n'y ait pas de surprise.
+    </p>
+  </div>
+</section>
+
+<!-- ═══════════════ CE QU'ON REÇOIT ═══════════════ -->
+<section class="band-alt">
+  <div class="wrap stack">
+    <p class="eyebrow">Ce que tu rejoins</p>
+    <h2 class="t-head">Tout ce qu'il te faut pour lancer ton jeu.</h2>
+    <ul class="recoit">
+      <li><b>Les vidéos de formation</b><span>Je crée mes jeux et je les mets en ligne devant toi, étape par étape.</span></li>
+      <li><b>Telegram et la publicité</b><span>Comment publier un jeu sur Telegram et y mettre de la publicité.</span></li>
+      <li><b>Mes réponses quand tu bloques</b><span>Directement dans le groupe.</span></li>
+      <li><b>Les nouvelles vidéos</b><span>Au fur et à mesure, sans rien payer de plus.</span></li>
+      <li><b>Le pack Game Build</b><span>Les 2 guides et la vidéo pas à pas, à télécharger tout de suite.</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═══════════════ LA VIDÉO ═══════════════ -->
+<section>
+  <div class="wrap stack">
+    <p class="eyebrow">Avant de te décider</p>
+    <h2 class="t-head">Regarde ce qui t'attend.</h2>
+    <div class="video" id="video">
+      <button type="button" id="video-lance" aria-label="Lancer la vidéo de présentation du groupe">
+        <img src="https://i.ytimg.com/vi/5u0nUVpzADY/hqdefault.jpg" width="480" height="360" loading="lazy" alt="">
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ LES JEUX ═══════════════ -->
+<section class="band-alt">
+  <div class="wrap stack">
+    <p class="eyebrow">En vrai</p>
+    <h2 class="t-head">Des jeux faits avec l'IA.</h2>
+    <p class="t-body measure">Sans une ligne de code écrite à la main.</p>
+    <div class="reel">
+      <figure class="media"><video src="media/jeu-1.mp4" poster="media/jeu-1.jpg" data-autoloop muted loop playsinline preload="none"></video></figure>
+      <figure class="media"><video src="media/remialde-coin.mp4" poster="media/remialde-coin.jpg" data-autoloop muted loop playsinline preload="none"></video></figure>
+      <figure class="media"><video src="media/eleve-2.mp4" poster="media/eleve-2.jpg" data-autoloop muted loop playsinline preload="none"></video></figure>
+      <figure class="media"><video src="media/eleve-3.mp4" poster="media/eleve-3.jpg" data-autoloop muted loop playsinline preload="none"></video></figure>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ QUESTIONS ═══════════════ -->
+<section>
+  <div class="wrap stack">
+    <h2 class="t-head">Tes questions.</h2>
+    <div class="faq">
+      <details>
+        <summary>Je ne sais pas coder, c'est un problème&nbsp;?</summary>
+        <p>Non. Tu décris ton jeu à l'IA, elle le fabrique. Les débutants sont les bienvenus.</p>
+      </details>
+      <details>
+        <summary>De quoi ai-je besoin&nbsp;?</summary>
+        <p>Un téléphone, l'application Claude et un compte Google. Pas besoin d'ordinateur.</p>
+      </details>
+      <details>
+        <summary>Jouable est-il obligatoire&nbsp;?</summary>
+        <p>Non, mais c'est la méthode que je montre et que je recommande&nbsp;: ton jeu est en ligne en quelques minutes. Jouable coûte 3&nbsp;000&nbsp;F une seule fois, à part du groupe. Il existe des solutions gratuites, qui demandent plus de manipulations.</p>
+      </details>
+      <details>
+        <summary>Ça rapporte combien&nbsp;?</summary>
+        <p>Je ne te promets aucun montant. Ce que rapporte un jeu dépend du nombre de joueurs qu'il attire. Je te montre comment en faire venir, mais personne ne peut te garantir une somme.</p>
+      </details>
+      <details>
+        <summary>Je ne suis pas sur la chaîne WhatsApp, ça change quelque chose&nbsp;?</summary>
+        <p>Non. Tout se passe dans le groupe, tu n'as pas besoin de la chaîne.</p>
+      </details>
+      <details>
+        <summary>Comment j'entre dans le groupe après le paiement&nbsp;?</summary>
+        <p>Une page s'affiche avec le lien et les étapes, et tu reçois aussi un e-mail. Tu demandes à rejoindre avec le numéro utilisé pour payer, et j'accepte ta demande à la main, en général dans la journée.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ CLÔTURE ═══════════════ -->
+<section class="band-alt">
+  <div class="wrap stack">
+    <h2 class="t-head">Ton jeu commence ici.</h2>
+    <p class="t-body measure" id="cloture">Rejoins le groupe et démarre avec la première vidéo.</p>
+    <a class="btn btn-lg js-payer" id="cta-bas" data-mesure="clôture" href="https://kgpqinxc.mychariow.shop/prd_iiq2laak/checkout">Rejoindre le groupe</a>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Game Build t'apprend une méthode et te donne des outils. Rien ne garantit un revenu&nbsp;: ce que ton jeu rapportera dépend de ton audience et de ce que tu en fais. Game Build n'est affilié ni à Google ni à aucune régie publicitaire.</p>
+    <div class="foot-rule">
+      <span>© <span id="year">2026</span> IA TOOL · Lomé, Togo</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ═══════════════ BARRE MOBILE ═══════════════ -->
+<div class="dock" id="dock">
+  <div class="dock-l">
+    <b class="js-prix">1&nbsp;990&nbsp;F</b>
+    <span id="dock-s">pour rejoindre le groupe</span>
+  </div>
+  <a class="btn js-payer" data-mesure="barre mobile" href="https://kgpqinxc.mychariow.shop/prd_iiq2laak/checkout">Rejoindre</a>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════════
+   RÉGLAGES — le lien de paiement, et le prix envoyé au pixel
+   tant que /api/places n'a pas répondu.
+   ══════════════════════════════════════════════════════════ */
+var LIEN_PAIEMENT = "https://kgpqinxc.mychariow.shop/prd_iiq2laak/checkout";
+var VALEUR_PIXEL  = 1990;
+
+(function () {
+  "use strict";
+
+  var $ = function (id) { return document.getElementById(id); };
+  $("year").textContent = new Date().getFullYear();
+
+  function montant(n) { return String(n).replace(/\B(?=(\d{3})+$)/g, " ") + " F"; }
+
+  /* ---------- Les places ----------
+     Le nombre vient de Chariow. S'il ne vient pas, la phrase déjà écrite
+     dans la page reste : elle est vraie sans chiffre du jour. */
+  function affichePlaces(p) {
+    if (!p || !Number.isFinite(p.prix)) return;
+    VALEUR_PIXEL = p.prix;
+    Array.prototype.forEach.call(document.querySelectorAll(".js-prix"), function (b) { b.textContent = montant(p.prix); });
+    if (p.restantes == null) { $("places-repli").hidden = true; return; }
+    if (p.restantes === 0) {
+      $("places-repli").textContent = "Dernières places à ce prix : il passe à " + montant(p.prixSuivant) + ".";
+      return;
+    }
+    var mot = p.restantes > 1 ? " places restantes" : " place restante";
+    $("places-t").textContent = p.restantes + mot + " à ce prix";
+    $("places-s").textContent = p.membres + " sur " + p.seuil + " déjà prises. Ensuite, le prix passe à " + montant(p.prixSuivant) + ".";
+    $("dock-s").textContent = p.restantes + mot + " à ce prix";
+    $("cloture").textContent = "Il reste " + p.restantes + (p.restantes > 1 ? " places" : " place") + " avant que le prix passe à " + montant(p.prixSuivant) + ".";
+    $("places-repli").hidden = true;
+    $("places").hidden = false;
+    setTimeout(function () { $("jauge").style.width = Math.min(100, p.membres / p.seuil * 100) + "%"; }, 60);
+  }
+  fetch("/api/places")
+    .then(function (rep) { return rep.ok ? rep.json() : null; })
+    .then(affichePlaces)
+    ["catch"](function () {});
+
+  /* ---------- Boutons vers le paiement ----------
+     Comme sur chaine.html : on laisse au pixel le temps de partir
+     (1,5 s au plus), et on reste dans le même onglet. */
+  var parti = false;
+  Array.prototype.forEach.call(document.querySelectorAll(".js-payer"), function (a) {
+    a.addEventListener("click", function (e) {
+      e.preventDefault();
+      if (parti) return;
+      parti = true;
+      try {
+        if (window.fbq) fbq("track", "InitiateCheckout", { content_name: "accompagnement", content_category: a.getAttribute("data-mesure") || "", currency: "XOF", value: VALEUR_PIXEL });
+      } catch (err) {}
+      var debut = Date.now();
+      (function attends() {
+        var pret = window.fbq && window.fbq.callMethod;
+        if (pret || Date.now() - debut > 1500) {
+          setTimeout(function () { location.href = LIEN_PAIEMENT; }, pret ? 300 : 0);
+        } else {
+          setTimeout(attends, 100);
+        }
+      })();
+      setTimeout(function () { parti = false; }, 3000);
+    });
+  });
+
+  /* ---------- La vidéo : rien de YouTube avant l'appui ---------- */
+  $("video-lance").addEventListener("click", function () {
+    var f = document.createElement("iframe");
+    f.src = "https://www.youtube-nocookie.com/embed/5u0nUVpzADY?autoplay=1&rel=0&playsinline=1";
+    f.title = "Présentation du groupe d'accompagnement";
+    f.allow = "autoplay; encrypted-media; picture-in-picture";
+    f.allowFullscreen = true;
+    $("video").textContent = "";
+    $("video").appendChild(f);
+  });
+
+  /* ---------- Gameplays : ils ne tournent qu'à l'écran ---------- */
+  var loops = document.querySelectorAll("video[data-autoloop]");
+  function joue(v) { var p = v.play(); if (p && p["catch"]) p["catch"](function () {}); }
+  if ("IntersectionObserver" in window) {
+    var vio = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) joue(en.target);
+        else if (!en.target.paused) en.target.pause();
+      });
+    }, { threshold: 0.25 });
+    Array.prototype.forEach.call(loops, function (v) { vio.observe(v); });
+  }
+
+  /* ---------- Barre mobile ---------- */
+  var dock = $("dock"), haut = $("cta-haut"), bas = $("cta-bas");
+  if ("IntersectionObserver" in window) {
+    var visibles = { haut: true, bas: false };
+    var dio = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) { visibles[en.target === haut ? "haut" : "bas"] = en.isIntersecting; });
+      var depasse = !visibles.haut && haut.getBoundingClientRect().bottom < 0;
+      dock.classList.toggle("is-up", depasse && !visibles.bas);
+    }, { threshold: 0 });
+    dio.observe(haut);
+    dio.observe(bas);
+  }
+})();
+</script>
+</body>
+</html>
