@@ -205,21 +205,23 @@ a{ color: var(--blue-ink); text-decoration: none; }
 .reel-shots .reel-item{ max-width: 240px; justify-self: center; width: 100%; }
 .reel-4{ grid-template-columns: repeat(4, 1fr); }
 
-/* Sur mobile, les quatre gameplays passent sur deux colonnes ; les captures
-   gardent une largeur lisible et se balayent. */
+/* Sur mobile, les gameplays et les captures se balayent sur une seule
+   ligne : les gameplays au format des idées de jeux, les captures assez
+   larges pour rester lisibles. */
 @media (max-width: 733px){
   .reel{ gap: 10px; }
-  .reel-4{ grid-template-columns: repeat(2, 1fr); }
   .reel:not(.reel-shots) .media{ border-radius: 13px; }
-  .reel-shots{
+  .reel-shots, .reel-4{
     display: flex; gap: 14px; overflow-x: auto;
     scroll-snap-type: x mandatory; scrollbar-width: none;
     margin-inline: calc(var(--gut) * -1);
     padding-inline: var(--gut);
     width: auto; align-self: stretch;
   }
-  .reel-shots::-webkit-scrollbar{ display: none; }
+  .reel-4{ scroll-padding-inline: var(--gut); }
+  .reel-shots::-webkit-scrollbar, .reel-4::-webkit-scrollbar{ display: none; }
   .reel-shots .reel-item{ flex: none; width: clamp(180px, 58vw, 240px); scroll-snap-align: center; }
+  .reel-4 .reel-item{ flex: none; width: 38vw; max-width: 170px; scroll-snap-align: start; }
 }
 
 /* ---------- Pied de page ---------- */
