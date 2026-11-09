@@ -12,8 +12,8 @@
 
 const PRODUIT = "prd_iiq2laak";
 const VENTES_AU_LANCEMENT = 171;   /* les ventes de l'ancien pack, avant le groupe */
-const SEUIL = 50;                  /* le nombre de membres qui déclenche la hausse */
-const PRIX_SUIVANT = 2500;
+const SEUIL = 100;                 /* le nombre de membres qui déclenche la hausse */
+const PRIX_SUIVANT = 3500;         /* 1 990 F jusqu'à 50 membres, 2 500 F jusqu'à 100, puis 3 500 F */
 
 export default async function handler(req, res) {
   if (req.method !== "GET") { res.status(405).json({ erreur: "GET seulement" }); return; }

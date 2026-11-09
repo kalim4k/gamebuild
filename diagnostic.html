@@ -422,9 +422,9 @@ src="https://www.facebook.com/tr?id=4451955808377862&ev=PageView&noscript=1"
    ══════════════════════════════════════════════════════════ */
 var LIEN_PAIEMENT = "https://kgpqinxc.mychariow.shop/prd_iiq2laak/checkout";
 var LIEN_CHAINE   = "https://www.whatsapp.com/channel/0029Vb8XIsmFnSzD0G0r5a2G";
-var PRIX_GROUPE   = "1 990 F";
+var PRIX_GROUPE   = "2 500 F";
 var PRIX_JOUABLE  = "3 000 F";
-var VALEUR_PIXEL  = 1990;     /* le prix du groupe, en F CFA, pour le pixel */
+var VALEUR_PIXEL  = 2500;     /* le prix du groupe, en F CFA, pour le pixel */
 
 (function () {
   "use strict";
@@ -908,7 +908,7 @@ var VALEUR_PIXEL  = 1990;     /* le prix du groupe, en F CFA, pour le pixel */
 
     /* Ce qu'il faut ajuster, formulé comme des actions */
     if (B === 0) {
-      ajuster.push("Mets 5 000 F de côté avant de te lancer : l'accompagnement coûte " + PRIX_GROUPE + ", puis " + PRIX_JOUABLE + " pour Jouable, qui met ton jeu en ligne.");
+      ajuster.push("Mets 5 500 F de côté avant de te lancer : l'accompagnement coûte " + PRIX_GROUPE + ", puis " + PRIX_JOUABLE + " pour Jouable, qui met ton jeu en ligne.");
     }
     if (T === 0) {
       ajuster.push("Avec moins de 30 minutes par jour, tu avanceras lentement. Vise au moins 1 heure : une partie pour ton jeu, une partie pour faire venir des joueurs.");
@@ -952,7 +952,7 @@ var VALEUR_PIXEL  = 1990;     /* le prix du groupe, en F CFA, pour le pixel */
       })) + ".";
     } else {
       titre = "Pas tout de suite.";
-      phrase = "Je préfère te le dire franchement : aujourd'hui, ce n'est pas le bon moment, parce que tu n'as pas encore de budget pour démarrer. Reviens refaire ce diagnostic quand tu auras mis 5 000 F de côté.";
+      phrase = "Je préfère te le dire franchement : aujourd'hui, ce n'est pas le bon moment, parce que tu n'as pas encore de budget pour démarrer. Reviens refaire ce diagnostic quand tu auras mis 5 500 F de côté.";
     }
 
     var idees = choisitIdees(r);
@@ -964,7 +964,7 @@ var VALEUR_PIXEL  = 1990;     /* le prix du groupe, en F CFA, pour le pixel */
       plan = [
         { quand: "Dès aujourd'hui", action: "Reste dans la chaîne : les vidéos, les preuves et les lives sont gratuits." },
         { quand: "Cette semaine", action: "Garde tes idées de jeux de côté : celles ci-dessus sont un bon début." },
-        { quand: "Avec 5 000 F de côté", action: "Refais ce diagnostic : ton plan sera prêt." }
+        { quand: "Avec 5 500 F de côté", action: "Refais ce diagnostic : ton plan sera prêt." }
       ];
     } else if (vite) {
       plan = [
