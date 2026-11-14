@@ -120,6 +120,19 @@
       ]
     },
     {
+      "source": "/live-studio",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-store"
+        }
+      ]
+    },
+    {
       "source": "/api/diagnostic",
       "headers": [
         {

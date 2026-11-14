@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Live Game Build</title>
+<meta name="description" content="Le live Game Build : crée ton propre jeu avec l'IA, juste avec ton téléphone. Pose tes questions en direct.">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ccircle cx=%2750%27 cy=%2750%27 r=%2750%27 fill=%27%230071e3%27/%3E%3Cpath d=%27M40 30v40l32-20z%27 fill=%27white%27/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/live/live.css">
+<style>
+/* ══════════════════════════════════════════════════════════
+   GAME BUILD — la page du live, côté spectateurs
+   Le spectateur entre son prénom, puis voit les slides et entend la
+   voix de l'animateur. Il ne se connecte à LiveKit qu'une fois le live
+   lancé (chaque minute connectée est décomptée) : avant, la page
+   interroge /api/live toutes les 15 secondes.
+   ══════════════════════════════════════════════════════════ */
+html, body{ height: 100%; }
+body{ display: flex; flex-direction: column; height: 100dvh; overflow: hidden; }
+
+.tete{ display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 16px; border-bottom: 1px solid var(--hair); }
+.tete h1{ margin: 0; font-size: 17px; font-weight: 600; }
+.tete .droite{ display: flex; align-items: center; gap: 12px; font-size: 13px; color: var(--ink-2); }
+
+.salle{ flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.gauche{ display: flex; flex-direction: column; }
+.offre{ display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 16px; background: var(--bg-2); border-top: 1px solid var(--hair); }
+.offre p{ margin: 0; font-size: 14px; color: var(--ink-2); }
+.offre .btn{ flex: none; }
+.salle .chat{ flex: 1; }
+
+@media (min-width: 900px){
+  .salle{ display: grid; grid-template-columns: 1fr 360px; }
+  .gauche{ min-height: 0; overflow-y: auto; padding: 24px; gap: 16px; }
+  .gauche .scene{ border-radius: 18px; }
+  .gauche .offre, .gauche .question{ border-radius: 14px; border: 0; }
+  .salle .chat{ border-left: 1px solid var(--hair); }
+}
+
+/* L'accueil : le prénom avant d'entrer */
+.accueil{ flex: 1; overflow-y: auto; display: grid; place-items: center; padding: 32px 16px; }
+.carte{ width: 100%; max-width: 420px; display: grid; gap: 18px; text-align: center; }
+.carte h2{ margin: 0; font-size: clamp(28px, 7vw, 40px); line-height: 1.1; font-weight: 700; letter-spacing: -.02em; text-wrap: balance; }
+.carte p{ margin: 0; color: var(--ink-2); }
+.carte .btn{ width: 100%; }
+
+/* Le son bloqué par le navigateur */
+.son{ position: absolute; inset: 0; display: grid; place-items: center; background: rgba(0,0,0,.6); z-index: 2; }
+</style>
+
+<!-- Meta Pixel -->
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '4451955808377862');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none" alt=""
+src="https://www.facebook.com/tr?id=4451955808377862&ev=PageView&noscript=1"></noscript>
+</head>
+<body>
+
+<header class="tete">
+  <h1 id="titre">Live Game Build</h1>
+  <div class="droite">
+    <span id="compte"></span>
+    <span class="pastille" id="pastille">Hors ligne</span>
+  </div>
+</header>
+
+<!-- 1. L'accueil -->
+<section class="accueil" id="accueil">
+  <form class="carte" id="form-entree" novalidate>
+    <h2>Crée ton propre jeu avec l'IA, juste avec ton téléphone.</h2>
+    <p id="etat-accueil">Un instant…</p>
+    <label class="champ">
+      <span>Ton prénom, pour le chat</span>
+      <input id="prenom" name="prenom" autocomplete="given-name" maxlength="24" required>
+    </label>
+    <p class="erreur" id="erreur-entree" role="alert"></p>
+    <button class="btn btn-lg" type="submit" id="bouton-entree">Entrer dans le live</button>
+    <p style="font-size:13px">Tu entends ma voix et tu vois mes slides : il faut peu de données, même sur un petit forfait.</p>
+  </form>
+</section>
+
+<!-- 2. La salle -->
+<main class="salle" id="salle" hidden>
+  <div class="gauche">
+    <div class="scene" id="scene">
+      <div class="vide" id="vide">Le live commence bientôt. Garde cette page ouverte : elle se met à jour toute seule.</div>
+    </div>
+    <div class="question" id="question" hidden><small>Question</small><span id="question-texte"></span></div>
+    <div class="offre" id="offre" hidden>
+      <p>Rejoins le groupe d'accompagnement.</p>
+      <a class="btn" id="bouton-offre" href="#" target="_blank" rel="noopener">Rejoindre le groupe</a>
+    </div>
+  </div>
+  <section class="chat" aria-label="Chat du live">
+    <div class="chat-tete"><span>Chat</span><span class="pastille" id="pastille-chat">fermé</span></div>
+    <div class="chat-liste" id="liste" aria-live="polite"></div>
+    <form class="chat-form" id="form-chat" autocomplete="off">
+      <input id="message" maxlength="200" placeholder="Le chat s'ouvre au début du live" aria-label="Ton message" disabled>
+      <button class="btn" type="submit" id="envoyer" disabled>Envoyer</button>
+    </form>
+  </section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/livekit-client@2.23.0/dist/livekit-client.umd.js"></script>
+<script src="/live/commun.js"></script>
+<script src="/live/slides.js"></script>
+<script>
+(function () {
+  "use strict";
+  var C = window.LiveCommun, LK = window.LivekitClient, CONF = window.LIVE || { slides: [] };
+  var $ = function (id) { return document.getElementById(id); };
+
+  var room = null, monIdentite = null, prenom = "", attente = null, dernierEnvoi = 0, prix = null;
+  var etatAnim = {};             /* les attributs de l'animateur : etat, slide, offre, question, chat */
+
+  try { prenom = localStorage.getItem("live-prenom") || ""; } catch (e) {}
+  $("prenom").value = prenom;
+  $("titre").textContent = CONF.titre || "Live Game Build";
+  $("bouton-offre").href = CONF.lienOffre || "/rejoindre";
+
+  /* Le prix du groupe, lu sur Chariow comme sur /rejoindre. */
+  fetch("/api/places").then(function (r) { return r.ok ? r.json() : null; }).then(function (p) {
+    if (p && Number.isFinite(p.prix)) {
+      prix = p.prix;
+      $("bouton-offre").textContent = "Rejoindre le groupe · " + p.prix.toLocaleString("fr-FR").replace(/ /g, " ") + " F";
+    }
+  }).catch(function () {});
+
+  function pastille(texte, direct) {
+    $("pastille").textContent = texte;
+    $("pastille").classList.toggle("direct", !!direct);
+  }
+
+  function systeme(texte) { C.ajouteEnBas($("liste"), C.el("div", "msg-sys", texte)); }
+
+  /* Un message à la place des slides (attente, reconnexion, fin). */
+  function messageScene(texte) {
+    $("scene").textContent = "";
+    $("scene").appendChild(C.el("div", "vide", texte));
+    delete $("scene").dataset.index;
+  }
+
+  /* ── Avant le live : on demande à /api/live s'il a commencé ── */
+  function etatServeur() {
+    return fetch("/api/live", { cache: "no-store" }).then(function (r) { return r.json(); }).catch(function () { return null; });
+  }
+
+  function accueil() {
+    etatServeur().then(function (e) {
+      if (!e || !e.configure) { $("etat-accueil").textContent = "Le live n'est pas encore ouvert. Reviens à l'heure annoncée sur la chaîne."; return; }
+      if (e.enDirect) {
+        $("etat-accueil").textContent = "Le live est en cours" + (e.spectateurs ? " : " + e.spectateurs + " personnes sont déjà là." : ".");
+        pastille("En direct", true);
+      } else {
+        $("etat-accueil").textContent = "Le live n'a pas encore commencé. Entre maintenant : la page s'ouvrira toute seule.";
+      }
+    });
+  }
+  accueil();
+
+  $("form-entree").addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    var p = $("prenom").value.trim();
+    if (p.length < 2) { $("erreur-entree").textContent = "Écris ton prénom (2 lettres au moins)."; return; }
+    prenom = p;
+    try { localStorage.setItem("live-prenom", p); } catch (e) {}
+    try { if (window.fbq) fbq("track", "CompleteRegistration", { content_name: "live" }); } catch (e) {}
+    $("accueil").hidden = true;
+    $("salle").hidden = false;
+    surveille();
+  });
+
+  /* Toutes les 15 secondes, tant que le live n'a pas commencé. */
+  function surveille() {
+    clearTimeout(attente);
+    etatServeur().then(function (e) {
+      if (e && e.enDirect) { connecte(); return; }
+      messageScene((e && !e.configure)
+        ? "Le live n'est pas encore ouvert. Reviens à l'heure annoncée sur la chaîne."
+        : "Le live commence bientôt. Garde cette page ouverte : elle se met à jour toute seule.");
+      attente = setTimeout(surveille, 15000);
+    });
+  }
+
+  /* ── La connexion à LiveKit ── */
+  function connecte() {
+    messageScene("Connexion au live…");
+    fetch("/api/live", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "jeton", nom: prenom }) })
+      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { ok: r.ok, j: j }; }); })
+      .then(function (x) {
+        if (!x.ok) throw new Error(x.j && x.j.erreur || "Connexion impossible.");
+        monIdentite = x.j.identite;
+        room = new LK.Room({ adaptiveStream: false, dynacast: false });
+        branche(room);
+        return room.connect(x.j.url, x.j.jeton, { autoSubscribe: true }).then(function () {
+          lisAnimateur();
+          compte();
+          if (!room.canPlaybackAudio) montreBoutonSon();
+        });
+      })
+      .catch(function (e) {
+        if (room) { room.disconnect(); room = null; }
+        messageScene((e && e.message) || "Connexion impossible.");
+        attente = setTimeout(surveille, 15000);
+      });
+  }
+
+  function animateur() {
+    var trouve = null;
+    if (room) room.remoteParticipants.forEach(function (p) { if (p.identity === C.ANIMATEUR) trouve = p; });
+    return trouve;
+  }
+
+  function branche(r) {
+    var E = LK.RoomEvent;
+    r.on(E.TrackSubscribed, function (track) {
+      if (track.kind !== "audio") return;
+      var a = track.attach(); a.hidden = true; document.body.appendChild(a);
+    });
+    r.on(E.TrackUnsubscribed, function (track) { track.detach().forEach(function (n) { n.remove(); }); });
+    r.on(E.AudioPlaybackStatusChanged, function () { if (!r.canPlaybackAudio) montreBoutonSon(); });
+    r.on(E.ParticipantAttributesChanged, function (changes, p) { if (p && p.identity === C.ANIMATEUR) lisAnimateur(); });
+    r.on(E.ParticipantConnected, function (p) { compte(); if (p.identity === C.ANIMATEUR) lisAnimateur(); });
+    r.on(E.ParticipantDisconnected, function (p) {
+      compte();
+      if (p.identity === C.ANIMATEUR && etatAnim.etat !== "fin") { messageScene("L'animateur se reconnecte…"); pastille("En attente", false); }
+    });
+    r.on(E.DataReceived, function (donnees, p, kind, topic) { recoit(donnees, p, topic); });
+    r.on(E.ParticipantPermissionsChanged, function () { chatOuvert(); });
+    r.on(E.Disconnected, function () {
+      if (etatAnim.etat === "fin") return;
+      pastille("Déconnecté", false);
+      systeme("Tu as été déconnecté. Recharge la page pour revenir dans le live.");
+      chatOuvert(false);
+    });
+  }
+
+  function compte() {
+    if (!room) return;
+    var n = 0;
+    room.remoteParticipants.forEach(function (p) { if (p.identity !== C.ANIMATEUR) n++; });
+    n += 1; /* toi */
+    $("compte").textContent = n + (n > 1 ? " personnes" : " personne");
+  }
+
+  /* L'animateur porte l'état du live dans ses attributs : un spectateur
+     qui arrive en retard le lit tout de suite. */
+  function lisAnimateur() {
+    var a = animateur();
+    etatAnim = (a && a.attributes) || {};
+    var slides = CONF.slides || [];
+    var i = parseInt(etatAnim.slide, 10);
+
+    if (etatAnim.etat === "fin") {
+      messageScene("Le live est terminé. Merci d'avoir été là.");
+      pastille("Terminé", false);
+      $("offre").hidden = false;
+      chatOuvert(false);
+      setTimeout(function () { if (room) room.disconnect(); }, 3000);
+      return;
+    }
+    if (!a || etatAnim.etat !== "direct") {
+      pastille("En attente", false);
+      if (!a) return;
+      messageScene("Le live va reprendre dans un instant.");
+    } else {
+      pastille("En direct", true);
+      if (Number.isFinite(i) && slides[i] && $("scene").dataset.index !== String(i)) {
+        C.rendSlide($("scene"), slides, i);
+        $("scene").dataset.index = String(i);
+      }
+    }
+
+    $("offre").hidden = etatAnim.offre !== "1";
+    var q = null;
+    try { q = etatAnim.question ? JSON.parse(etatAnim.question) : null; } catch (e) {}
+    $("question").hidden = !q;
+    if (q) $("question-texte").textContent = q.nom + " : " + q.texte;
+    chatOuvert();
+  }
+
+  function chatOuvert(force) {
+    var permis = room && room.localParticipant && room.localParticipant.permissions
+      ? room.localParticipant.permissions.canPublishData !== false : true;
+    var ouvert = force === false ? false : (room && etatAnim.etat === "direct" && etatAnim.chat !== "ferme" && permis);
+    $("message").disabled = !ouvert;
+    $("envoyer").disabled = !ouvert;
+    $("message").placeholder = ouvert ? "Pose ta question" : (!permis ? "Le chat t'a été fermé" : "Le chat est fermé");
+    $("pastille-chat").textContent = ouvert ? "" : "fermé";
+  }
+
+  function recoit(donnees, p, topic) {
+    var o = C.decode(donnees);
+    if (!o) return;
+    var deAnim = p && p.identity === C.ANIMATEUR;
+    if (topic === "chat" && p) {
+      var t = C.texteChat(o.texte);
+      if (!t) return;
+      C.ajouteEnBas($("liste"), C.rendMessage({ id: String(o.id || ""), nom: p.name || "Anonyme", texte: t, anim: deAnim }));
+    } else if (topic === "historique" && deAnim && Array.isArray(o.messages)) {
+      $("liste").textContent = "";
+      o.messages.forEach(function (m) {
+        C.ajouteEnBas($("liste"), C.rendMessage({ id: String(m.id || ""), nom: String(m.nom || ""), texte: C.texteChat(m.texte), anim: !!m.anim }));
+      });
+    } else if (topic === "masquer" && deAnim) {
+      var n = $("liste").querySelector('[data-id="' + String(o.id).replace(/[^a-z0-9]/gi, "") + '"]');
+      if (n) n.remove();
+    }
+  }
+
+  $("form-chat").addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    var t = C.texteChat($("message").value);
+    if (!t || !room) return;
+    if (Date.now() - dernierEnvoi < 3000) { systeme("Attends quelques secondes entre deux messages."); return; }
+    dernierEnvoi = Date.now();
+    var m = { id: C.idMessage(), texte: t };
+    room.localParticipant.publishData(C.encode(m), { reliable: true, topic: "chat" }).then(function () {
+      C.ajouteEnBas($("liste"), C.rendMessage({ id: m.id, nom: prenom, texte: t }));
+      $("message").value = "";
+    }).catch(function () { systeme("Ton message n'est pas parti. Réessaie."); });
+  });
+
+  function montreBoutonSon() {
+    if ($("son")) return;
+    var d = C.el("div", "son"); d.id = "son";
+    var b = C.el("button", "btn btn-lg", "Appuie ici pour entendre le live");
+    b.type = "button";
+    b.addEventListener("click", function () { room.startAudio().then(function () { d.remove(); }).catch(function () {}); });
+    d.appendChild(b);
+    /* Posé sur la colonne, pas dans la scène : un changement de slide ne l'efface pas. */
+    $("scene").parentNode.style.position = "relative";
+    $("scene").parentNode.appendChild(d);
+  }
+
+  $("bouton-offre").addEventListener("click", function () {
+    try { if (window.fbq) fbq("track", "InitiateCheckout", { content_name: "accompagnement", currency: "XOF", value: prix || undefined }); } catch (e) {}
+  });
+})();
+</script>
+</body>
+</html>

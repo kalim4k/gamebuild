@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Studio du live</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ccircle cx=%2750%27 cy=%2750%27 r=%2750%27 fill=%27%23ff453a%27/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/live/live.css">
+<style>
+/* ══════════════════════════════════════════════════════════
+   GAME BUILD — l'espace de l'animateur du live
+   Mot de passe (LIVE_MOT_DE_PASSE dans Vercel), puis : le micro, les
+   slides, l'offre, le chat et sa modération. L'état du live est porté
+   par les attributs de l'animateur dans LiveKit (etat, slide, offre,
+   question, chat) : un spectateur qui arrive en retard le lit aussitôt.
+   Raccourcis : flèches ou espace pour les slides, M pour le micro,
+   O pour l'offre.
+   ══════════════════════════════════════════════════════════ */
+html, body{ height: 100%; }
+body{ display: flex; flex-direction: column; min-height: 100dvh; }
+
+.tete{ display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 20px; border-bottom: 1px solid var(--hair); flex-wrap: wrap; }
+.tete h1{ margin: 0; font-size: 17px; font-weight: 600; }
+.tete .droite{ display: flex; align-items: center; gap: 16px; font-size: 14px; color: var(--ink-2); flex-wrap: wrap; }
+
+.connexion{ flex: 1; display: grid; place-items: center; padding: 32px 16px; }
+.carte{ width: 100%; max-width: 380px; display: grid; gap: 16px; }
+.carte h2{ margin: 0; font-size: 28px; }
+
+.studio{ flex: 1; display: grid; gap: 20px; padding: 20px; grid-template-columns: minmax(0, 1fr) 380px; min-height: 0; }
+.col{ display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.scene{ border-radius: 16px; }
+.nav{ display: flex; align-items: center; gap: 10px; }
+.nav .num{ flex: 1; text-align: center; color: var(--ink-2); font-size: 15px; }
+.nav .btn{ min-width: 140px; }
+.bloc{ background: var(--bg-2); border-radius: 14px; padding: 14px 16px; display: grid; gap: 8px; }
+.bloc h3{ margin: 0; font-size: 13px; font-weight: 600; color: var(--ink-3); text-transform: uppercase; letter-spacing: .04em; }
+.notes{ font-size: 17px; line-height: 1.5; white-space: pre-wrap; }
+.suivante{ display: grid; grid-template-columns: 160px 1fr; gap: 12px; align-items: center; }
+.suivante .scene{ border-radius: 8px; }
+.suivante p{ margin: 0; color: var(--ink-2); font-size: 14px; }
+.commandes{ display: flex; flex-wrap: wrap; gap: 10px; }
+.btn.actif{ background: var(--green); color: #000; }
+.btn.coupe{ background: var(--red); }
+.niveau{ display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--ink-3); transition: background .15s; }
+.niveau.parle{ background: var(--green); }
+
+.chat{ border-radius: 14px; overflow: hidden; min-height: 420px; flex: 1; }
+.msg{ position: relative; }
+.msg .actions{ display: none; gap: 10px; margin-top: 4px; }
+.msg:hover .actions, .msg:focus-within .actions{ display: flex; }
+.msg .actions button{ background: none; border: 0; color: var(--blue); font-size: 13px; padding: 0; cursor: pointer; }
+.msg .actions button.danger{ color: var(--red); }
+
+@media (max-width: 960px){
+  .studio{ grid-template-columns: 1fr; }
+  .msg .actions{ display: flex; }
+}
+</style>
+</head>
+<body>
+
+<header class="tete">
+  <h1>Studio du live</h1>
+  <div class="droite">
+    <span id="chrono">00:00</span>
+    <span id="compte">0 spectateur</span>
+    <span class="pastille" id="pastille">Hors ligne</span>
+  </div>
+</header>
+
+<!-- 1. Le mot de passe -->
+<section class="connexion" id="connexion">
+  <form class="carte" id="form-connexion">
+    <h2>Entrer dans le studio</h2>
+    <label class="champ"><span>Ton nom dans le chat</span><input id="nom" maxlength="24" autocomplete="name"></label>
+    <label class="champ"><span>Mot de passe</span><input id="mdp" type="password" autocomplete="current-password" required></label>
+    <p class="erreur" id="erreur" role="alert"></p>
+    <button class="btn btn-lg" type="submit" id="entrer">Entrer</button>
+    <p style="margin:0;color:var(--ink-3);font-size:13px">Les spectateurs ne t'entendent pas tant que tu n'as pas appuyé sur « Lancer le live ».</p>
+  </form>
+</section>
+
+<!-- 2. Le studio -->
+<main class="studio" id="studio" hidden>
+  <div class="col">
+    <div class="scene" id="scene"></div>
+    <div class="nav">
+      <button class="btn btn-gris" type="button" id="prec">Précédente</button>
+      <span class="num" id="num"></span>
+      <button class="btn" type="button" id="suiv">Suivante</button>
+    </div>
+    <div class="bloc">
+      <h3>Tes notes</h3>
+      <div class="notes" id="notes"></div>
+    </div>
+    <div class="bloc">
+      <h3>Slide suivante</h3>
+      <div class="suivante"><div class="scene mini" id="scene-suiv"></div><p id="titre-suiv"></p></div>
+    </div>
+  </div>
+
+  <div class="col">
+    <div class="bloc">
+      <h3>Le live</h3>
+      <div class="commandes">
+        <button class="btn" type="button" id="lancer">Lancer le live</button>
+        <button class="btn btn-rouge" type="button" id="terminer" hidden>Terminer le live</button>
+      </div>
+      <div class="commandes">
+        <button class="btn btn-gris" type="button" id="micro"><span class="niveau" id="niveau"></span><span id="micro-t">Micro coupé</span></button>
+        <button class="btn btn-gris" type="button" id="offre">Afficher l'offre</button>
+        <button class="btn btn-gris" type="button" id="chat-bascule">Fermer le chat</button>
+      </div>
+      <p class="erreur" id="erreur-studio" role="alert"></p>
+    </div>
+    <div class="question" id="question" hidden><small>En avant</small><span id="question-texte"></span><button class="lien" type="button" id="retirer-question">Retirer</button></div>
+    <section class="chat" aria-label="Chat du live">
+      <div class="chat-tete"><span>Chat</span><span style="font-size:12px;color:var(--ink-3);font-weight:400">Survole un message pour le modérer</span></div>
+      <div class="chat-liste" id="liste"></div>
+      <form class="chat-form" id="form-chat" autocomplete="off">
+        <input id="message" maxlength="200" placeholder="Écrire à tout le monde" aria-label="Ton message">
+        <button class="btn" type="submit">Envoyer</button>
+      </form>
+    </section>
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/livekit-client@2.23.0/dist/livekit-client.umd.js"></script>
+<script src="/live/commun.js"></script>
+<script src="/live/slides.js"></script>
+<script>
+(function () {
+  "use strict";
+  var C = window.LiveCommun, LK = window.LivekitClient, CONF = window.LIVE || { slides: [] };
+  var SLIDES = CONF.slides || [];
+  var $ = function (id) { return document.getElementById(id); };
+
+  var room = null, motDePasse = "", monNom = "", index = 0;
+  var etat = { etat: "attente", slide: "0", offre: "", question: "", chat: "" };
+  var historique = [];            /* les derniers messages visibles, envoyés aux retardataires */
+  var debut = null, minuteur = null, verrouEcran = null;
+
+  try { $("nom").value = localStorage.getItem("live-studio-nom") || CONF.animateur || ""; } catch (e) {}
+
+  function erreur(t) { $("erreur-studio").textContent = t || ""; }
+
+  /* ── Connexion ── */
+  $("form-connexion").addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    $("erreur").textContent = "";
+    $("entrer").disabled = true;
+    motDePasse = $("mdp").value;
+    monNom = $("nom").value.trim() || CONF.animateur || "Animateur";
+    try { localStorage.setItem("live-studio-nom", monNom); } catch (e) {}
+    fetch("/api/live", { method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "jeton", role: "animateur", motDePasse: motDePasse, nom: monNom }) })
+      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { ok: r.ok, j: j }; }); })
+      .then(function (x) {
+        if (!x.ok) throw new Error(x.j && x.j.erreur || "Connexion impossible.");
+        room = new LK.Room({
+          publishDefaults: { audioPreset: LK.AudioPresets.speech, dtx: true, red: true },
+          audioCaptureDefaults: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }
+        });
+        branche(room);
+        return room.connect(x.j.url, x.j.jeton);
+      })
+      .then(function () {
+        $("connexion").hidden = true;
+        $("studio").hidden = false;
+        /* On reprend l'état si on revient après une coupure. */
+        var a = room.localParticipant.attributes || {};
+        if (a.etat) etat = Object.assign(etat, a);
+        index = Math.max(0, Math.min(SLIDES.length - 1, parseInt(etat.slide, 10) || 0));
+        if (etat.etat === "fin") etat.etat = "attente";
+        publie({ etat: etat.etat, slide: String(index) });
+        affiche();
+      })
+      .catch(function (e) {
+        $("erreur").textContent = (e && e.message) || "Connexion impossible.";
+        $("entrer").disabled = false;
+      });
+  });
+
+  function publie(changes) {
+    Object.keys(changes).forEach(function (k) { etat[k] = changes[k]; });
+    if (!room) return Promise.resolve();
+    return room.localParticipant.setAttributes(changes).catch(function () { erreur("L'état n'a pas été envoyé. Vérifie ta connexion."); });
+  }
+
+  function branche(r) {
+    var E = LK.RoomEvent;
+    r.on(E.ParticipantConnected, function (p) {
+      compte();
+      /* Le retardataire reçoit les derniers messages du chat. */
+      if (historique.length) r.localParticipant.publishData(C.encode({ messages: historique }), { reliable: true, topic: "historique", destinationIdentities: [p.identity] }).catch(function () {});
+    });
+    r.on(E.ParticipantDisconnected, compte);
+    r.on(E.DataReceived, function (donnees, p, kind, topic) {
+      if (topic !== "chat" || !p) return;
+      var o = C.decode(donnees);
+      var t = o && C.texteChat(o.texte);
+      if (!t) return;
+      ajouteMessage({ id: String(o.id || C.idMessage()).replace(/[^a-z0-9]/gi, "").slice(0, 20), nom: p.name || "Anonyme", texte: t, de: p.identity, anim: false });
+    });
+    r.on(E.LocalTrackPublished, majMicro);
+    r.on(E.LocalTrackUnpublished, majMicro);
+    r.on(E.TrackMuted, majMicro);
+    r.on(E.TrackUnmuted, majMicro);
+    r.on(E.ActiveSpeakersChanged, function (qui) {
+      $("niveau").classList.toggle("parle", qui.some(function (p) { return p.identity === C.ANIMATEUR; }));
+    });
+    r.on(E.Reconnecting, function () { erreur("Connexion instable, je me reconnecte…"); });
+    r.on(E.Reconnected, function () { erreur(""); });
+    r.on(E.Disconnected, function () {
+      $("pastille").textContent = "Déconnecté";
+      $("pastille").classList.remove("direct");
+      if (etat.etat !== "fin") erreur("Tu as été déconnecté. Recharge la page et reconnecte-toi : le live reprendra là où il en était.");
+    });
+  }
+
+  function compte() {
+    if (!room) return;
+    var n = room.remoteParticipants.size;
+    $("compte").textContent = n + (n > 1 ? " spectateurs" : " spectateur");
+  }
+
+  /* ── Les slides ── */
+  function affiche() {
+    C.rendSlide($("scene"), SLIDES, index);
+    C.rendSlide($("scene-suiv"), SLIDES, index + 1);
+    var s = SLIDES[index] || {}, suiv = SLIDES[index + 1];
+    $("num").textContent = (index + 1) + " / " + SLIDES.length;
+    $("notes").textContent = s.notes || "Pas de notes pour cette slide.";
+    $("titre-suiv").textContent = suiv ? (suiv.titre || suiv.grand || "") : "C'était la dernière slide.";
+    $("prec").disabled = index <= 0;
+    $("suiv").disabled = index >= SLIDES.length - 1;
+    $("offre").textContent = etat.offre === "1" ? "Masquer l'offre" : "Afficher l'offre";
+    $("offre").classList.toggle("actif", etat.offre === "1");
+    $("chat-bascule").textContent = etat.chat === "ferme" ? "Ouvrir le chat" : "Fermer le chat";
+    var direct = etat.etat === "direct";
+    $("lancer").hidden = direct;
+    $("terminer").hidden = !direct;
+    $("pastille").textContent = direct ? "En direct" : (etat.etat === "fin" ? "Terminé" : "Pas encore en direct");
+    $("pastille").classList.toggle("direct", direct);
+    compte();
+    majMicro();
+  }
+
+  function va(i) {
+    if (!room || i < 0 || i >= SLIDES.length) return;
+    index = i;
+    var changes = { slide: String(i) };
+    /* Une slide marquée « offre » affiche le bouton chez tout le monde. */
+    if (SLIDES[i].offre && etat.offre !== "1") changes.offre = "1";
+    publie(changes);
+    affiche();
+  }
+  $("prec").addEventListener("click", function () { va(index - 1); });
+  $("suiv").addEventListener("click", function () { va(index + 1); });
+
+  document.addEventListener("keydown", function (ev) {
+    if (!room || /input|textarea/i.test(document.activeElement && document.activeElement.tagName)) return;
+    if (ev.key === "ArrowRight" || ev.key === "PageDown" || ev.key === " ") { ev.preventDefault(); va(index + 1); }
+    else if (ev.key === "ArrowLeft" || ev.key === "PageUp") { ev.preventDefault(); va(index - 1); }
+    else if (ev.key === "m" || ev.key === "M") { basculeMicro(); }
+    else if (ev.key === "o" || ev.key === "O") { $("offre").click(); }
+  });
+
+  /* ── Le micro ── */
+  function microActif() { return !!(room && room.localParticipant.isMicrophoneEnabled); }
+  function majMicro() {
+    var on = microActif();
+    $("micro-t").textContent = on ? "Micro ouvert" : "Micro coupé";
+    $("micro").classList.toggle("actif", on);
+    $("micro").classList.toggle("coupe", !on && etat.etat === "direct");
+  }
+  function basculeMicro() {
+    if (!room) return Promise.resolve();
+    erreur("");
+    return room.localParticipant.setMicrophoneEnabled(!microActif())
+      .then(majMicro)
+      .catch(function () { erreur("Le micro est refusé. Autorise-le dans ton navigateur (l'icône à gauche de l'adresse), puis réessaie."); });
+  }
+  $("micro").addEventListener("click", basculeMicro);
+
+  /* ── Lancer et terminer ── */
+  $("lancer").addEventListener("click", function () {
+    var go = microActif() ? Promise.resolve() : basculeMicro();
+    go.then(function () {
+      publie({ etat: "direct", slide: String(index) });
+      debut = debut || Date.now();
+      clearInterval(minuteur);
+      minuteur = setInterval(chrono, 1000);
+      if (navigator.wakeLock) navigator.wakeLock.request("screen").then(function (v) { verrouEcran = v; }).catch(function () {});
+      affiche();
+    });
+  });
+  $("terminer").addEventListener("click", function () {
+    if (!confirm("Terminer le live pour tout le monde ?")) return;
+    publie({ etat: "fin" }).then(function () {
+      clearInterval(minuteur);
+      if (verrouEcran) verrouEcran.release().catch(function () {});
+      affiche();
+      setTimeout(function () { room.localParticipant.setMicrophoneEnabled(false).catch(function () {}); }, 1500);
+    });
+  });
+  function chrono() {
+    var s = Math.floor((Date.now() - debut) / 1000);
+    var h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), sec = s % 60;
+    $("chrono").textContent = (h ? h + ":" : "") + String(m).padStart(2, "0") + ":" + String(sec).padStart(2, "0");
+  }
+
+  $("offre").addEventListener("click", function () { publie({ offre: etat.offre === "1" ? "" : "1" }); affiche(); });
+  $("chat-bascule").addEventListener("click", function () { publie({ chat: etat.chat === "ferme" ? "" : "ferme" }); affiche(); });
+
+  window.addEventListener("beforeunload", function (ev) { if (etat.etat === "direct") { ev.preventDefault(); ev.returnValue = ""; } });
+
+  /* ── Le chat et sa modération ── */
+  function ajouteMessage(m) {
+    historique.push(m);
+    if (historique.length > 40) historique.shift();
+    var n = C.rendMessage(m);
+    if (!m.anim) {
+      var act = C.el("div", "actions");
+      var enAvant = C.el("button", null, "Mettre en avant"); enAvant.type = "button";
+      enAvant.addEventListener("click", function () { mettreEnAvant(m); });
+      var masquer = C.el("button", null, "Masquer"); masquer.type = "button";
+      masquer.addEventListener("click", function () { masque(m.id); });
+      var couper = C.el("button", "danger", "Couper son chat"); couper.type = "button";
+      couper.addEventListener("click", function () { coupe(m); });
+      act.appendChild(enAvant); act.appendChild(masquer); act.appendChild(couper);
+      n.appendChild(act);
+    }
+    C.ajouteEnBas($("liste"), n);
+  }
+
+  function mettreEnAvant(m) {
+    publie({ question: JSON.stringify({ nom: m.nom, texte: m.texte }) });
+    $("question").hidden = false;
+    $("question-texte").textContent = m.nom + " : " + m.texte;
+  }
+  $("retirer-question").addEventListener("click", function () { publie({ question: "" }); $("question").hidden = true; });
+
+  function masque(id) {
+    historique = historique.filter(function (x) { return x.id !== id; });
+    var n = $("liste").querySelector('[data-id="' + id + '"]');
+    if (n) n.remove();
+    room.localParticipant.publishData(C.encode({ id: id }), { reliable: true, topic: "masquer" }).catch(function () {});
+  }
+
+  function coupe(m) {
+    if (!confirm("Couper le chat de " + m.nom + " ? Ses messages seront masqués.")) return;
+    fetch("/api/live", { method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "chat", motDePasse: motDePasse, identite: m.de, autorise: false }) })
+      .then(function (r) { if (!r.ok) throw new Error(); })
+      .then(function () {
+        historique.filter(function (x) { return x.de === m.de; }).forEach(function (x) { masque(x.id); });
+      })
+      .catch(function () { erreur("Impossible de couper son chat. Masque ses messages à la main."); });
+  }
+
+  $("form-chat").addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    var t = C.texteChat($("message").value);
+    if (!t || !room) return;
+    var m = { id: C.idMessage(), texte: t };
+    room.localParticipant.publishData(C.encode(m), { reliable: true, topic: "chat" }).then(function () {
+      ajouteMessage({ id: m.id, nom: monNom, texte: t, de: C.ANIMATEUR, anim: true });
+      $("message").value = "";
+    }).catch(function () { erreur("Ton message n'est pas parti."); });
+  });
+})();
+</script>
+</body>
+</html>
