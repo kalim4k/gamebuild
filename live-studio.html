@@ -217,6 +217,7 @@ body{ min-height: 100dvh; }
   var etat = { etat: "attente", slide: "0", offre: "", question: "", chat: "" };
   var historique = [];           /* les derniers messages visibles, envoyés aux retardataires */
   var nonLus = 0, debut = null, minuteur = null, verrouEcran = null, toastMinuteur = null;
+  var enreg = null;              /* l'enregistrement en cours : { recorder, morceaux, t0, date, type, evenements } */
 
   try { $("nom").value = localStorage.getItem("live-studio-nom") || CONF.animateur || ""; } catch (e) {}
 
@@ -360,6 +361,7 @@ body{ min-height: 100dvh; }
     /* Une slide marquée « offre » affiche le bouton chez tout le monde. */
     if (SLIDES[i].offre && etat.offre !== "1") changes.offre = "1";
     publie(changes);
+    note(changes.offre ? { slide: i, offre: true } : { slide: i });
     affiche();
   }
   $("prec").addEventListener("click", function () { va(index - 1); });
@@ -419,7 +421,7 @@ body{ min-height: 100dvh; }
   function basculeMicro() {
     if (!room) return Promise.resolve();
     return room.localParticipant.setMicrophoneEnabled(!microActif())
-      .then(majActions)
+      .then(function () { majActions(); if (etat.etat === "direct" && microActif()) demarreEnregistrement(); })
       .catch(function () { toast("Le micro est refusé. Autorise-le pour ce site dans les réglages du navigateur, puis réessaie.", true); });
   }
   $("micro").addEventListener("click", basculeMicro);
@@ -433,13 +435,14 @@ body{ min-height: 100dvh; }
         if (verrouEcran) verrouEcran.release().catch(function () {});
         majActions();
         setTimeout(function () { room.localParticipant.setMicrophoneEnabled(false).then(majActions).catch(function () {}); }, 1500);
-        toast("Le live est terminé.");
+        arreteEnregistrement().then(finDuLive);
       });
       return;
     }
     (microActif() ? Promise.resolve() : basculeMicro()).then(function () {
       if (!microActif()) return;   /* pas de live sans micro */
       publie({ etat: "direct", slide: String(index) });
+      demarreEnregistrement();
       debut = debut || Date.now();
       clearInterval(minuteur);
       minuteur = setInterval(chrono, 1000);
@@ -463,7 +466,120 @@ body{ min-height: 100dvh; }
     if (!microActif()) toast("Ton micro est coupé : touche « Micro » pour reprendre.", true);
   });
 
-  $("offre").addEventListener("click", function () { if (room) { publie({ offre: etat.offre === "1" ? "" : "1" }); majActions(); } });
+  $("offre").addEventListener("click", function () { if (room) { publie({ offre: etat.offre === "1" ? "" : "1" }); note({ offre: etat.offre === "1" }); majActions(); } });
+
+  /* ── L'enregistrement pour la rediffusion ──
+     Le téléphone enregistre ta voix pendant le live, et note à quel moment
+     chaque slide et l'offre apparaissent. Rien ne part tant que tu n'as pas
+     touché « Publier la rediffusion » à la fin. */
+  function typeAudio() {
+    if (!window.MediaRecorder) return null;
+    var choix = ["audio/mp4;codecs=mp4a.40.2", "audio/mp4", "audio/webm;codecs=opus", "audio/webm"];
+    for (var i = 0; i < choix.length; i++) if (MediaRecorder.isTypeSupported(choix[i])) return choix[i];
+    return "";
+  }
+
+  function demarreEnregistrement() {
+    if (enreg || !room) return;
+    var LK = window.LivekitClient;
+    var pub = room.localParticipant.getTrackPublication(LK && LK.Track ? LK.Track.Source.Microphone : "microphone");
+    var piste = pub && pub.track && pub.track.mediaStreamTrack;
+    var type = typeAudio();
+    if (!piste || type === null) { toast("Ce navigateur ne peut pas enregistrer la rediffusion. Le live, lui, marche.", true); return; }
+    try {
+      var rec = new MediaRecorder(new MediaStream([piste]), type ? { mimeType: type, audioBitsPerSecond: 32000 } : { audioBitsPerSecond: 32000 });
+      enreg = { recorder: rec, morceaux: [], t0: Date.now(), date: new Date(), type: rec.mimeType || type || "audio/webm",
+                evenements: [{ t: 0, slide: index, offre: etat.offre === "1" }] };
+      rec.ondataavailable = function (e) { if (e.data && e.data.size) enreg.morceaux.push(e.data); };
+      rec.start(5000);
+    } catch (e) {
+      enreg = null;
+      toast("L'enregistrement de la rediffusion n'a pas pu démarrer. Le live, lui, marche.", true);
+    }
+  }
+
+  function note(evt) {
+    if (!enreg) return;
+    evt.t = Date.now() - enreg.t0;
+    enreg.evenements.push(evt);
+  }
+
+  function arreteEnregistrement() {
+    return new Promise(function (ok) {
+      if (!enreg) { ok(null); return; }
+      var e = enreg;
+      e.duree = Date.now() - e.t0;
+      e.recorder.onstop = function () { ok(e); };
+      try { e.recorder.stop(); } catch (x) { ok(e); }
+    });
+  }
+
+  function minutes(ms) { var m = Math.round(ms / 60000); return m < 1 ? "moins d'une minute" : m + " min"; }
+
+  /* La feuille de fin : publier, télécharger, ou ne rien faire. */
+  function finDuLive(e) {
+    if (!e || !e.morceaux.length) { toast("Le live est terminé."); return; }
+    var base = e.type.split(";")[0];
+    var fichier = new Blob(e.morceaux, { type: base });
+    var ext = base === "audio/mp4" ? "m4a" : base === "audio/ogg" ? "ogg" : "webm";
+    var d = $("menu");
+    d.textContent = ""; d.hidden = false;
+    var voile = C.el("div", "voile"); voile.style.zIndex = 9;
+    var boite = C.el("div", "menu");
+    var ap = C.el("div", "apercu", "Ton live est enregistré (" + minutes(e.duree) + ", " + (fichier.size / 1048576).toFixed(1) + " Mo). Publier la rediffusion ? Elle sera rejouée sur ton site, sans consommer de minutes LiveKit.");
+    var g = C.el("div", "groupe");
+    var publier = C.el("button", null, "Publier la rediffusion"); publier.type = "button";
+    var telecharger = C.el("a", null, "Télécharger le fichier");
+    telecharger.href = URL.createObjectURL(fichier);
+    telecharger.download = "live-" + e.date.toISOString().slice(0, 10) + "." + ext;
+    telecharger.style.cssText = "display:grid;place-items:center;min-height:54px;border-top:1px solid var(--hair);color:var(--blue);font-size:17px;text-decoration:none";
+    var non = C.el("button", "danger", "Ne pas publier"); non.type = "button";
+    g.appendChild(publier); g.appendChild(telecharger); g.appendChild(non);
+    var fait = false;
+    function ferme() { d.hidden = true; d.textContent = ""; }
+    non.addEventListener("click", function () {
+      if (fait || confirm("Ne pas publier cette rediffusion ? Tu peux encore télécharger le fichier avant.")) ferme();
+    });
+    publier.addEventListener("click", function () {
+      if (fait) { window.open("/rediffusion", "_blank", "noopener"); return; }
+      publier.disabled = true; non.disabled = true;
+      envoie(e, fichier, base, ext, function (pc) { publier.textContent = "Envoi… " + pc + " %"; })
+        .then(function () {
+          fait = true;
+          ap.textContent = "La rediffusion est en ligne.";
+          publier.textContent = "Voir la rediffusion";
+          publier.disabled = false;
+          non.textContent = "Fermer"; non.className = ""; non.disabled = false;
+        })
+        .catch(function (err) {
+          ap.textContent = "L'envoi a échoué : " + ((err && err.message) || "erreur inconnue") + ". Réessaie, ou télécharge le fichier pour ne rien perdre.";
+          publier.textContent = "Réessayer"; publier.disabled = false; non.disabled = false;
+        });
+    });
+    boite.appendChild(ap); boite.appendChild(g);
+    d.appendChild(voile); d.appendChild(boite);
+  }
+
+  function envoie(e, fichier, base, ext, progres) {
+    var stamp = e.date.toISOString().slice(0, 16).replace(":", "-");
+    var options = function (type) {
+      return { access: "public", handleUploadUrl: "/api/rediffusion", clientPayload: JSON.stringify({ motDePasse: motDePasse }), contentType: type };
+    };
+    return import("/live/vendor/blob-client.js").then(function (B) {
+      var o = options(base);
+      o.multipart = fichier.size > 20 * 1048576;
+      o.onUploadProgress = function (p) { progres(Math.round(p.percentage)); };
+      return B.upload("rediffusions/" + stamp + "-voix." + ext, fichier, o).then(function (voix) {
+        var meta = {
+          version: 1, titre: CONF.titre || "Live", date: e.date.toISOString(), duree: e.duree,
+          audio: voix.url, type: base, evenements: e.evenements,
+          slides: SLIDES, lienOffre: CONF.lienOffre || "", lienChaine: CONF.lienChaine || ""
+        };
+        var json = new Blob([JSON.stringify(meta)], { type: "application/json" });
+        return B.upload("rediffusions/" + stamp + "-live.json", json, options("application/json"));
+      });
+    });
+  }
   $("chat-bascule").addEventListener("click", function () { publie({ chat: etat.chat === "ferme" ? "" : "ferme" }); majActions(); });
 
   window.addEventListener("beforeunload", function (ev) { if (etat.etat === "direct") { ev.preventDefault(); ev.returnValue = ""; } });

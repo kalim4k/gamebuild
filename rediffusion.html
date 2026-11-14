@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rediffusion du live</title>
+<meta name="description" content="La rediffusion du live Game Build : crée ton propre jeu avec l'IA, juste avec ton téléphone.">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ccircle cx=%2750%27 cy=%2750%27 r=%2750%27 fill=%27%230071e3%27/%3E%3Cpath d=%27M40 30v40l32-20z%27 fill=%27white%27/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/live/live.css">
+<style>
+/* ══════════════════════════════════════════════════════════
+   GAME BUILD — la rediffusion d'un live
+   Rejoue la voix enregistrée pendant le live et remet chaque slide
+   (et le bouton d'offre) au moment où elle était apparue. Tout vient
+   du stockage Vercel Blob : aucune minute LiveKit n'est consommée.
+   Sans « ?id= », la page montre la rediffusion la plus récente.
+   ══════════════════════════════════════════════════════════ */
+.tete{ display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 16px; border-bottom: 1px solid var(--hair); }
+.tete h1{ margin: 0; font-size: 17px; font-weight: 600; }
+.tete .pastille::before{ background: var(--blue); }
+.tete .pastille{ color: var(--ink-2); }
+
+.contenu{ max-width: 960px; margin: 0 auto; display: grid; gap: 0; }
+.cadre{ position: relative; }
+.lancer{ position: absolute; inset: 0; z-index: 2; display: grid; place-items: center; background: rgba(0,0,0,.55); border: 0; cursor: pointer; color: #fff; }
+.lancer span{ display: inline-flex; align-items: center; gap: 10px; min-height: 56px; padding: 14px 26px; border-radius: 980px; background: var(--blue-bg); font-size: 18px; font-weight: 600; }
+.lancer svg{ width: 22px; height: 22px; }
+
+.lecteur{ display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center; padding: 12px 16px; background: var(--bg-2); }
+.lecteur button{ width: 44px; height: 44px; border-radius: 50%; border: 0; background: var(--bg-3); color: var(--ink); display: grid; place-items: center; cursor: pointer; }
+.lecteur button svg{ width: 20px; height: 20px; }
+.lecteur input{ width: 100%; accent-color: var(--blue); }
+.lecteur .temps{ font-size: 13px; color: var(--ink-2); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+.offre{ display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; background: var(--bg-2); border-top: 1px solid var(--hair); }
+.offre p{ margin: 0; font-size: 14px; color: var(--ink-2); }
+.offre .btn{ flex: none; }
+.info{ padding: 18px 16px 40px; color: var(--ink-2); font-size: 15px; display: grid; gap: 8px; }
+.info a{ color: var(--blue); }
+
+@media (min-width: 900px){
+  .contenu{ padding: 24px; gap: 12px; }
+  .cadre .scene, .lancer{ border-radius: 18px; }
+  .lecteur, .offre{ border-radius: 14px; border: 0; }
+}
+</style>
+
+<!-- Meta Pixel -->
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '4451955808377862');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none" alt=""
+src="https://www.facebook.com/tr?id=4451955808377862&ev=PageView&noscript=1"></noscript>
+</head>
+<body>
+
+<header class="tete">
+  <h1 id="titre">Rediffusion du live</h1>
+  <span class="pastille" id="pastille">Rediffusion</span>
+</header>
+
+<main class="contenu">
+  <div class="cadre">
+    <div class="scene" id="scene"><div class="vide">Chargement de la rediffusion…</div></div>
+    <button class="lancer" type="button" id="lancer" hidden>
+      <span><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg><b id="lancer-t">Écouter la rediffusion</b></span>
+    </button>
+  </div>
+  <div class="lecteur" id="lecteur" hidden>
+    <button type="button" id="lecture" aria-label="Lecture">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path id="icone" d="M8 5v14l11-7z"/></svg>
+    </button>
+    <input type="range" id="barre" min="0" max="1000" value="0" step="1" aria-label="Position dans la rediffusion">
+    <span class="temps" id="temps">0:00</span>
+  </div>
+  <div class="offre" id="offre" hidden>
+    <p>Rejoins le groupe d'accompagnement.</p>
+    <a class="btn" id="bouton-offre" href="/rejoindre" target="_blank" rel="noopener">Rejoindre le groupe</a>
+  </div>
+  <div class="info" id="info"></div>
+  <audio id="audio" preload="metadata"></audio>
+</main>
+
+<script src="/live/commun.js"></script>
+<script src="/live/slides.js"></script>
+<script>
+(function () {
+  "use strict";
+  var C = window.LiveCommun, CONF = window.LIVE || {};
+  var $ = function (id) { return document.getElementById(id); };
+  var audio = $("audio"), meta = null, slides = [], evts = [], courante = -1, prix = null, glisse = false, vu = false;
+  var PLAY = "M8 5v14l11-7z", PAUSE = "M7 5h4v14H7zM13 5h4v14h-4z";
+
+  function message(t) { $("scene").textContent = ""; $("scene").appendChild(C.el("div", "vide", t)); }
+  function hms(s) {
+    s = Math.max(0, Math.floor(s || 0));
+    var h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), x = s % 60;
+    return (h ? h + ":" + String(m).padStart(2, "0") : m) + ":" + String(x).padStart(2, "0");
+  }
+
+  fetch("/api/places").then(function (r) { return r.ok ? r.json() : null; }).then(function (p) {
+    if (p && Number.isFinite(p.prix)) {
+      prix = p.prix;
+      $("bouton-offre").textContent = "Rejoindre le groupe · " + p.prix.toLocaleString("fr-FR").replace(/ /g, " ") + " F";
+    }
+  }).catch(function () {});
+
+  var id = new URLSearchParams(location.search).get("id");
+  fetch("/api/rediffusion").then(function (r) { return r.json(); }).then(function (liste) {
+    var r = (liste.rediffusions || []).filter(function (x) { return !id || x.id === id; })[0];
+    if (!r) throw new Error("vide");
+    return fetch(r.url).then(function (x) { if (!x.ok) throw new Error("meta"); return x.json(); });
+  }).then(function (m) {
+    meta = m;
+    slides = Array.isArray(m.slides) && m.slides.length ? m.slides : (CONF.slides || []);
+    evts = (m.evenements || []).slice().sort(function (a, b) { return a.t - b.t; });
+    audio.src = m.audio;
+    var date = new Date(m.date);
+    var jour = date.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" });
+    $("titre").textContent = m.titre || "Rediffusion du live";
+    $("lancer-t").textContent = "Écouter la rediffusion" + (m.duree ? " · " + hms(m.duree / 1000) : "");
+    $("info").textContent = "";
+    $("info").appendChild(C.el("p", null, "C'est la rediffusion du live du " + jour + "."));
+    var q = C.el("p", null, "Une question ? Pose-la sur ");
+    var a = C.el("a", null, "la chaîne WhatsApp"); a.href = m.lienChaine || CONF.lienChaine || "/chaine";
+    q.appendChild(a); q.appendChild(document.createTextNode("."));
+    $("info").appendChild(q);
+    $("bouton-offre").href = m.lienOffre || CONF.lienOffre || "/rejoindre";
+    $("lancer").hidden = false;
+    $("lecteur").hidden = false;
+    applique(0);
+  }).catch(function () {
+    message("Pas encore de rediffusion. Le prochain live est annoncé sur la chaîne WhatsApp.");
+  });
+
+  /* L'état au temps t : la dernière slide et le dernier état de l'offre notés avant t. */
+  function applique(sec) {
+    var t = sec * 1000, slide = 0, offre = false;
+    for (var i = 0; i < evts.length && evts[i].t <= t; i++) {
+      if (typeof evts[i].slide === "number") slide = evts[i].slide;
+      if (typeof evts[i].offre === "boolean") offre = evts[i].offre;
+    }
+    if (slide !== courante && slides[slide]) { C.rendSlide($("scene"), slides, slide); courante = slide; }
+    $("offre").hidden = !offre;
+  }
+
+  function lit() {
+    audio.play().then(function () {
+      $("lancer").hidden = true;
+      if (!vu) { vu = true; try { if (window.fbq) fbq("track", "ViewContent", { content_name: "rediffusion" }); } catch (e) {} }
+    }).catch(function () { $("lancer").hidden = false; });
+  }
+  $("lancer").addEventListener("click", lit);
+  $("lecture").addEventListener("click", function () { if (audio.paused) lit(); else audio.pause(); });
+  document.addEventListener("keydown", function (ev) {
+    if (ev.key === " " && meta && document.activeElement.tagName !== "INPUT") { ev.preventDefault(); $("lecture").click(); }
+  });
+
+  audio.addEventListener("play", function () { $("icone").setAttribute("d", PAUSE); });
+  audio.addEventListener("pause", function () { $("icone").setAttribute("d", PLAY); });
+  audio.addEventListener("ended", function () { $("icone").setAttribute("d", PLAY); });
+  function duree() { return Number.isFinite(audio.duration) && audio.duration > 0 ? audio.duration : (meta && meta.duree ? meta.duree / 1000 : 0); }
+  audio.addEventListener("timeupdate", function () {
+    applique(audio.currentTime);
+    if (!glisse && duree()) $("barre").value = Math.round(audio.currentTime / duree() * 1000);
+    $("temps").textContent = hms(audio.currentTime) + " / " + hms(duree());
+  });
+  audio.addEventListener("loadedmetadata", function () { $("temps").textContent = "0:00 / " + hms(duree()); });
+  $("barre").addEventListener("input", function () {
+    glisse = true;
+    var s = $("barre").value / 1000 * duree();
+    applique(s);
+    $("temps").textContent = hms(s) + " / " + hms(duree());
+  });
+  $("barre").addEventListener("change", function () {
+    glisse = false;
+    if (duree()) audio.currentTime = $("barre").value / 1000 * duree();
+  });
+
+  $("bouton-offre").addEventListener("click", function () {
+    try { if (window.fbq) fbq("track", "InitiateCheckout", { content_name: "accompagnement", currency: "XOF", value: prix || undefined }); } catch (e) {}
+  });
+})();
+</script>
+</body>
+</html>
