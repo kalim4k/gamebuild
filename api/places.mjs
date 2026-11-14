@@ -8,13 +8,14 @@
    Sans clé, ou si Chariow ne répond pas, la fonction renvoie 503 et la
    page n'affiche aucun nombre : jamais un chiffre inventé.
 
-   À chaque palier de prix, change PRIX_ACTUEL, SEUIL et PRIX_SUIVANT. */
+   À chaque palier de prix, change PRIX_ACTUEL, SEUIL et PRIX_SUIVANT.
+   SEUIL à null : dernier palier, la page n'affiche aucun compte à rebours. */
 
 const PRODUIT = "prd_iiq2laak";
 const VENTES_AU_LANCEMENT = 171;   /* les ventes de l'ancien pack, avant le groupe */
-const PRIX_ACTUEL = 3500;          /* le prix du palier en cours : sans lui sur Chariow, pas de compte à rebours */
-const SEUIL = 150;                 /* le nombre de membres qui déclenche la hausse */
-const PRIX_SUIVANT = 4500;         /* 1 990 F jusqu'à 50 membres, 2 500 F jusqu'à 100, 3 500 F jusqu'à 150, puis 4 500 F */
+const PRIX_ACTUEL = 4500;          /* le prix du palier en cours : sans lui sur Chariow, pas de compte à rebours */
+const SEUIL = null;                /* le nombre de membres qui déclenche la hausse ; null : pas de palier suivant */
+const PRIX_SUIVANT = null;         /* 1 990 F jusqu'à 50 membres, 2 500 F jusqu'à 100, 3 500 F jusqu'à 150, puis 4 500 F (dernier palier) */
 
 export default async function handler(req, res) {
   if (req.method !== "GET") { res.status(405).json({ erreur: "GET seulement" }); return; }
@@ -42,7 +43,7 @@ export default async function handler(req, res) {
 
     const membres = Math.max(0, vendus - VENTES_AU_LANCEMENT);
     /* Prix de Chariow différent du palier en cours (pas encore changé, ou déjà monté) : pas de compte à rebours. */
-    const restantes = prix !== PRIX_ACTUEL ? null : Math.max(0, SEUIL - membres);
+    const restantes = SEUIL == null || prix !== PRIX_ACTUEL ? null : Math.max(0, SEUIL - membres);
 
     res.setHeader("Cache-Control", "public, s-maxage=60, stale-while-revalidate=120");
     res.status(200).json({ prix, prixSuivant: PRIX_SUIVANT, seuil: SEUIL, membres, restantes });
