@@ -1,4 +1,4 @@
-/* Prépare la base pour les bonus (page /bonus, api/bonus.mjs) :
+/* Prépare la base pour les bonus (page après achat, api/bonus.mjs) :
    crée les trois tables, puis range le guide PDF (bonus 1) dans la base.
 
    Le guide est un produit payant : il ne va jamais dans le dépôt, qui est

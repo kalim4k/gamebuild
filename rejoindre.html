@@ -33,7 +33,9 @@
    chaîne, ou il tombe ici sans la connaître. Une seule chose à
    faire : payer pour rejoindre le groupe. Le nombre de places
    vient de Chariow (/api/places) : sans réponse, la page n'en
-   affiche aucun. Même système visuel que chaine.html.
+   affiche aucun. Les 2 bonus des 30 premiers membres (compteur
+   et section noire) ne s'affichent que si /api/places dit qu'il
+   en reste. Même système visuel que chaine.html.
    ══════════════════════════════════════════════════════════ */
 
 :root{
@@ -145,6 +147,31 @@ a{ color: var(--blue-ink); text-decoration: none; }
 .places-s{ font-size: 15px; line-height: 1.35; color: var(--ink-2); margin: 0; }
 .jauge{ height: 8px; border-radius: 8px; background: rgba(0,0,0,.08); overflow: hidden; }
 .jauge i{ display: block; height: 100%; width: 0; border-radius: 8px; background: var(--orange); transition: width .7s var(--ease); }
+
+/* ---------- Les 2 bonus des premiers membres ---------- */
+
+.bonus{ background: #000; color: #f5f5f7; }
+.bonus .eyebrow{ color: #ff8a3d; }
+.bonus .t-body{ color: #a1a1a6; }
+.bonus-grille{
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px;
+  width: 100%; max-width: 860px; margin-top: clamp(16px, 3vw, 28px); text-align: left;
+}
+.bonus-carte{ min-width: 0; border-radius: 22px; overflow: hidden; background: #1d1d1f; display: flex; flex-direction: column; }
+.bonus-image{ position: relative; aspect-ratio: 4 / 3; overflow: hidden; }
+.bonus-image img{ position: absolute; left: 7%; top: 7%; width: 86%; height: 86%; object-fit: contain; }
+.bonus-image-guide{ background: radial-gradient(circle at 30% 20%, #2a5bd7 0, #0b1d4d 55%, #050b1f 100%); }
+.bonus-image-guide img{ filter: drop-shadow(0 16px 28px rgba(0,0,0,.6)); }
+.bonus-image-visuel{ background: linear-gradient(160deg, #ffd27a 0%, #ff9a4d 60%, #f56a2b 100%); }
+.bonus-texte{ padding: 20px 22px 24px; display: grid; gap: 6px; }
+.bonus-num{ margin: 0; font-size: 13px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: #ff8a3d; }
+.bonus-texte h3{ margin: 0; font-size: 22px; line-height: 1.18; font-weight: 600; letter-spacing: -.01em; }
+.bonus-texte p:last-child{ margin: 0; font-size: 16px; line-height: 1.45; color: #a1a1a6; }
+.bonus-compte{ margin: 6px 0 0; font-size: 17px; font-weight: 600; color: #ff8a3d; }
+@media (max-width: 640px){
+  .bonus-grille{ grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  .bonus-image{ aspect-ratio: 16 / 10; }
+}
 
 
 /* ---------- Ce qu'on reçoit ---------- */
@@ -305,9 +332,46 @@ src="https://www.facebook.com/tr?id=4451955808377862&ev=PageView&noscript=1"
         <p class="places-s" id="places-s"></p>
       </div>
       <p class="places-s" id="places-repli" hidden></p>
+      <div class="places" id="bonus-places" hidden>
+        <p class="places-t" id="bonus-t"></p>
+        <div class="jauge" aria-hidden="true"><i id="bonus-jauge"></i></div>
+        <p class="places-s" id="bonus-s"></p>
+      </div>
       <a class="btn btn-lg js-payer" id="cta-haut" data-mesure="héros" href="https://kgpqinxc.mychariow.shop/prd_iiq2laak/checkout">Rejoindre le groupe</a>
       <p class="t-caption">Paiement par Mobile Money. Après le paiement, tu reçois le lien du groupe.</p>
     </div>
+  </div>
+</section>
+
+<!-- ═══════════════ LES 2 BONUS ═══════════════ -->
+<section class="bonus" id="bonus" hidden>
+  <div class="wrap stack">
+    <p class="eyebrow">Pour les 30 premiers membres</p>
+    <h2 class="t-head">2 bonus offerts, en plus du groupe.</h2>
+    <p class="t-body measure">Tu les reçois sur la page qui s'ouvre juste après ton paiement. Quand les 30&nbsp;places sont parties, ils ne sont plus offerts.</p>
+    <div class="bonus-grille">
+      <article class="bonus-carte">
+        <div class="bonus-image bonus-image-guide">
+          <img src="media/bonus-guide.webp" width="560" height="792" loading="lazy" alt="La couverture du guide Ton jeu en ligne, étape par étape">
+        </div>
+        <div class="bonus-texte">
+          <p class="bonus-num">Bonus 1</p>
+          <h3>Le guide pas à pas</h3>
+          <p>36 pages à suivre dans l'ordre&nbsp;: choisir ton jeu, le construire avec l'IA, le mettre en ligne, y mettre la publicité et faire venir tes joueurs. Avec les messages à copier et les listes à cocher.</p>
+        </div>
+      </article>
+      <article class="bonus-carte">
+        <div class="bonus-image bonus-image-visuel">
+          <img src="media/bonus-visuel.webp" width="480" height="480" loading="lazy" alt="Un personnage créé pour un jeu de vendeur de mangues">
+        </div>
+        <div class="bonus-texte">
+          <p class="bonus-num">Bonus 2</p>
+          <h3>Les visuels de ton jeu</h3>
+          <p>Tu décris ton jeu, et tu reçois en 2&nbsp;minutes son icône, son fond d'écran, son personnage, l'objet à ramasser et l'obstacle. Tu les donnes à l'IA, et ton jeu a son propre style dès le départ.</p>
+        </div>
+      </article>
+    </div>
+    <p class="bonus-compte" id="bonus-compte"></p>
   </div>
 </section>
 
@@ -430,8 +494,26 @@ var VALEUR_PIXEL  = 4500;
   /* ---------- Les places ----------
      Le nombre vient de Chariow. S'il ne vient pas, la phrase déjà écrite
      dans la page reste : elle est vraie sans chiffre du jour. */
+  /* ---------- Les 2 bonus ----------
+     Rien ne s'affiche tant que /api/places n'a pas dit qu'il en reste. */
+  function afficheBonus(b) {
+    if (!b || !(b.restantes > 0)) return;
+    var r = b.restantes;
+    var phrase = r > 1 ? "Plus que " + r + " places avec les 2 bonus" : "Plus qu'une place avec les 2 bonus";
+    $("bonus-t").textContent = phrase;
+    $("bonus-s").textContent = (b.prises ? b.prises + " sur " + b.places + " déjà prises. " : "") +
+      "Le guide pas à pas et les visuels de ton jeu, offerts aux " + b.places + " premiers membres.";
+    $("bonus-compte").textContent = phrase + ".";
+    $("dock-s").textContent = "2 bonus offerts : plus que " + r + (r > 1 ? " places" : " place");
+    $("cloture").textContent = "Rejoins le groupe et démarre avec la première vidéo. Les 2 bonus partent avec les " + b.places + " premiers : il en reste " + r + ".";
+    $("bonus-places").hidden = false;
+    $("bonus").hidden = false;
+    setTimeout(function () { $("bonus-jauge").style.width = Math.min(100, b.prises / b.places * 100) + "%"; }, 60);
+  }
+
   function affichePlaces(p) {
     if (!p || !Number.isFinite(p.prix)) return;
+    afficheBonus(p.bonus);
     VALEUR_PIXEL = p.prix;
     Array.prototype.forEach.call(document.querySelectorAll(".js-prix"), function (b) { b.textContent = montant(p.prix); });
     if (p.restantes == null) { $("places-repli").hidden = true; return; }

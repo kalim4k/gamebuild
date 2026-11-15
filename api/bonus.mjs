@@ -1,4 +1,4 @@
-/* Les bonus réservés aux premiers membres du groupe (page /bonus).
+/* Les bonus des 30 premiers membres, sur la page après achat (/bienvenue-r8m4t).
 
    Bonus 1 : le guide PDF, rangé dans la base (table bonus_fichiers), jamais
              dans le dépôt, qui est public.
@@ -6,57 +6,45 @@
              obstacle), créés par Kie AI (GPT Image 2) à partir de sa
              description, puis allégés en WebP et gardés dans la base.
 
-   Qui y a droit : les BONUS_PLACES premiers paiements réussis du groupe
-   (produit Chariow PRODUIT) à partir de BONUS_DEBUT. Le membre tape l'e-mail
-   ou le numéro de son paiement ; la fonction le cherche dans les ventes
-   Chariow et lui rend un jeton signé. Son contact n'est jamais enregistré.
+   Qui y a droit : la page après achat demande un accès (action « ouvrir »).
+   Tant que le groupe n'a pas dépassé BONUS_DEPART + BONUS_PLACES membres
+   (_membres.mjs), elle reçoit un jeton signé, gardé sur le téléphone. Au-delà,
+   les bonus ne s'affichent plus. Le nombre de séries d'images ne dépasse
+   jamais le nombre de membres arrivés depuis l'ouverture (+ MARGE).
 
    Variables :
-     CHARIOW_VENTES_KEY  clé Chariow avec sales.read et customers.pii.read
-                         (l'autre clé, CHARIOW_API_KEY, ne lit que les produits)
+     CHARIOW_API_KEY     le nombre de membres (droit products.read)
      KIE_AI_API          clé Kie AI, pour les images
      DATABASE_URL        la base Neon (tables : node scripts/init-bonus.mjs)
-     HASH_SEL            sert aussi à signer les jetons
-     ADMIN_MOT_DE_PASSE  ouvre un accès d'essai, sans achat
+     HASH_SEL            signe les jetons
 
-   POST {action: "acces", contact} ou {action: "acces", admin}  -> {jeton, ...état}
-   GET  ?j=                                                     -> état (et avance les images en cours)
-   POST {action: "generer", j, jeu}                             -> lance les 5 images
-   POST {action: "refaire", j, sorte}                           -> refait une image
-   GET  ?image=<id>[&dl=nom]                                    -> l'image (WebP)
-   GET  ?guide=1&j=                                             -> le guide PDF */
+   POST {action: "ouvrir"}               -> {jeton, ...état} ou {ferme: true}
+   GET  ?j=                              -> état (et avance les images en cours)
+   POST {action: "generer", j, jeu}      -> lance les 5 images
+   POST {action: "refaire", j, sorte}    -> refait une image
+   GET  ?image=<id>[&dl=nom]             -> l'image (WebP)
+   GET  ?guide=1&j=                      -> le guide PDF */
 
 import { neon } from "@neondatabase/serverless";
-import { createHash, createHmac, randomBytes, timingSafeEqual } from "node:crypto";
+import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 import sharp from "sharp";
+import { lisProduit, bonusDe, BONUS_PLACES } from "./_membres.mjs";
 
-const PRODUIT = "prd_iiq2laak";
-/* Le premier paiement qui compte, en UTC. null : les bonus ne sont pas encore ouverts. */
-const DEBUT = null;
-const BONUS_DEBUT = process.env.BONUS_DEBUT || DEBUT;
-const BONUS_PLACES = 25;
 const REFAITS_MAX = 2;          /* images refaites au choix du membre, en plus de la série */
 const ESSAIS_ECHEC = 3;         /* nouvelles tentatives gratuites quand Kie échoue */
 const ATTENTE_MAX = 10 * 60e3;  /* une image toujours pas prête au bout de 10 min est abandonnée */
+const MARGE = 5;               /* séries en plus du nombre de membres : Chariow compte parfois avec retard, et tes essais */
 
 const sql = process.env.DATABASE_URL ? neon(process.env.DATABASE_URL) : null;
-const CLE_VENTES = process.env.CHARIOW_VENTES_KEY || "";
 const CLE_KIE = process.env.KIE_AI_API || "";
-const CHARIOW = process.env.CHARIOW_API || "https://api.chariow.com/v1";
 const KIE = process.env.KIE_API || "https://api.kie.ai/api/v1";
-const SECRET = createHmac("sha256", process.env.HASH_SEL || CLE_VENTES || "bonus").update("gb-bonus-v1").digest();
+const SECRET = createHmac("sha256", process.env.HASH_SEL || process.env.DATABASE_URL || "bonus").update("gb-bonus-v2").digest();
 
 const SORTES = ["icone", "fond", "personnage", "objet", "obstacle"];
 const DETOUREES = new Set(["personnage", "objet", "obstacle"]);
 const NOMS_FICHIERS = { icone: "icone", fond: "fond", personnage: "personnage", objet: "objet", obstacle: "obstacle" };
 
 /* ---------- Outils ---------- */
-
-function egal(a, b) {
-  const x = createHash("sha256").update(String(a)).digest();
-  const y = createHash("sha256").update(String(b)).digest();
-  return timingSafeEqual(x, y);
-}
 
 function jetonPour(venteId) {
   const p = Buffer.from(JSON.stringify({ v: venteId, e: Date.now() + 180 * 864e5 })).toString("base64url");
@@ -81,48 +69,15 @@ function texte(v, min, max) {
   return t.length >= min ? t.slice(0, max) : null;
 }
 
-const chiffres = (s) => String(s || "").replace(/\D/g, "");
+/* ---------- Le nombre de membres, gardé 30 s ---------- */
 
-/* ---------- Chariow : les paiements qui ouvrent les bonus ---------- */
+let cache = { t: 0, p: null };
 
-let cache = { t: 0, ventes: null };
-
-async function ventesBonus() {
-  if (cache.ventes && Date.now() - cache.t < 60e3) return cache.ventes;
-  const debut = Date.parse(BONUS_DEBUT);
-  const vues = new Map();
-  for (const statut of ["completed", "settled"]) {
-    let curseur = null;
-    for (let page = 0; page < 20; page++) {
-      const u = new URL(CHARIOW + "/sales");
-      u.searchParams.set("status", statut);
-      u.searchParams.set("per_page", "100");
-      u.searchParams.set("from", BONUS_DEBUT.slice(0, 10));
-      if (curseur) u.searchParams.set("cursor", curseur);
-      const r = await fetch(u, { headers: { Authorization: "Bearer " + CLE_VENTES, Accept: "application/json" }, signal: AbortSignal.timeout(8000) });
-      if (!r.ok) throw new Error("Chariow a répondu " + r.status);
-      const j = await r.json();
-      for (const v of j.data || []) {
-        if (!v || !v.id || !v.product || v.product.id !== PRODUIT) continue;
-        const quand = Date.parse(v.completed_at || v.created_at);
-        if (!(quand >= debut)) continue;
-        const c = v.customer || {};
-        vues.set(v.id, { id: v.id, quand, email: String(c.email || "").trim().toLowerCase(), tel: chiffres(c.phone && c.phone.number) });
-      }
-      if (!j.pagination || !j.pagination.has_more_pages || !j.pagination.next_cursor) break;
-      curseur = j.pagination.next_cursor;
-    }
-  }
-  const ventes = [...vues.values()].sort((a, b) => a.quand - b.quand);
-  cache = { t: Date.now(), ventes };
-  return ventes;
-}
-
-function correspond(v, contact) {
-  if (contact.includes("@")) return !!v.email && v.email === contact.trim().toLowerCase();
-  const c = chiffres(contact);
-  if (c.length < 8 || v.tel.length < 8) return false;
-  return v.tel.endsWith(c) || c.endsWith(v.tel);
+async function membres() {
+  if (cache.p && Date.now() - cache.t < 30e3) return cache.p;
+  const p = await lisProduit().catch((e) => { console.error("bonus: Chariow", e && e.message); return null; });
+  if (p) cache = { t: Date.now(), p };
+  return p;
 }
 
 /* ---------- Kie AI : les images ---------- */
@@ -240,7 +195,7 @@ async function avance(venteId) {
 /* ---------- L'état d'un membre ---------- */
 
 async function etat(venteId) {
-  const [a] = await sql`SELECT rang, test, jeu, refaits FROM bonus_acces WHERE vente_id = ${venteId}`;
+  const [a] = await sql`SELECT jeu, refaits FROM bonus_acces WHERE vente_id = ${venteId}`;
   if (!a) return null;
   const lignes = await sql`SELECT DISTINCT ON (sorte) id, sorte, version, etat FROM bonus_images
                            WHERE vente_id = ${venteId} ORDER BY sorte, version DESC`;
@@ -255,8 +210,7 @@ async function etat(venteId) {
     jeu: a.jeu ? { nom: a.jeu.nom } : null,
     images,
     refaitsRestants: Math.max(0, REFAITS_MAX - a.refaits),
-    places: BONUS_PLACES,
-    test: a.test
+    places: BONUS_PLACES
   };
 }
 
@@ -317,32 +271,14 @@ export default async function handler(req, res) {
     if (typeof corps === "string") { try { corps = JSON.parse(corps); } catch { corps = null; } }
     if (!corps || typeof corps !== "object") { res.status(400).json({ erreur: "Requête illisible." }); return; }
 
-    /* Retrouver le paiement */
-    if (corps.action === "acces") {
-      if (typeof corps.admin === "string" && corps.admin) {
-        if (!process.env.ADMIN_MOT_DE_PASSE || !egal(corps.admin, process.env.ADMIN_MOT_DE_PASSE)) {
-          res.status(403).json({ erreur: "mot-de-passe" }); return;
-        }
-        const venteId = "essai-" + randomBytes(5).toString("hex");
-        await sql`INSERT INTO bonus_acces (vente_id, rang, test) VALUES (${venteId}, 0, true)`;
-        res.status(200).json({ jeton: jetonPour(venteId), ...(await etat(venteId)) });
-        return;
-      }
-      if (!BONUS_DEBUT) { res.status(200).json({ erreur: "pas-ouvert" }); return; }
-      if (!CLE_VENTES) { res.status(503).json({ erreur: "indisponible" }); return; }
-      const contact = texte(corps.contact, 5, 120);
-      if (!contact) { res.status(400).json({ erreur: "contact" }); return; }
-      let ventes;
-      try { ventes = await ventesBonus(); } catch (e) {
-        console.error("bonus: Chariow", e && e.message);
-        res.status(503).json({ erreur: "indisponible" }); return;
-      }
-      const rang = ventes.findIndex((v) => correspond(v, contact));
-      if (rang < 0) { res.status(200).json({ erreur: "introuvable", depuis: BONUS_DEBUT }); return; }
-      if (rang >= BONUS_PLACES) { res.status(200).json({ erreur: "complet", places: BONUS_PLACES }); return; }
-      const venteId = ventes[rang].id;
-      await sql`INSERT INTO bonus_acces (vente_id, rang) VALUES (${venteId}, ${rang + 1})
-                ON CONFLICT (vente_id) DO UPDATE SET vu_le = now()`;
+    /* Ouvrir les bonus, depuis la page après achat */
+    if (corps.action === "ouvrir") {
+      const p = await membres();
+      if (!p) { res.status(503).json({ erreur: "indisponible" }); return; }
+      const b = bonusDe(p.membres);
+      if (b.prises > b.places) { res.status(200).json({ ferme: true, places: b.places }); return; }
+      const venteId = "m-" + randomBytes(8).toString("hex");
+      await sql`INSERT INTO bonus_acces (vente_id, rang) VALUES (${venteId}, ${b.prises})`;
       res.status(200).json({ jeton: jetonPour(venteId), ...(await etat(venteId)) });
       return;
     }
@@ -366,6 +302,10 @@ export default async function handler(req, res) {
       };
       const manque = Object.keys(jeu).filter((k) => !jeu[k]);
       if (manque.length) { res.status(400).json({ erreur: "champs", champs: manque }); return; }
+      const p = await membres();
+      const plafond = Math.min(BONUS_PLACES, p ? bonusDe(p.membres).prises : BONUS_PLACES) + MARGE;
+      const [series] = await sql`SELECT count(*)::int AS n FROM bonus_acces WHERE jeu IS NOT NULL`;
+      if (series.n >= plafond) { res.status(429).json({ erreur: "complet" }); return; }
       const [pris] = await sql`UPDATE bonus_acces SET jeu = ${JSON.stringify(jeu)}::jsonb WHERE vente_id = ${venteId} AND jeu IS NULL RETURNING vente_id`;
       if (!pris) { res.status(409).json({ erreur: "deja" }); return; }
       const lances = await Promise.allSettled(SORTES.map((s) => nouvelleImage(venteId, s, jeu)));

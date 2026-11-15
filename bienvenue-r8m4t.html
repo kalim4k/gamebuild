@@ -17,6 +17,11 @@
    bas du fichier : il est donc lisible dans le dépôt public, ce que
    l'utilisateur accepte, parce qu'il approuve chaque demande à la
    main. Adresse peu devinable et non indexée.
+
+   Les 2 bonus des 30 premiers membres (le guide PDF et les visuels
+   du jeu) s'affichent sous les étapes, tant que /api/bonus les
+   ouvre. Le jeton est gardé sur le téléphone et dans l'adresse
+   (#b=...), pour qu'il suive si la page est rouverte dans Chrome.
    ══════════════════════════════════════════════════════════ */
 
 :root{
@@ -114,6 +119,63 @@ h1{ font-size: clamp(32px, 7.4vw, 48px); line-height: 1.08; letter-spacing: -.01
 
 .note{ margin-top: 28px; font-size: 14px; line-height: 1.45; color: var(--ink-3); text-align: center; }
 
+/* ---------- Les 2 bonus ---------- */
+.bonus{ margin-top: 44px; display: grid; gap: 14px; }
+.bonus-tete{ text-align: center; display: grid; gap: 8px; justify-items: center; margin-bottom: 4px; }
+.bonus-sur{ font-size: 15px; font-weight: 600; color: var(--orange); }
+.bonus-tete h2{ font-size: clamp(28px, 6vw, 36px); line-height: 1.1; letter-spacing: -.015em; }
+.bonus-tete p{ color: var(--ink-2); font-size: 16px; max-width: 34ch; }
+.carte{ background: var(--bg-alt); border-radius: 20px; padding: 22px 20px; display: grid; gap: 12px; }
+.carte .num{ font-size: 13px; font-weight: 600; color: var(--orange); text-transform: uppercase; letter-spacing: .04em; }
+.carte h3{ margin: 0; font-size: 21px; line-height: 1.2; font-weight: 600; letter-spacing: -.01em; }
+.gris{ color: var(--ink-2); font-size: 15px; line-height: 1.45; }
+.petit{ color: var(--ink-3); font-size: 13px; line-height: 1.4; }
+.bleu{
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 52px; padding: 13px 24px; border: 0; border-radius: 980px; width: 100%;
+  background: var(--blue); color: #fff; font-family: var(--font); font-size: 17px; letter-spacing: -.022em; cursor: pointer;
+  transition: background-color .2s var(--ease), transform .12s var(--ease);
+}
+.bleu:hover{ background: #0077ed; }
+.bleu:active{ transform: scale(.98); }
+.bleu[disabled]{ background: #9cc4f0; cursor: default; transform: none; }
+.bleu svg{ width: 18px; height: 18px; flex: none; }
+.bonus form{ display: grid; gap: 14px; }
+.bonus label{ display: grid; gap: 6px; font-size: 15px; font-weight: 600; }
+.bonus input, .bonus textarea{
+  width: 100%; font-family: var(--font); font-size: 17px; font-weight: 400; letter-spacing: -.01em; color: var(--ink);
+  background: #fff; border: 1px solid #d2d2d7; border-radius: 12px; padding: 13px 14px;
+}
+.bonus textarea{ min-height: 74px; resize: vertical; line-height: 1.4; }
+.bonus input:focus, .bonus textarea:focus{ outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(0,113,227,.18); }
+.erreur{ color: #c9302c; font-size: 15px; line-height: 1.4; }
+.avertis{ background: #fff4ec; color: #7a2e00; border-radius: 12px; padding: 12px 14px; font-size: 14px; line-height: 1.45; }
+.info{ background: #eef5ff; color: #0a3d7a; border-radius: 12px; padding: 12px 14px; font-size: 14px; line-height: 1.45; display: grid; gap: 8px; }
+.info ol{ margin: 0; padding-left: 20px; display: grid; gap: 6px; }
+.grille{ display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.tuile{ min-width: 0; background: #fff; border-radius: 16px; padding: 10px; display: grid; gap: 8px; align-content: start; }
+.tuile.large{ grid-column: 1 / -1; }
+.tuile .nom{ font-size: 14px; font-weight: 600; }
+.cadre{
+  position: relative; aspect-ratio: 1; border-radius: 12px; overflow: hidden; display: grid; place-items: center;
+  background-color: #fff;
+  background-image: linear-gradient(45deg,#ececf0 25%,transparent 25%),linear-gradient(-45deg,#ececf0 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#ececf0 75%),linear-gradient(-45deg,transparent 75%,#ececf0 75%);
+  background-size: 18px 18px; background-position: 0 0, 0 9px, 9px -9px, -9px 0;
+}
+.tuile.large .cadre{ aspect-ratio: 9 / 16; max-height: 70vh; margin-inline: auto; width: 100%; max-width: 340px; }
+.cadre img{ width: 100%; height: 100%; object-fit: contain; display: block; }
+.tuile.large .cadre img, .tuile[data-sorte="icone"] .cadre img{ object-fit: cover; }
+.attente{ position: absolute; inset: 0; display: grid; justify-items: center; align-content: center; gap: 10px; padding: 10px; text-align: center; color: var(--ink-2); font-size: 13px; background: rgba(245,245,247,.9); }
+.roue{ width: 28px; height: 28px; border-radius: 50%; border: 3px solid #d8d8de; border-top-color: var(--blue); animation: tourne 1s linear infinite; }
+@keyframes tourne{ to{ transform: rotate(360deg); } }
+.actions{ display: grid; gap: 6px; }
+.actions a, .actions button{ min-height: 40px; border-radius: 980px; border: 0; font-family: var(--font); font-size: 14px; display: inline-flex; align-items: center; justify-content: center; padding: 8px 12px; cursor: pointer; }
+.actions a{ background: var(--blue); color: #fff; }
+.actions button{ background: var(--bg-alt); color: var(--ink); }
+.actions button[disabled]{ color: var(--ink-3); cursor: default; }
+@media (min-width: 560px){ .grille{ grid-template-columns: repeat(4, minmax(0, 1fr)); } .carte{ padding: 26px; } }
+@media (prefers-reduced-motion: reduce){ .roue{ animation-duration: 3s; } }
+
 footer{ background: var(--bg-alt); padding-block: 26px calc(26px + env(safe-area-inset-bottom)); font-size: 12px; color: var(--ink-3); }
 
 @media (prefers-reduced-motion: reduce){ *{ transition: none !important; } }
@@ -175,6 +237,71 @@ src="https://www.facebook.com/tr?id=4451955808377862&ev=PageView&noscript=1"
     </li>
   </ol>
 
+  <!-- Les 2 bonus des 30 premiers membres : cachés tant que /api/bonus ne les ouvre pas -->
+  <section class="bonus" id="bonus" hidden aria-labelledby="bonus-titre">
+    <div class="bonus-tete">
+      <p class="bonus-sur">Tu fais partie des 30 premiers</p>
+      <h2 id="bonus-titre">Tes 2 bonus</h2>
+      <p>Télécharge-les depuis cette page, dès maintenant.</p>
+    </div>
+
+    <div class="carte">
+      <p class="num">Bonus 1</p>
+      <h3>Le guide pas à pas</h3>
+      <p class="gris">36 pages à suivre dans l'ordre&nbsp;: choisir ton jeu, le construire avec Claude, le mettre en ligne, y mettre la publicité et faire venir tes joueurs.</p>
+      <a class="bleu" id="dl-guide" href="#" download>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
+        Télécharger le guide (PDF)
+      </a>
+    </div>
+
+    <div class="carte" id="bonus2">
+      <p class="num">Bonus 2</p>
+      <h3>Les visuels de ton jeu</h3>
+
+      <div id="vue-form" hidden>
+        <p class="gris" style="margin-bottom:14px">Décris ton jeu&nbsp;: tu reçois son icône, son fond d'écran, son personnage, l'objet à ramasser et l'obstacle. L'étape 1 du guide t'aide à choisir ton jeu.</p>
+        <form id="form-jeu" novalidate>
+          <label>Le nom du jeu
+            <input name="nom" maxlength="40" placeholder="Mangue Rush" autocomplete="off" required>
+          </label>
+          <label>L'univers et les couleurs
+            <textarea name="univers" maxlength="300" placeholder="Une ville d'Afrique de l'Ouest au coucher du soleil, des toits colorés, des couleurs chaudes" required></textarea>
+          </label>
+          <label>Le personnage principal
+            <textarea name="personnage" maxlength="220" placeholder="Un petit vendeur de mangues joyeux, casquette orange, tablier vert, panier de mangues" required></textarea>
+          </label>
+          <label>L'objet à ramasser
+            <input name="objet" maxlength="160" placeholder="Une mangue dorée qui brille" autocomplete="off" required>
+          </label>
+          <label>L'obstacle ou l'ennemi
+            <input name="obstacle" maxlength="160" placeholder="Un chat de gouttière qui bondit" autocomplete="off" required>
+          </label>
+          <div class="avertis">Tu ne crées ta série qu'une fois&nbsp;: prends le temps de bien décrire. Ensuite, tu pourras refaire <b id="nb-refaits">2</b> images qui ne te plaisent pas.</div>
+          <p class="erreur" id="err-jeu" role="alert" hidden></p>
+          <button class="bleu" type="submit" id="btn-jeu">Créer mes visuels</button>
+        </form>
+      </div>
+
+      <div id="vue-images" hidden>
+        <p class="gris" id="etat-images" aria-live="polite"></p>
+        <div class="grille" id="grille" style="margin-top:12px"></div>
+        <p class="erreur" id="err-images" role="alert" hidden></p>
+        <p class="petit" id="refaits-info" style="margin-top:10px"></p>
+        <div class="info" id="suite" hidden style="margin-top:12px">
+          <b>Et maintenant</b>
+          <ol>
+            <li>Télécharge les 5 images sur ton téléphone.</li>
+            <li>Ouvre Claude et joins-les à ton message, avec les captures du jeu qui t'inspire.</li>
+            <li>Envoie le premier message du guide (étape 3), en citant chaque image.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <p class="petit" style="text-align:center">Un téléchargement ne démarre pas&nbsp;? Ouvre cette page dans Chrome ou Safari&nbsp;: tes bonus te suivent.</p>
+  </section>
+
   <p class="note">Une fois dans le groupe, commence par la première vidéo de formation. Quand ton jeu sera prêt, tu le mettras en ligne avec Jouable (3&nbsp;000&nbsp;F, une seule fois)&nbsp;: je te montre tout dans le groupe.</p>
 
   <div class="aide">
@@ -222,6 +349,151 @@ var LIEN_GROUPE = "https://chat.whatsapp.com/LDT5QqOfVnJ02bLj69PSx3";
     })();
     setTimeout(function () { parti = false; }, 3000);
   });
+})();
+
+/* ══════════════════════════════════════════════════════════
+   LES 2 BONUS — /api/bonus ouvre l'accès tant que le groupe n'a
+   pas dépassé ses 30 premiers membres depuis l'ouverture des
+   bonus. Sinon la section reste cachée. Un téléphone qui a déjà
+   son jeton garde ses bonus, même après.
+   ══════════════════════════════════════════════════════════ */
+(function () {
+  "use strict";
+  var $ = function (id) { return document.getElementById(id); };
+  var CLE = "gb-bonus";
+  var NOMS = { icone: "Icône", fond: "Fond d'écran", personnage: "Personnage", objet: "Objet à ramasser", obstacle: "Obstacle" };
+  var ORDRE = ["icone", "personnage", "objet", "obstacle", "fond"];
+  var jeton = null, nomJeu = "", suivi = null, dernier = null;
+
+  function lis() {
+    var m = location.hash.match(/[#&]b=([\w.-]+)/);
+    if (m) return m[1];
+    try { return localStorage.getItem(CLE); } catch (e) { return null; }
+  }
+  function garde(v) {
+    try { if (v) localStorage.setItem(CLE, v); else localStorage.removeItem(CLE); } catch (e) {}
+    try { history.replaceState(null, "", location.pathname + location.search + (v ? "#b=" + v : "")); } catch (e) {}
+  }
+  function el(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
+  function montre(id, oui) { $(id).hidden = !oui; }
+  function erreur(id, t) { $(id).textContent = t || ""; $(id).hidden = !t; }
+
+  function api(methode, corps, params) {
+    var o = { method: methode, headers: {} };
+    if (corps) { o.headers["Content-Type"] = "application/json"; o.body = JSON.stringify(corps); }
+    return fetch("/api/bonus" + (params || ""), o).then(function (r) {
+      return r.json()["catch"](function () { return {}; }).then(function (d) { d._statut = r.status; return d; });
+    });
+  }
+
+  function ouvre(d) {
+    $("dl-guide").href = "/api/bonus?guide=1&j=" + encodeURIComponent(jeton);
+    montre("bonus", true);
+    affiche(d);
+  }
+
+  function affiche(d) {
+    dernier = d;
+    $("nb-refaits").textContent = d.refaitsRestants;
+    if (!d.jeu) { montre("vue-form", true); montre("vue-images", false); return; }
+    nomJeu = d.jeu.nom || "jeu";
+    montre("vue-form", false); montre("vue-images", true);
+    var enCours = 0, faits = 0, g = $("grille");
+    g.textContent = "";
+    d.images.slice().sort(function (a, b) { return ORDRE.indexOf(a.sorte) - ORDRE.indexOf(b.sorte); }).forEach(function (im) {
+      var t = el("div", "tuile" + (im.sorte === "fond" ? " large" : "")); t.setAttribute("data-sorte", im.sorte);
+      t.appendChild(el("div", "nom", NOMS[im.sorte]));
+      var c = el("div", "cadre"); t.appendChild(c);
+      if (im.etat === "fait") {
+        faits++;
+        var img = el("img"); img.alt = NOMS[im.sorte] + " de " + nomJeu; img.loading = "lazy";
+        img.src = "/api/bonus?image=" + im.id; c.appendChild(img);
+        var a = el("div", "actions");
+        var dl = el("a", null, "Télécharger"); dl.href = "/api/bonus?image=" + im.id + "&dl=" + encodeURIComponent(nomJeu); dl.setAttribute("download", "");
+        var re = el("button", null, "Refaire"); re.type = "button"; re.disabled = !d.refaitsRestants;
+        re.addEventListener("click", function () { refaire(im.sorte, false); });
+        a.appendChild(dl); a.appendChild(re); t.appendChild(a);
+      } else if (im.etat === "attente") {
+        enCours++;
+        var w = el("div", "attente"); w.appendChild(el("div", "roue")); w.appendChild(el("span", null, "Création en cours…")); c.appendChild(w);
+      } else if (im.etat === "echec") {
+        var f = el("div", "attente"); f.appendChild(el("span", null, "Cette image n'a pas pu être créée.")); c.appendChild(f);
+        var b = el("div", "actions");
+        var r = el("button", null, im.reessai ? "Réessayer" : "Plus d'essai"); r.type = "button"; r.disabled = !im.reessai;
+        r.addEventListener("click", function () { refaire(im.sorte, true); });
+        b.appendChild(r); t.appendChild(b);
+      }
+      g.appendChild(t);
+    });
+    $("etat-images").textContent = enCours
+      ? "Création de tes visuels : compte 1 à 2 minutes. Garde cette page ouverte."
+      : faits + " visuels prêts pour « " + nomJeu + " ». Télécharge-les un par un.";
+    $("refaits-info").textContent = d.refaitsRestants
+      ? "Une image ne te plaît pas ? Tu peux encore en refaire " + d.refaitsRestants + "."
+      : "Tu as utilisé tes images à refaire.";
+    montre("suite", !enCours && faits > 0);
+    clearTimeout(suivi);
+    if (enCours) suivi = setTimeout(rafraichit, 5000);
+  }
+
+  function rafraichit() {
+    api("GET", null, "?j=" + encodeURIComponent(jeton)).then(function (d) {
+      if (d.images) { erreur("err-images", ""); affiche(d); }
+      else suivi = setTimeout(rafraichit, 8000);
+    })["catch"](function () { suivi = setTimeout(rafraichit, 8000); });
+  }
+
+  function refaire(sorte, echec) {
+    if (!echec && !confirm("Refaire l'image « " + NOMS[sorte] + " » ? Il te restera " + Math.max(0, dernier.refaitsRestants - 1) + " image(s) à refaire.")) return;
+    erreur("err-images", "");
+    api("POST", { action: "refaire", j: jeton, sorte: sorte }).then(function (d) {
+      if (d.images) affiche(d);
+      else erreur("err-images", d.erreur === "refaits" ? "Tu as déjà refait tes images." : d.erreur === "essais" ? "Plus d'essai pour cette image. Écris-moi dans le groupe." : (d.erreur || "Ça n'a pas marché. Réessaie."));
+    })["catch"](function () { erreur("err-images", "Pas de connexion. Réessaie."); });
+  }
+
+  $("form-jeu").addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    var f = ev.target, jeu = {}, vide = [];
+    ["nom", "univers", "personnage", "objet", "obstacle"].forEach(function (k) {
+      jeu[k] = f.elements[k].value.trim();
+      if (jeu[k].length < (k === "nom" ? 2 : 3)) vide.push(k);
+    });
+    if (vide.length) {
+      erreur("err-jeu", "Remplis chaque case : il manque " + vide.map(function (k) { return f.elements[k].closest("label").firstChild.textContent.trim().toLowerCase(); }).join(", ") + ".");
+      f.elements[vide[0]].focus(); return;
+    }
+    if (!confirm("On crée tes visuels avec cette description ? Tu ne pourras pas la changer ensuite.")) return;
+    erreur("err-jeu", ""); $("btn-jeu").disabled = true; $("btn-jeu").textContent = "Lancement…";
+    api("POST", { action: "generer", j: jeton, jeu: jeu }).then(function (d) {
+      $("btn-jeu").disabled = false; $("btn-jeu").textContent = "Créer mes visuels";
+      if (d.images) { affiche(d); $("bonus2").scrollIntoView({ behavior: "smooth", block: "start" }); return; }
+      if (d.erreur === "deja") { rafraichit(); return; }
+      erreur("err-jeu",
+        d.erreur === "champs" ? "Une case est trop courte. Décris un peu plus." :
+        d.erreur === "complet" ? "Les visuels ne sont plus disponibles pour le moment. Écris-moi dans le groupe." :
+        (d.erreur || "Ça n'a pas marché. Réessaie."));
+    })["catch"](function () {
+      $("btn-jeu").disabled = false; $("btn-jeu").textContent = "Créer mes visuels";
+      erreur("err-jeu", "Pas de connexion. Réessaie.");
+    });
+  });
+
+  /* Pas encore de jeton : on demande l'accès. Les bonus partis, rien ne s'affiche. */
+  function demande(essai) {
+    api("POST", { action: "ouvrir" }).then(function (d) {
+      if (d.jeton) { jeton = d.jeton; garde(jeton); ouvre(d); return; }
+      if (d._statut === 503 && !essai) setTimeout(function () { demande(true); }, 4000);
+    })["catch"](function () { if (!essai) setTimeout(function () { demande(true); }, 4000); });
+  }
+
+  jeton = lis();
+  if (jeton) {
+    api("GET", null, "?j=" + encodeURIComponent(jeton)).then(function (d) {
+      if (d.images) { garde(jeton); ouvre(d); }
+      else if (d._statut === 401) { jeton = null; garde(null); demande(false); }
+    })["catch"](function () {});
+  } else demande(false);
 })();
 </script>
 </body>
