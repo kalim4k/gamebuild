@@ -210,7 +210,8 @@ async function etat(venteId) {
     jeu: a.jeu ? { nom: a.jeu.nom } : null,
     images,
     refaitsRestants: Math.max(0, REFAITS_MAX - a.refaits),
-    places: BONUS_PLACES
+    places: BONUS_PLACES,
+    visuels: !!CLE_KIE
   };
 }
 

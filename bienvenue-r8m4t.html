@@ -259,6 +259,8 @@ src="https://www.facebook.com/tr?id=4451955808377862&ev=PageView&noscript=1"
       <p class="num">Bonus 2</p>
       <h3>Les visuels de ton jeu</h3>
 
+      <p class="avertis" id="vue-bientot" hidden>Le créateur de visuels ouvre dans quelques heures. Reviens sur cette page depuis ce téléphone&nbsp;: il t'attendra ici.</p>
+
       <div id="vue-form" hidden>
         <p class="gris" style="margin-bottom:14px">Décris ton jeu&nbsp;: tu reçois son icône, son fond d'écran, son personnage, l'objet à ramasser et l'obstacle. L'étape 1 du guide t'aide à choisir ton jeu.</p>
         <form id="form-jeu" novalidate>
@@ -395,6 +397,9 @@ var LIEN_GROUPE = "https://chat.whatsapp.com/LDT5QqOfVnJ02bLj69PSx3";
   function affiche(d) {
     dernier = d;
     $("nb-refaits").textContent = d.refaitsRestants;
+    var bientot = !d.jeu && d.visuels === false;
+    montre("vue-bientot", bientot);
+    if (bientot) { montre("vue-form", false); montre("vue-images", false); return; }
     if (!d.jeu) { montre("vue-form", true); montre("vue-images", false); return; }
     nomJeu = d.jeu.nom || "jeu";
     montre("vue-form", false); montre("vue-images", true);
