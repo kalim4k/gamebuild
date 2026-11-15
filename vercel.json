@@ -3,7 +3,8 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "functions": {
-    "api/conseil.mjs": { "maxDuration": 60 }
+    "api/conseil.mjs": { "maxDuration": 60 },
+    "api/bonus.mjs": { "maxDuration": 60 }
   },
   "redirects": [
     { "source": "/", "destination": "/chaine", "permanent": false },
@@ -108,6 +109,19 @@
     },
     {
       "source": "/bienvenue-r8m4t",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/bonus",
       "headers": [
         {
           "key": "X-Robots-Tag",
