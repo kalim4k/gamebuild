@@ -32,17 +32,32 @@ window.LiveCommun = (function () {
       scene.appendChild(d);
       return;
     }
-    if (s.surtitre) d.appendChild(el("div", "surtitre", s.surtitre));
-    if (s.grand) {
-      d.appendChild(el("div", "grand", s.grand));
-      if (s.legende) d.appendChild(el("div", "legende", s.legende));
+    /* Une illustration (live/visuels.js) : le texte d'un côté, le dessin de
+       l'autre, ou le dessin en grand sous le titre (disposition: "large").
+       Le dessin vient du code du site, jamais d'un texte du chat. */
+    var t = d, dessin = s.visuel && window.LiveVisuels && window.LiveVisuels[s.visuel];
+    if (dessin) {
+      d.classList.add("avec-visuel");
+      if (s.disposition === "large") d.classList.add("large");
+      t = el("div", "texte");
+      d.appendChild(t);
     }
-    if (s.titre) d.appendChild(el("h2", null, s.titre));
-    if (s.texte) d.appendChild(el("p", null, s.texte));
+    if (s.surtitre) t.appendChild(el("div", "surtitre", s.surtitre));
+    if (s.grand) {
+      t.appendChild(el("div", "grand", s.grand));
+      if (s.legende) t.appendChild(el("div", "legende", s.legende));
+    }
+    if (s.titre) t.appendChild(el("h2", null, s.titre));
+    if (s.texte) t.appendChild(el("p", null, s.texte));
     if (s.puces && s.puces.length) {
       var ul = el("ul");
       s.puces.forEach(function (p) { ul.appendChild(el("li", null, p)); });
-      d.appendChild(ul);
+      t.appendChild(ul);
+    }
+    if (dessin) {
+      var v = el("div", "visuel");
+      v.innerHTML = dessin();
+      d.appendChild(v);
     }
     scene.appendChild(d);
   }

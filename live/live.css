@@ -78,10 +78,50 @@ button, input, textarea{ font: inherit; color: inherit; }
 .scene:not(.mini) .slide .grand{ font-size: max(36px, 10cqw); }
 .scene:not(.mini) .slide .legende{ font-size: max(15px, 3cqw); }
 .scene:not(.mini) .vide{ font-size: max(15px, 2.6cqw); }
+/* ── Les slides avec une illustration (live/visuels.js) ──
+   Sur ordinateur : le texte à gauche, le dessin à droite ; « large » :
+   le dessin en grand sous le titre. Sur téléphone : toujours dessous. */
+.slide.avec-visuel{
+  display: grid; grid-template-columns: minmax(0, .92fr) minmax(0, 1.25fr); grid-template-rows: minmax(0, 1fr);
+  align-items: center; gap: 3.5cqw; padding: 4.5cqw 4.5cqw 4.5cqw 6.5cqw;
+}
+.slide.avec-visuel .texte{ display: flex; flex-direction: column; gap: 1.4cqw; min-width: 0; }
+.slide.avec-visuel h2{ font-size: 4.3cqw; }
+.slide.avec-visuel p{ font-size: 2.3cqw; }
+.slide.avec-visuel li{ font-size: 2.4cqw; }
+.slide .visuel{ position: relative; min-width: 0; min-height: 0; height: 100%; }
+.slide .visuel svg{ position: absolute; inset: 0; display: block; width: 100%; height: 100%; font-family: var(--font); }
+.slide .visuel svg.v-tel{ display: none; }
+.slide.avec-visuel.large{ grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); align-items: stretch; gap: 3cqw; padding: 4.5cqw 6cqw; }
+.slide.avec-visuel.large h2{ max-width: none; font-size: 4cqw; }
+.slide.avec-visuel.large p{ max-width: 70ch; }
+.scene:not(.mini) .slide.avec-visuel .surtitre{ font-size: max(12px, 2cqw); }
+.scene:not(.mini) .slide.avec-visuel h2{ font-size: max(19px, 4.3cqw); }
+.scene:not(.mini) .slide.avec-visuel.large h2{ font-size: max(19px, 4cqw); }
+.scene:not(.mini) .slide.avec-visuel p{ font-size: max(13px, 2.3cqw); }
+.scene:not(.mini) .slide.avec-visuel li{ font-size: max(13px, 2.4cqw); }
+
+/* Les dessins s'animent en entrant, sauf dans les vignettes du studio. */
+.v-monte{ animation: v-monte .6s cubic-bezier(.28,.11,.32,1) both; }
+@keyframes v-monte{ from{ opacity: 0; transform: translateY(14px); } to{ opacity: 1; transform: none; } }
+.v-barre{ transform-box: fill-box; transform-origin: left center; animation: v-barre 1.1s cubic-bezier(.28,.11,.32,1) .2s both; }
+@keyframes v-barre{ from{ transform: scaleX(0); } to{ transform: none; } }
+.v-pulse{ transform-box: fill-box; transform-origin: center; animation: v-pulse 1.8s ease-out infinite; }
+@keyframes v-pulse{ 0%{ transform: scale(.6); opacity: 1; } 100%{ transform: scale(1.5); opacity: 0; } }
+.v-tourne{ animation: v-tourne 6s linear infinite; }
+@keyframes v-tourne{ to{ stroke-dashoffset: -260; } }
+.v-flux{ animation: v-tourne 9s linear infinite; }
+.scene.mini *{ animation: none !important; }
+
 @media (max-width: 600px){
-  .scene:not(.mini){ aspect-ratio: 4 / 3; }
+  /* Sur téléphone, la scène est carrée : le dessin a la place d'être lisible. */
+  .scene:not(.mini){ aspect-ratio: 1 / 1; }
   .scene:not(.mini) .slide{ padding: 20px 22px; gap: 10px; }
   .scene:not(.mini) .slide ul{ gap: 7px; }
+  .scene:not(.mini) .slide.avec-visuel{ grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); align-items: stretch; gap: 14px; padding: 20px 20px 18px; }
+  .scene:not(.mini) .slide.avec-visuel .texte{ gap: 6px; }
+  .scene:not(.mini) .slide .visuel svg.v-ordi{ display: none; }
+  .scene:not(.mini) .slide .visuel svg.v-tel{ display: block; }
 }
 .scene .vide{ position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 6cqw; color: var(--ink-2); font-size: 2.6cqw; }
 
@@ -119,5 +159,6 @@ button, input, textarea{ font: inherit; color: inherit; }
 
 @media (prefers-reduced-motion: reduce){
   .slide{ animation: none; }
+  .slide .visuel *{ animation: none !important; }
   .pastille.direct::before{ animation: none; }
 }
