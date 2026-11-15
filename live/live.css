@@ -52,33 +52,37 @@ button, input, textarea{ font: inherit; color: inherit; }
 }
 .slide{
   position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center;
-  padding: 6cqw 7cqw; gap: 1.6cqw;
+  padding: 6cqw 8cqw; gap: 1.8cqw;
   animation: entre .45s cubic-bezier(.28,.11,.32,1);
 }
 @keyframes entre{ from{ opacity: 0; transform: translateY(1.2cqw); } to{ opacity: 1; transform: none; } }
-.slide .surtitre{ color: #0066cc; font-weight: 600; font-size: 2.3cqw; letter-spacing: 0; }
-.slide h2{ margin: 0; font-weight: 700; font-size: 5.4cqw; line-height: 1.08; letter-spacing: -.02em; max-width: 22ch; text-wrap: balance; }
-.slide p{ margin: 0; color: #6e6e73; font-size: 2.7cqw; line-height: 1.35; max-width: 46ch; }
-.slide ul{ margin: .6cqw 0 0; padding: 0; list-style: none; display: grid; gap: 1.3cqw; }
-.slide li{ font-size: 2.9cqw; line-height: 1.25; padding-left: 3cqw; position: relative; }
-.slide li::before{ content: ""; position: absolute; left: 0; top: .9cqw; width: 1.1cqw; height: 1.1cqw; border-radius: 50%; background: #0071e3; }
-.slide .grand{ font-size: 10cqw; font-weight: 700; line-height: 1; letter-spacing: -.03em;
-  background: linear-gradient(90deg, #0071e3, #8e44ec); -webkit-background-clip: text; background-clip: text; color: transparent; }
-.slide .legende{ font-size: 3cqw; font-weight: 600; color: #1d1d1f; }
+/* Style épuré : une idée par slide, de grands titres, peu de couleur. */
+.slide .surtitre{ color: #86868b; font-weight: 600; font-size: 2.1cqw; letter-spacing: 0; }
+.slide h2{ margin: 0; font-weight: 700; font-size: 5.8cqw; line-height: 1.06; letter-spacing: -.025em; max-width: 20ch; text-wrap: balance; }
+.slide p{ margin: 0; color: #6e6e73; font-size: 2.6cqw; line-height: 1.38; max-width: 42ch; text-wrap: pretty; }
+.slide ul{ margin: .8cqw 0 0; padding: 0; list-style: none; display: grid; gap: 1.5cqw; }
+.slide li{ font-size: 2.8cqw; line-height: 1.25; padding-left: 2.6cqw; position: relative; }
+.slide li::before{ content: ""; position: absolute; left: 0; top: 1cqw; width: .8cqw; height: .8cqw; border-radius: 50%; background: #86868b; }
+.slide .grand{ font-size: 12cqw; font-weight: 700; line-height: 1; letter-spacing: -.04em; color: #1d1d1f; }
+.slide .legende{ font-size: 2.8cqw; font-weight: 500; color: #6e6e73; }
+.slide.centre{ align-items: center; text-align: center; }
+.slide.centre h2{ font-size: 6.4cqw; max-width: 18ch; }
+.slide.centre p{ max-width: 36ch; }
 .slide.avec-image{ padding: 0; justify-content: flex-end; }
 .slide.avec-image img{ position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .slide.avec-image .voile{ position: relative; padding: 4cqw 6cqw; background: linear-gradient(transparent, rgba(0,0,0,.85)); color: #fff; }
 .slide.avec-image .voile p{ color: rgba(255,255,255,.8); }
 /* Sur téléphone, la scène est plus haute et le texte ne descend pas
    sous une taille lisible (sauf la vignette « slide suivante » du studio). */
-.scene:not(.mini) .slide .surtitre{ font-size: max(12px, 2.3cqw); }
-.scene:not(.mini) .slide h2{ font-size: max(20px, 5.4cqw); }
-.scene:not(.mini) .slide p{ font-size: max(14px, 2.7cqw); }
-.scene:not(.mini) .slide li{ font-size: max(14px, 2.9cqw); }
-.scene:not(.mini) .slide li::before{ width: max(6px, 1.1cqw); height: max(6px, 1.1cqw); top: max(6px, .9cqw); }
-.scene:not(.mini) .slide li{ padding-left: max(16px, 3cqw); }
-.scene:not(.mini) .slide .grand{ font-size: max(36px, 10cqw); }
-.scene:not(.mini) .slide .legende{ font-size: max(15px, 3cqw); }
+.scene:not(.mini) .slide .surtitre{ font-size: max(12px, 2.1cqw); }
+.scene:not(.mini) .slide h2{ font-size: max(24px, 5.8cqw); }
+.scene:not(.mini) .slide.centre h2{ font-size: max(26px, 6.4cqw); }
+.scene:not(.mini) .slide p{ font-size: max(15px, 2.6cqw); }
+.scene:not(.mini) .slide li{ font-size: max(15px, 2.8cqw); }
+.scene:not(.mini) .slide li::before{ width: max(5px, .8cqw); height: max(5px, .8cqw); top: max(7px, 1cqw); }
+.scene:not(.mini) .slide li{ padding-left: max(16px, 2.6cqw); }
+.scene:not(.mini) .slide .grand{ font-size: max(60px, 12cqw); }
+.scene:not(.mini) .slide .legende{ font-size: max(16px, 2.8cqw); }
 .scene:not(.mini) .vide{ font-size: max(15px, 2.6cqw); }
 /* ── Les slides avec une illustration (live/visuels.js) ──
    Sur ordinateur : le texte à gauche, le dessin à droite ; « large » :
@@ -88,7 +92,7 @@ button, input, textarea{ font: inherit; color: inherit; }
   align-items: center; gap: 3.5cqw; padding: 4.5cqw 4.5cqw 4.5cqw 6.5cqw;
 }
 .slide.avec-visuel .texte{ display: flex; flex-direction: column; gap: 1.4cqw; min-width: 0; }
-.slide.avec-visuel h2{ font-size: 4.3cqw; }
+.slide.avec-visuel h2{ font-size: 4.4cqw; }
 .slide.avec-visuel p{ font-size: 2.3cqw; }
 .slide.avec-visuel li{ font-size: 2.4cqw; }
 .slide .visuel{ position: relative; min-width: 0; min-height: 0; height: 100%; }
@@ -98,8 +102,8 @@ button, input, textarea{ font: inherit; color: inherit; }
 .slide.avec-visuel.large h2{ max-width: none; font-size: 4cqw; }
 .slide.avec-visuel.large p{ max-width: 70ch; }
 .scene:not(.mini) .slide.avec-visuel .surtitre{ font-size: max(12px, 2cqw); }
-.scene:not(.mini) .slide.avec-visuel h2{ font-size: max(19px, 4.3cqw); }
-.scene:not(.mini) .slide.avec-visuel.large h2{ font-size: max(19px, 4cqw); }
+.scene:not(.mini) .slide.avec-visuel h2{ font-size: max(20px, 4.4cqw); }
+.scene:not(.mini) .slide.avec-visuel.large h2{ font-size: max(20px, 4cqw); }
 .scene:not(.mini) .slide.avec-visuel p{ font-size: max(13px, 2.3cqw); }
 .scene:not(.mini) .slide.avec-visuel li{ font-size: max(13px, 2.4cqw); }
 
@@ -107,8 +111,8 @@ button, input, textarea{ font: inherit; color: inherit; }
 @media (max-width: 600px){
   /* Sur téléphone, la scène est carrée : le dessin a la place d'être lisible. */
   .scene:not(.mini){ aspect-ratio: 1 / 1; }
-  .scene:not(.mini) .slide{ padding: 20px 22px; gap: 10px; }
-  .scene:not(.mini) .slide ul{ gap: 7px; }
+  .scene:not(.mini) .slide{ padding: 26px 26px; gap: 12px; }
+  .scene:not(.mini) .slide ul{ gap: 10px; }
   .scene:not(.mini) .slide.avec-visuel{ grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); align-items: stretch; gap: 14px; padding: 20px 20px 18px; }
   .scene:not(.mini) .slide.avec-visuel .texte{ gap: 6px; }
   .scene:not(.mini) .slide .visuel svg.v-ordi{ display: none; }

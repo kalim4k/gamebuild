@@ -35,6 +35,7 @@ window.LiveCommun = (function () {
     /* Une illustration (live/visuels.js) : le texte d'un côté, le dessin de
        l'autre, ou le dessin en grand sous le titre (disposition: "large").
        Le dessin vient du code du site, jamais d'un texte du chat. */
+    if (s.centre) d.classList.add("centre");
     var t = d, dessin = s.visuel && window.LiveVisuels && window.LiveVisuels[s.visuel];
     if (dessin) {
       d.classList.add("avec-visuel");
