@@ -12,10 +12,12 @@
 window.LiveVisuels = (function () {
   "use strict";
 
+  /* Les couleurs, pour une slide claire (fond blanc). */
   var C = {
-    bleu: "#2997ff", violet: "#a875ff", orange: "#ff9f0a", vert: "#30d158",
-    rouge: "#ff453a", or: "#ffd60a", encre: "#f5f5f7", gris: "#a1a1a6",
-    gris3: "#6e6e73", carte: "#1c1c1e", carte2: "#2c2c2e", trait: "#3a3a3c"
+    bleu: "#0071e3", violet: "#8e44ec", orange: "#f56300", vert: "#34c759",
+    rouge: "#ff3b30", or: "#f5b400", encre: "#1d1d1f", gris: "#6e6e73",
+    gris3: "#86868b", carte: "#f5f5f7", carte2: "#e8e8ed", trait: "#d2d2d7",
+    vertTexte: "#248a3d", rougeTexte: "#d70015"
   };
   var NB = " ";
   var compte = 0;
@@ -39,9 +41,7 @@ window.LiveVisuels = (function () {
       (opts.ancre ? ' text-anchor="' + opts.ancre + '"' : "") +
       (opts.style ? ' style="' + opts.style + '"' : "") + ">" + t + "</text>";
   }
-  function monte(contenu, delai) {
-    return '<g class="v-monte" style="animation-delay:' + (delai || 0) + 's">' + contenu + "</g>";
-  }
+  function monte(contenu) { return "<g>" + contenu + "</g>"; }
 
   /* Un téléphone avec une capture d'écran dedans */
   function telephone(u, k, x, y, w, h, image, rot) {
@@ -80,9 +80,9 @@ window.LiveVisuels = (function () {
   V.trio = function () {
     var u = uid();
     var defs = '<radialGradient id="' + u + 'h" cx="50%" cy="55%" r="50%">' +
-      '<stop offset="0" stop-color="' + C.bleu + '" stop-opacity=".45"/>' +
-      '<stop offset=".6" stop-color="' + C.violet + '" stop-opacity=".14"/>' +
-      '<stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>';
+      '<stop offset="0" stop-color="' + C.bleu + '" stop-opacity=".16"/>' +
+      '<stop offset=".6" stop-color="' + C.violet + '" stop-opacity=".06"/>' +
+      '<stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>';
     return svg("0 0 520 400", "Trois jeux faits avec l'IA, sur des téléphones", defs,
       '<ellipse cx="260" cy="215" rx="255" ry="190" fill="url(#' + u + 'h)"/>' +
       monte(telephone(u, 1, 52, 62, 148, 306, "/media/jeu-3.jpg", -9), 0.15) +
@@ -95,14 +95,14 @@ window.LiveVisuels = (function () {
     var u = uid();
     return svg("0 0 520 400", "Un lien envoyé dans une discussion ouvre le jeu, sans rien installer", "",
       monte(
-        '<path d="M48 50 L18 42 L40 76 Z" fill="#0b5d4b"/>' +
-        '<rect x="24" y="50" width="276" height="168" rx="24" fill="#0b5d4b"/>' +
-        texte(50, 100, "Viens battre mon", 28, "#e9edef") +
-        texte(50, 136, "record" + NB + "!", 28, "#e9edef") +
-        texte(50, 186, "Joue ici", 28, "#53bdeb", { gras: true }) +
-        '<rect x="50" y="193" width="112" height="3" rx="1.5" fill="#53bdeb"/>' +
-        '<circle class="v-pulse" cx="150" cy="180" r="26" fill="#fff" fill-opacity=".22"/>' +
-        '<circle cx="150" cy="180" r="10" fill="#fff" fill-opacity=".7"/>', 0) +
+        '<path d="M48 50 L18 42 L40 76 Z" fill="#d9fdd3"/>' +
+        '<rect x="24" y="50" width="276" height="168" rx="24" fill="#d9fdd3"/>' +
+        texte(50, 100, "Viens battre mon", 28, "#111b21") +
+        texte(50, 136, "record" + NB + "!", 28, "#111b21") +
+        texte(50, 186, "Joue ici", 28, "#0a7cbd", { gras: true }) +
+        '<rect x="50" y="193" width="112" height="3" rx="1.5" fill="#0a7cbd"/>' +
+        '<circle cx="150" cy="180" r="26" fill="#0a7cbd" fill-opacity=".16"/>' +
+        '<circle cx="150" cy="180" r="10" fill="#0a7cbd" fill-opacity=".55"/>', 0) +
       '<path d="M308 170 H340" stroke="' + C.gris + '" stroke-width="5" stroke-linecap="round"/>' +
       fleche(346, 170, 0, C.gris, 13) +
       monte(telephone(u, 1, 358, 24, 148, 318, "/media/eleve-2.jpg", 0), 0.35) +
@@ -161,7 +161,7 @@ window.LiveVisuels = (function () {
       '<linearGradient id="' + u + 'l" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="' + C.bleu + '"/><stop offset="1" stop-color="' + C.violet + '"/></linearGradient>';
     var etapes = [["Choisir", "ton jeu"], ["Le décrire", "à l'IA"], ["Tester,", "corriger"], ["Faire", "revenir"], ["Le mettre", "en ligne"], ["La pub,", "les joueurs"]];
     var s = '<rect x="90" y="88" width="820" height="8" rx="4" fill="' + C.trait + '"/>' +
-      '<rect class="v-barre" x="90" y="88" width="820" height="8" rx="4" fill="url(#' + u + 'l)"/>';
+      '<rect x="90" y="88" width="820" height="8" rx="4" fill="url(#' + u + 'l)"/>';
     etapes.forEach(function (e, i) {
       var x = 90 + i * 164;
       s += monte('<circle cx="' + x + '" cy="92" r="44" fill="url(#' + u + 'g)"/>' +
@@ -216,12 +216,12 @@ window.LiveVisuels = (function () {
     var u = uid();
     var defs = degrade(u + "o", "#ffcf6b", "#ff7a2f");
     return svg("0 0 520 400", "Tu décris ton jeu à l'IA, elle te répond avec le jeu prêt à jouer", defs,
-      '<rect x="6" y="6" width="508" height="388" rx="28" fill="#111113" stroke="' + C.carte2 + '" stroke-width="2"/>' +
+      '<rect x="6" y="6" width="508" height="388" rx="28" fill="#f5f5f7" stroke="' + C.carte2 + '" stroke-width="2"/>' +
       monte('<rect x="168" y="28" width="326" height="134" rx="24" fill="#0a84ff"/>' +
         texte(190, 74, "Fais-moi un jeu" + NB + ": un", 24, "#fff") +
         texte(190, 106, "vendeur de mangues saute", 24, "#fff") +
         texte(190, 138, "de toit en toit.", 24, "#fff"), 0.15) +
-      monte('<rect x="24" y="184" width="332" height="194" rx="24" fill="' + C.carte2 + '"/>' +
+      monte('<rect x="24" y="184" width="332" height="194" rx="24" fill="#fff" stroke="' + C.carte2 + '" stroke-width="2"/>' +
         texte(46, 224, "Voici ton jeu.", 25, C.encre, { gras: 600 }) +
         '<rect x="44" y="244" width="292" height="116" rx="18" fill="url(#' + u + 'o)"/>' +
         '<image href="/media/bonus-visuel.webp" x="50" y="250" width="104" height="104"/>' +
@@ -240,7 +240,7 @@ window.LiveVisuels = (function () {
         texte(cx, cy + 9, t, 26, C.encre, { ancre: "middle", gras: 600 }), d);
     }
     return svg("0 0 520 400", "Une boucle : tu testes, tu demandes, l'IA corrige", defs,
-      '<circle class="v-tourne" cx="260" cy="205" r="135" fill="none" stroke="url(#' + u + 'g)" stroke-width="6" stroke-dasharray="14 12"/>' +
+      '<circle cx="260" cy="205" r="135" fill="none" stroke="url(#' + u + 'g)" stroke-width="6" stroke-dasharray="14 12"/>' +
       fleche(377, 137.5, 60, C.bleu, 16) + fleche(260, 340, 180, C.violet, 16) + fleche(143, 137.5, 300, C.violet, 16) +
       texte(260, 190, "Quelques", 25, C.gris, { ancre: "middle" }) +
       texte(260, 222, "allers-retours", 25, C.gris, { ancre: "middle" }) +
@@ -285,23 +285,23 @@ window.LiveVisuels = (function () {
     return svg("0 0 1000 330", "Exemple sur un mois : 5 000 joueurs qui jouent une fois font 5 000 parties ; 200 joueurs qui font 10 parties par jour font 60 000 parties", defs,
       texte(0, 78, "5" + NB + "000 joueurs", 32, C.encre, { gras: 700 }) +
       texte(0, 112, "1 partie chacun", 24, C.gris) +
-      '<rect class="v-barre" x="330" y="62" width="50" height="50" rx="12" fill="' + C.gris3 + '"/>' +
+      '<rect x="330" y="62" width="50" height="50" rx="12" fill="' + C.gris3 + '"/>' +
       texte(398, 98, "5" + NB + "000 parties", 28, C.gris, { gras: 600 }) +
       texte(0, 200, "200 joueurs", 32, C.encre, { gras: 700 }) +
       texte(0, 234, "10 parties par jour,", 24, C.gris) +
       texte(0, 264, "pendant 30 jours", 24, C.gris) +
-      '<rect class="v-barre" style="animation-delay:.35s" x="330" y="190" width="640" height="56" rx="14" fill="url(#' + u + 'v)"/>' +
+      '<rect x="330" y="190" width="640" height="56" rx="14" fill="url(#' + u + 'v)"/>' +
       monte(texte(948, 229, "60" + NB + "000 parties", 30, "#fff", { gras: 700, ancre: "end" }), 1.1) +
       texte(0, 322, "Exemple de calcul sur un mois.", 22, C.gris3), "v-ordi") +
     /* Sur téléphone : les deux barres l'une sous l'autre, en pleine largeur */
     svg("0 0 520 360", "Exemple sur un mois : 5 000 parties contre 60 000 parties", defs.replace(u + "v", u + "w"),
       texte(0, 34, "5" + NB + "000 joueurs", 30, C.encre, { gras: 700 }) +
       texte(0, 64, "1 partie chacun", 22, C.gris) +
-      '<rect class="v-barre" x="0" y="80" width="44" height="46" rx="12" fill="' + C.gris3 + '"/>' +
+      '<rect x="0" y="80" width="44" height="46" rx="12" fill="' + C.gris3 + '"/>' +
       texte(58, 112, "5" + NB + "000 parties", 26, C.gris, { gras: 600 }) +
       texte(0, 186, "200 joueurs", 30, C.encre, { gras: 700 }) +
       texte(0, 216, "10 parties par jour, pendant 30 jours", 22, C.gris) +
-      '<rect class="v-barre" style="animation-delay:.35s" x="0" y="234" width="520" height="56" rx="14" fill="url(#' + u + 'w)"/>' +
+      '<rect x="0" y="234" width="520" height="56" rx="14" fill="url(#' + u + 'w)"/>' +
       monte(texte(500, 271, "60" + NB + "000 parties", 28, "#fff", { gras: 700, ancre: "end" }), 1.1) +
       texte(0, 340, "Exemple de calcul sur un mois.", 21, C.gris3), "v-tel");
   };
@@ -317,7 +317,7 @@ window.LiveVisuels = (function () {
     var traits = "", s = "";
     puces.forEach(function (p, i) {
       var cx = p[1] + p[3] / 2, cy = p[2] + 27;
-      traits += '<path class="v-flux" d="M260 202 L' + cx + " " + cy + '" stroke="' + C.trait + '" stroke-width="3" stroke-dasharray="8 8"/>';
+      traits += '<path d="M260 202 L' + cx + " " + cy + '" stroke="' + C.trait + '" stroke-width="3" stroke-dasharray="8 8"/>';
       s += monte('<rect x="' + p[1] + '" y="' + p[2] + '" width="' + p[3] + '" height="54" rx="27" fill="' + C.carte + '" stroke="' + C.trait + '" stroke-width="2"/>' +
         texte(cx, cy + 8, p[0], 23, C.encre, { ancre: "middle", gras: 500 }), 0.15 + i * 0.1);
     });
@@ -335,8 +335,8 @@ window.LiveVisuels = (function () {
     }
     var manette = '<circle cx="66" cy="58" r="34" fill="rgba(41,151,255,.18)"/>' +
       '<rect x="42" y="45" width="48" height="28" rx="14" fill="' + C.bleu + '"/>' +
-      '<rect x="51" y="56" width="12" height="4" rx="2" fill="#0d0d0f"/><rect x="55" y="52" width="4" height="12" rx="2" fill="#0d0d0f"/>' +
-      '<circle cx="76" cy="55" r="3" fill="#0d0d0f"/><circle cx="82" cy="62" r="3" fill="#0d0d0f"/>';
+      '<rect x="51" y="56" width="12" height="4" rx="2" fill="#fff"/><rect x="55" y="52" width="4" height="12" rx="2" fill="#fff"/>' +
+      '<circle cx="76" cy="55" r="3" fill="#fff"/><circle cx="82" cy="62" r="3" fill="#fff"/>';
     var ecran = '<circle cx="66" cy="200" r="34" fill="rgba(255,159,10,.18)"/>' +
       '<rect x="44" y="184" width="44" height="32" rx="6" fill="' + C.orange + '"/>' +
       texte(66, 206, "PUB", 14, "#1d1d1f", { ancre: "middle", gras: 800 });
@@ -362,18 +362,18 @@ window.LiveVisuels = (function () {
     }
     return svg("0 0 520 400", "Deux écrans : la pub en fin de partie, et une pub regardée contre des pièces", defs,
       monte(ecran(40, "a") +
-        texte(140, 82, "Partie terminée", 21, C.encre, { ancre: "middle", gras: 600 }) +
+        texte(140, 82, "Partie terminée", 21, "#f5f5f7", { ancre: "middle", gras: 600 }) +
         texte(140, 146, "42", 62, "#fff", { ancre: "middle", gras: 800 }) +
-        texte(140, 174, "points", 18, C.gris, { ancre: "middle" }) +
-        '<rect x="68" y="196" width="144" height="104" rx="12" fill="' + C.encre + '"/>' +
+        texte(140, 174, "points", 18, "#a1a1a6", { ancre: "middle" }) +
+        '<rect x="68" y="196" width="144" height="104" rx="12" fill="#f5f5f7"/>' +
         '<rect x="76" y="204" width="42" height="20" rx="5" fill="' + C.or + '"/>' +
         texte(97, 219, "Pub", 14, "#1d1d1f", { ancre: "middle", gras: 800 }) +
         '<rect x="86" y="240" width="108" height="11" rx="5.5" fill="#c7c7cc"/><rect x="86" y="262" width="74" height="11" rx="5.5" fill="#c7c7cc"/>' +
         '<rect x="80" y="320" width="120" height="42" rx="21" fill="' + C.bleu + '"/>' +
         texte(140, 347, "Rejouer", 19, "#fff", { ancre: "middle", gras: 600 }), 0) +
       monte(ecran(280, "b") +
-        texte(380, 70, "120 pièces", 17, C.gris, { ancre: "middle" }) +
-        '<rect x="302" y="112" width="156" height="210" rx="18" fill="' + C.carte + '" stroke="' + C.trait + '" stroke-width="2"/>' +
+        texte(380, 70, "120 pièces", 17, "#a1a1a6", { ancre: "middle" }) +
+        '<rect x="302" y="112" width="156" height="210" rx="18" fill="#fff"/>' +
         '<circle cx="380" cy="160" r="26" fill="' + C.or + '"/><circle cx="380" cy="160" r="17" fill="none" stroke="#b8860b" stroke-width="3"/>' +
         texte(380, 222, "+50", 30, C.or, { ancre: "middle", gras: 800 }) +
         texte(380, 248, "pièces", 18, C.gris, { ancre: "middle" }) +
@@ -398,7 +398,7 @@ window.LiveVisuels = (function () {
       s += monte(texte(0, y + 38, l[0], 30, C.encre, { gras: 700 }) + texte(0, y + 70, l[1], 22, C.gris) +
         texte(360, y + 38, l[3], 26, C.encre) +
         '<rect x="360" y="' + (y + 54) + '" width="300" height="14" rx="7" fill="' + C.carte2 + '"/>' +
-        '<rect class="v-barre" style="animation-delay:' + (0.3 + i * 0.15) + 's" x="360" y="' + (y + 54) + '" width="' + Math.max(12, 300 * l[2] / 10000) + '" height="14" rx="7" fill="url(#' + u + 'b)"/>' +
+        '<rect x="360" y="' + (y + 54) + '" width="' + Math.max(12, 300 * l[2] / 10000) + '" height="14" rx="7" fill="url(#' + u + 'b)"/>' +
         texte(1000, y + 44, l[4], 32, C.orange, { gras: 700, ancre: "end" }) +
         texte(1000, y + 72, "par jour", 20, C.gris, { ancre: "end" }), 0.1 + i * 0.15);
     });
@@ -411,7 +411,7 @@ window.LiveVisuels = (function () {
       t += monte('<text x="0" y="' + (y + 26) + '" font-size="23" fill="' + C.gris + '">' +
           '<tspan font-weight="700" fill="' + C.encre + '">' + l[0] + "</tspan> " + l[1] + "</text>" +
         '<rect x="0" y="' + (y + 40) + '" width="270" height="14" rx="7" fill="' + C.carte2 + '"/>' +
-        '<rect class="v-barre" style="animation-delay:' + (0.3 + i * 0.15) + 's" x="0" y="' + (y + 40) + '" width="' + Math.max(12, 270 * l[2] / 10000) + '" height="14" rx="7" fill="url(#' + u + 'b)"/>' +
+        '<rect x="0" y="' + (y + 40) + '" width="' + Math.max(12, 270 * l[2] / 10000) + '" height="14" rx="7" fill="url(#' + u + 'b)"/>' +
         texte(284, y + 53, l[3].replace(" par jour", " / jour"), 19, C.gris) +
         '<text x="0" y="' + (y + 96) + '" font-size="32" font-weight="700" fill="' + C.orange + '">' + l[4] +
           '<tspan font-size="20" font-weight="400" fill="' + C.gris + '"> par jour</tspan></text>', 0.1 + i * 0.15);
@@ -454,8 +454,8 @@ window.LiveVisuels = (function () {
       return monte(s, d);
     }
     return svg("0 0 520 400", "Seul, une erreur te bloque et tu abandonnes. Avec moi, une vidéo pour chaque étape, des réponses, et ton jeu sort.", "",
-      colonne(10, "Seul", C.rouge, [["Une erreur", "te bloque"], ["Tu ne sais pas", "quoi demander"], ["Tu abandonnes", ""]], croix, 0) +
-      colonne(265, "Avec moi", C.vert, [["Une vidéo pour", "chaque étape"], ["Je réponds quand", "tu bloques"], ["Ton jeu sort", ""]], coche, 0.3));
+      colonne(10, "Seul", C.rougeTexte, [["Une erreur", "te bloque"], ["Tu ne sais pas", "quoi demander"], ["Tu abandonnes", ""]], croix, 0) +
+      colonne(265, "Avec moi", C.vertTexte, [["Une vidéo pour", "chaque étape"], ["Je réponds quand", "tu bloques"], ["Ton jeu sort", ""]], coche, 0.3));
   };
 
   /* ── L'offre ───────────────────────────────────────────── */
