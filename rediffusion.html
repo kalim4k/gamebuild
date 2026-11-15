@@ -113,7 +113,8 @@ src="https://www.facebook.com/tr?id=4451955808377862&ev=PageView&noscript=1"></n
   }).catch(function () {});
 
   var id = new URLSearchParams(location.search).get("id");
-  fetch("/api/rediffusion").then(function (r) { return r.json(); }).then(function (liste) {
+  fetch("/api/rediffusion" + (id ? "?id=" + encodeURIComponent(id) : "")).then(function (r) { return r.json(); }).then(function (liste) {
+    if (liste.meta && liste.meta.audio) return liste.meta;
     var r = (liste.rediffusions || []).filter(function (x) { return !id || x.id === id; })[0];
     if (!r) throw new Error("vide");
     return fetch(r.url).then(function (x) { if (!x.ok) throw new Error("meta"); return x.json(); });

@@ -47,8 +47,17 @@ export default async function handler(req, res) {
         .filter((x) => x.m)
         .sort((x, y) => new Date(y.b.uploadedAt) - new Date(x.b.uploadedAt))
         .map((x) => ({ id: x.m[1], url: x.b.url, date: x.b.uploadedAt }));
+      /* Le minutage de la rediffusion demandée (ou de la plus récente) est renvoyé
+         tel quel : la page n'a pas à le lire sur un autre domaine. */
+      const voulu = typeof req.query?.id === "string" ? req.query.id : "";
+      const choisie = rediffusions.find((r) => !voulu || r.id === voulu);
+      let meta = null;
+      if (choisie) {
+        const r = await fetch(choisie.url);
+        if (r.ok) meta = await r.json();
+      }
       res.setHeader("Cache-Control", "public, s-maxage=60, stale-while-revalidate=300");
-      res.status(200).json({ configure: true, rediffusions });
+      res.status(200).json({ configure: true, rediffusions, meta });
     } catch (e) {
       console.error("rediffusion:", e && e.message);
       res.setHeader("Cache-Control", "no-store");
