@@ -311,6 +311,7 @@ a{ color: var(--blue-ink); text-decoration: none; }
 .prix b{ font-size: 40px; line-height: 1.1; font-weight: 600; letter-spacing: -.02em; }
 .prix span{ font-size: 15px; color: var(--ink-2); }
 .o-jouable{ font-size: 15px; color: var(--ink-2); max-width: 36ch; }
+.offre .o-ferme{ font-size: 19px; line-height: 1.3; font-weight: 600; color: var(--orange); max-width: 26ch; text-wrap: balance; }
 
 .fin-page{ margin-top: 36px; display: grid; justify-items: center; gap: 4px; }
 
@@ -422,6 +423,7 @@ src="https://www.facebook.com/tr?id=4451955808377862&ev=PageView&noscript=1"
    ══════════════════════════════════════════════════════════ */
 var LIEN_PAIEMENT = "https://kgpqinxc.mychariow.shop/prd_iiq2laak/checkout";
 var LIEN_CHAINE   = "https://www.whatsapp.com/channel/0029Vb8XIsmFnSzD0G0r5a2G";
+var PORTES_FERMEES = true;   /* le groupe est temporairement fermé : false pour rouvrir */
 var PRIX_GROUPE   = "4 500 F";
 var PRIX_JOUABLE  = "3 000 F";
 var VALEUR_PIXEL  = 4500;     /* le prix du groupe, en F CFA, pour le pixel */
@@ -968,7 +970,7 @@ var VALEUR_PIXEL  = 4500;     /* le prix du groupe, en F CFA, pour le pixel */
       ];
     } else if (vite) {
       plan = [
-        { quand: "Jour 1", action: "Rejoins l'accompagnement et regarde la première vidéo." },
+        { quand: "Jour 1", action: PORTES_FERMEES ? "Rejoins l'accompagnement dès sa réouverture, annoncée sur la chaîne WhatsApp." : "Rejoins l'accompagnement et regarde la première vidéo." },
         { quand: "Jours 1 et 2", action: "Crée ton jeu avec l'IA, depuis ton téléphone : " + nomIdee },
         { quand: "Jour 3", action: "Mets-le en ligne avec Jouable et ajoute la publicité Adsterra, qui accepte vite." },
         { quand: "Jours 3 à 7", action: "Fais venir tes premiers joueurs chaque jour, avec la méthode de l'accompagnement, et regarde ce qui marche le mieux." }
@@ -978,7 +980,7 @@ var VALEUR_PIXEL  = 4500;     /* le prix du groupe, en F CFA, pour le pixel */
         : T === 1 ? ["Jour 1", "Semaine 1", "Semaine 2", "Ensuite"]
         : ["Jour 1", "Jours 2 à 4", "Jour 5", "Ensuite"];
       plan = [
-        { quand: q[0], action: "Rejoins l'accompagnement et regarde la première vidéo." },
+        { quand: q[0], action: PORTES_FERMEES ? "Rejoins l'accompagnement dès sa réouverture, annoncée sur la chaîne WhatsApp." : "Rejoins l'accompagnement et regarde la première vidéo." },
         { quand: q[1], action: "Crée ton premier jeu avec l'IA, depuis ton téléphone : " + nomIdee },
         { quand: q[2], action: "Mets-le en ligne avec Jouable, et ajoute la publicité." },
         { quand: q[3], action: "Fais venir tes premiers joueurs avec la méthode de l'accompagnement, un peu chaque jour." }
@@ -1184,6 +1186,17 @@ var VALEUR_PIXEL  = 4500;     /* le prix du groupe, en F CFA, pour le pixel */
       ul.appendChild(li);
     });
     o.appendChild(ul);
+    if (PORTES_FERMEES) {
+      o.appendChild(el("p", "o-ferme", "Les portes du groupe sont temporairement fermées."));
+      var suite = el("p", "o-jouable", "La réouverture sera annoncée sur la ");
+      var lienChaine = el("a", null, "chaîne WhatsApp");
+      lienChaine.href = LIEN_CHAINE;
+      lienChaine.addEventListener("click", versChaine);
+      suite.appendChild(lienChaine);
+      suite.appendChild(document.createTextNode("."));
+      o.appendChild(suite);
+      return o;
+    }
     var prix = el("div", "prix");
     prix.appendChild(el("b", null, PRIX_GROUPE));
     prix.appendChild(el("span", null, "une seule fois, pour rejoindre le groupe"));

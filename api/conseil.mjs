@@ -59,6 +59,12 @@ const CONDITIONS = {
 const VERDICTS = new Set(["oui", "condition", "pas-encore"]);
 const VISUELS = ["billes", "fruits", "pop-it", "glacage", "vis", "aucun"];
 
+/* Le groupe est temporairement fermé : mettre false à la réouverture. */
+const PORTES_FERMEES = true;
+const FERME = `
+
+En ce moment, les portes du groupe d'accompagnement sont temporairement fermées, et la date de réouverture n'est pas fixée. N'écris jamais qu'on peut le rejoindre aujourd'hui, et ne donne aucune date. Dans le plan, la première étape devient : rejoindre l'accompagnement dès sa réouverture, qui sera annoncée sur la chaîne WhatsApp, et en attendant préciser son idée de jeu.`;
+
 const SYSTEME = `Tu rédiges, à la première personne, le diagnostic personnalisé que je donne aux personnes qui veulent créer et monétiser des jeux vidéo avec l'IA. Je suis formateur, en Afrique de l'Ouest. Ces personnes viennent de ma chaîne WhatsApp et ont répondu à 10 questions. Tu écris comme moi : tutoiement, chaleureux, direct, encourageant, concret. Phrases courtes, français simple, sans jargon. Tu parles à une seule personne : sers-toi de ses réponses, de son prénom, de son pays, de ses passions, de son idée. Aucune phrase toute faite qui pourrait s'appliquer à n'importe qui.
 
 Ce que je propose (n'invente rien d'autre) :
@@ -224,7 +230,7 @@ async function redige(r, verdict, conditions) {
        résoudre, et la personne attend devant l'écran d'analyse. */
     thinking: { type: "disabled" },
     output_config: { effort: "low", format: { type: "json_schema", schema: SCHEMA } },
-    system: SYSTEME,
+    system: PORTES_FERMEES ? SYSTEME + FERME : SYSTEME,
     messages: [{ role: "user", content: decrit(r, verdict, conditions) }]
   }, { timeout: 45000 });
 

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" data-portes="fermees">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -260,6 +260,15 @@ footer p{ margin: 0 0 14px; }
 .foot-rule{ border-top: 1px solid var(--hair); padding-top: 16px; display: flex; flex-wrap: wrap; gap: 6px 18px; }
 @media (min-width: 900px){ footer{ padding-bottom: 46px; } }
 
+/* ---------- Portes fermées ----------
+   Tant que <html> porte data-portes="fermees", la page n'affiche ni prix
+   ni bouton de paiement. Pour rouvrir, retirer cet attribut. */
+.ferme{ display: none; }
+[data-portes="fermees"] .ferme{ display: block; text-align: center; }
+[data-portes="fermees"] div.ferme{ display: grid; justify-items: center; gap: 8px; }
+[data-portes="fermees"] .ouvert, [data-portes="fermees"] .dock{ display: none !important; }
+.ferme-t{ font-size: 21px; line-height: 1.3; font-weight: 600; letter-spacing: -.01em; color: var(--orange); margin: 0; max-width: 24ch; text-wrap: balance; }
+
 /* ---------- Barre mobile ----------
    Elle monte quand le bouton du héros sort de l'écran, et redescend
    quand le bouton du bas est visible : jamais deux boutons à la fois. */
@@ -322,23 +331,27 @@ src="https://www.facebook.com/tr?id=4451955808377862&ev=PageView&noscript=1"
     </p>
 
     <div class="prix-carte">
-      <div class="prix">
+      <div class="ferme" role="status">
+        <p class="ferme-t">Les portes du groupe sont temporairement fermées.</p>
+        <p class="places-s">La réouverture sera annoncée sur la <a href="https://www.whatsapp.com/channel/0029Vb8XIsmFnSzD0G0r5a2G">chaîne WhatsApp</a>.</p>
+      </div>
+      <div class="prix ouvert">
         <b class="js-prix">4&nbsp;500&nbsp;F</b>
         <span>une seule fois, pour rejoindre le groupe</span>
       </div>
-      <div class="places" id="places" hidden>
+      <div class="places ouvert" id="places" hidden>
         <p class="places-t" id="places-t"></p>
         <div class="jauge" aria-hidden="true"><i id="jauge"></i></div>
         <p class="places-s" id="places-s"></p>
       </div>
-      <p class="places-s" id="places-repli" hidden></p>
-      <div class="places" id="bonus-places" hidden>
+      <p class="places-s ouvert" id="places-repli" hidden></p>
+      <div class="places ouvert" id="bonus-places" hidden>
         <p class="places-t" id="bonus-t"></p>
         <div class="jauge" aria-hidden="true"><i id="bonus-jauge"></i></div>
         <p class="places-s" id="bonus-s"></p>
       </div>
-      <a class="btn btn-lg js-payer" id="cta-haut" data-mesure="héros" href="https://kgpqinxc.mychariow.shop/prd_iiq2laak/checkout">Rejoindre le groupe</a>
-      <p class="t-caption">Paiement par Mobile Money. Après le paiement, tu reçois le lien du groupe.</p>
+      <a class="btn btn-lg js-payer ouvert" id="cta-haut" data-mesure="héros" href="https://kgpqinxc.mychariow.shop/prd_iiq2laak/checkout">Rejoindre le groupe</a>
+      <p class="t-caption ouvert">Paiement par Mobile Money. Après le paiement, tu reçois le lien du groupe.</p>
     </div>
   </div>
 </section>
@@ -451,8 +464,9 @@ src="https://www.facebook.com/tr?id=4451955808377862&ev=PageView&noscript=1"
 <section class="band-alt">
   <div class="wrap stack">
     <h2 class="t-head">Ton jeu commence ici.</h2>
-    <p class="t-body measure" id="cloture">Rejoins le groupe et démarre avec la première vidéo.</p>
-    <a class="btn btn-lg js-payer" id="cta-bas" data-mesure="clôture" href="https://kgpqinxc.mychariow.shop/prd_iiq2laak/checkout">Rejoindre le groupe</a>
+    <p class="t-body measure ferme">Les portes du groupe sont temporairement fermées. La réouverture sera annoncée sur la <a href="https://www.whatsapp.com/channel/0029Vb8XIsmFnSzD0G0r5a2G">chaîne WhatsApp</a>.</p>
+    <p class="t-body measure ouvert" id="cloture">Rejoins le groupe et démarre avec la première vidéo.</p>
+    <a class="btn btn-lg js-payer ouvert" id="cta-bas" data-mesure="clôture" href="https://kgpqinxc.mychariow.shop/prd_iiq2laak/checkout">Rejoindre le groupe</a>
   </div>
 </section>
 </main>
@@ -530,7 +544,9 @@ var VALEUR_PIXEL  = 4500;
     $("places").hidden = false;
     setTimeout(function () { $("jauge").style.width = Math.min(100, p.membres / p.seuil * 100) + "%"; }, 60);
   }
-  fetch("/api/places")
+  /* Portes fermées : ni prix ni places à afficher. */
+  var FERME = document.documentElement.getAttribute("data-portes") === "fermees";
+  if (!FERME) fetch("/api/places")
     .then(function (rep) { return rep.ok ? rep.json() : null; })
     .then(affichePlaces)
     ["catch"](function () {});
