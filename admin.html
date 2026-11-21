@@ -276,6 +276,32 @@ a:hover{ text-decoration: underline; }
     <div id="contenu">
       <div class="grille">
 
+        <!-- ─────────── Les envois des membres (/membres/promotion) ───────────
+             Chargés à part par le script en bas de page (/api/membres). -->
+        <section class="carte large" id="m-envois">
+          <style>
+            .m-barre{ display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: 22px; }
+            .m-barre .btn{ padding: 8px 16px; font-size: 13.5px; }
+            .m-envois-table{ margin-top: 10px; overflow-x: auto; }
+            .m-envois-table table{ width: 100%; border-collapse: collapse; font-size: 13px; }
+            .m-envois-table th, .m-envois-table td{ text-align: left; padding: 8px 10px 8px 0; border-bottom: 1px solid var(--grille); vertical-align: top; }
+            .m-envois-table th{ color: var(--ink-3); font-weight: 500; white-space: nowrap; }
+            .m-envois-table tr:last-child td{ border-bottom: 0; }
+            .m-envois-table a{ word-break: break-all; }
+            .m-envois-table input{ width: 17px; height: 17px; accent-color: var(--blue); cursor: pointer; }
+            .m-envois-table .m-retenu td{ background: #f2f8ff; }
+            .m-copie{ border: 0; background: none; color: var(--blue-ink); font: inherit; font-size: 12.5px; padding: 0 0 0 6px; cursor: pointer; }
+            .m-vide{ margin: 10px 0 0; color: var(--ink-3); font-size: 13.5px; }
+          </style>
+          <h2>Les envois des membres</h2>
+          <p>Les jeux et les liens directs envoyés depuis la vidéo « Promouvoir son jeu » (/membres/promotion). Coche ceux que tu partages, puis copie la liste pour ta chaîne.</p>
+          <div class="tuiles" id="m-tuiles"></div>
+          <div class="m-barre"><h2>Les jeux</h2><button class="btn" type="button" id="m-copier-jeux">Copier les jeux retenus</button></div>
+          <div class="m-envois-table" id="m-jeux"></div>
+          <div class="m-barre"><h2>Les liens directs</h2><button class="btn" type="button" id="m-copier-liens">Copier les liens retenus</button></div>
+          <div class="m-envois-table" id="m-liens"></div>
+        </section>
+
         <!-- ─────────── Le diagnostic (/diagnostic) ─────────── -->
         <section class="carte large">
           <h2>Le diagnostic</h2>
@@ -1134,6 +1160,136 @@ a:hover{ text-decoration: underline; }
   setInterval(function () { if (donnees && !document.hidden) charge(); }, 120000);
 
   if (mdp()) charge(); else { porte.hidden = false; $("mdp").focus(); }
+})();
+</script>
+<!-- ══════════════ Les envois des membres ══════════════
+     À part du reste : se charge dès que le tableau de bord s'affiche,
+     avec le même mot de passe (sessionStorage « gb_mdp »). -->
+<script>
+(function () {
+  "use strict";
+  var board = document.getElementById("board");
+  var donnees = null;
+  function $(id) { return document.getElementById(id); }
+  function mdp() { try { return sessionStorage.getItem("gb_mdp") || ""; } catch (e) { return ""; } }
+  function quand(iso) {
+    var d = new Date(iso);
+    return d.toLocaleDateString("fr-FR", { day: "numeric", month: "short" }) + " " +
+           d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+  }
+  function el(tag, texte, classe) {
+    var e = document.createElement(tag);
+    if (texte != null) e.textContent = texte;
+    if (classe) e.className = classe;
+    return e;
+  }
+  function copie(texte, bouton) {
+    var fini = function () { var t = bouton.textContent; bouton.textContent = "Copié"; setTimeout(function () { bouton.textContent = t; }, 1600); };
+    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(texte).then(fini, function () { window.prompt("Copie :", texte); });
+    else window.prompt("Copie :", texte);
+  }
+  function lien(url) {
+    var a = el("a", url.replace(/^https?:\/\//, "").replace(/\/$/, ""));
+    a.href = url; a.target = "_blank"; a.rel = "noopener noreferrer";
+    return a;
+  }
+
+  function retenir(l, coche, tr) {
+    coche.disabled = true;
+    fetch("/api/membres", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-mdp": mdp() },
+      body: JSON.stringify({ action: "retenir", id: l.id, retenu: coche.checked })
+    }).then(function (r) {
+      if (!r.ok) throw new Error();
+      l.retenu = coche.checked;
+      tr.classList.toggle("m-retenu", l.retenu);
+      tuiles();
+    }).catch(function () { coche.checked = !coche.checked; })
+      .then(function () { coche.disabled = false; });
+  }
+
+  function table(cible, entetes, lignes, cellules) {
+    cible.textContent = "";
+    if (!lignes.length) { cible.appendChild(el("p", "Rien de reçu pour l'instant.", "m-vide")); return; }
+    var t = el("table"), th = el("tr");
+    entetes.forEach(function (h) { th.appendChild(el("th", h)); });
+    var thead = el("thead"); thead.appendChild(th); t.appendChild(thead);
+    var tb = el("tbody");
+    lignes.forEach(function (l) {
+      var tr = el("tr");
+      if (l.retenu) tr.className = "m-retenu";
+      var td = el("td"), coche = el("input");
+      coche.type = "checkbox"; coche.checked = !!l.retenu;
+      coche.setAttribute("aria-label", "Retenu");
+      coche.addEventListener("change", function () { retenir(l, coche, tr); });
+      td.appendChild(coche); tr.appendChild(td);
+      cellules(l).forEach(function (c) {
+        var td2 = el("td");
+        if (c && c.nodeType) td2.appendChild(c); else td2.textContent = c == null ? "" : c;
+        tr.appendChild(td2);
+      });
+      tb.appendChild(tr);
+    });
+    t.appendChild(tb);
+    cible.appendChild(t);
+  }
+
+  function tuiles() {
+    var zt = $("m-tuiles"); zt.textContent = "";
+    var j = donnees.jeux, li = donnees.liens;
+    [[j.length, j.length > 1 ? "jeux reçus" : "jeu reçu"],
+     [j.filter(function (x) { return x.retenu; }).length, "jeux retenus"],
+     [li.length, li.length > 1 ? "liens directs reçus" : "lien direct reçu"],
+     [li.filter(function (x) { return x.retenu; }).length, "liens directs retenus"]
+    ].forEach(function (t) {
+      var d = el("div", null, "tuile");
+      d.appendChild(el("b", String(t[0]))); d.appendChild(el("span", t[1]));
+      zt.appendChild(d);
+    });
+  }
+
+  function dessine() {
+    tuiles();
+    table($("m-jeux"), ["Retenu", "Reçu le", "Prénom", "WhatsApp", "Jeu", "Lien", "En une phrase"], donnees.jeux, function (l) {
+      return [quand(l.maj_le), l.prenom, l.whatsapp, l.nom_jeu, lien(l.lien), l.phrase || ""];
+    });
+    table($("m-liens"), ["Retenu", "Reçu le", "Prénom", "WhatsApp", "Régie", "Lien direct"], donnees.liens, function (l) {
+      var span = el("span"); span.appendChild(lien(l.lien));
+      var b = el("button", "Copier", "m-copie"); b.type = "button";
+      b.addEventListener("click", function () { copie(l.lien, b); });
+      span.appendChild(b);
+      return [quand(l.maj_le), l.prenom, l.whatsapp, l.regie === "monetag" ? "Monetag" : "Adsterra", span];
+    });
+  }
+
+  function charge() {
+    if (!mdp()) return;
+    fetch("/api/membres?liste=1", { headers: { "x-mdp": mdp() } })
+      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function (j) { donnees = j; dessine(); })
+      .catch(function () {
+        if (!donnees) { $("m-jeux").textContent = ""; $("m-jeux").appendChild(el("p", "Les envois n'ont pas pu être chargés.", "m-vide")); }
+      });
+  }
+
+  $("m-copier-jeux").addEventListener("click", function () {
+    if (!donnees) return;
+    var r = donnees.jeux.filter(function (x) { return x.retenu; });
+    if (!r.length) { window.alert("Coche d'abord les jeux que tu veux partager."); return; }
+    copie(r.map(function (x) { return x.nom_jeu + (x.phrase ? " : " + x.phrase : "") + "\n" + x.lien; }).join("\n\n"), this);
+  });
+  $("m-copier-liens").addEventListener("click", function () {
+    if (!donnees) return;
+    var r = donnees.liens.filter(function (x) { return x.retenu; });
+    if (!r.length) { window.alert("Coche d'abord les liens que tu veux partager."); return; }
+    copie(r.map(function (x) { return x.lien; }).join("\n"), this);
+  });
+
+  /* Se charge quand le tableau de bord apparaît, puis toutes les deux minutes. */
+  new MutationObserver(function () { if (!board.hidden) charge(); }).observe(board, { attributes: true, attributeFilter: ["hidden"] });
+  if (!board.hidden) charge();
+  setInterval(function () { if (!board.hidden && !document.hidden) charge(); }, 120000);
 })();
 </script>
 </body>

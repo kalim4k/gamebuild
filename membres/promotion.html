@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Comment faire la promotion de son jeu et attirer des joueurs</title>
+<meta name="description" content="Les 4 leçons du module : quel jeu créer, des vidéos qui font des vues, des joueurs qui reviennent, puis la pub payante.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#ffffff">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="Comment faire la promotion de son jeu et attirer des joueurs">
+<meta property="og:description" content="La vidéo, le playbook à télécharger, et le formulaire pour m'envoyer ton jeu et ton lien direct.">
+<meta property="og:image" content="https://i.ytimg.com/vi/1pm4qeghS_8/hqdefault.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ccircle cx=%2750%27 cy=%2750%27 r=%2750%27 fill=%27%230071e3%27/%3E%3Cpath d=%27M40 30v40l32-20z%27 fill=%27white%27/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/formation/formation.css">
+<link rel="stylesheet" href="/membres/membres.css">
+<!-- Vidéo des membres : le titre et le lien YouTube sont dans
+     formation/contenu.js, série « membres ». Les deux sections cachées
+     ci-dessous (playbook, envois) sont placées sous la vidéo par
+     formation.js ; les formulaires parlent à /api/membres. -->
+</head>
+<body data-page="video" data-adresse="/membres/promotion">
+<header class="top"><div class="wrap">
+  <span class="top-marque">Groupe d'accompagnement</span>
+  <span class="top-note">Réservé aux membres</span>
+</div></header>
+<main class="wrap" id="app"></main>
+<noscript><p class="wrap">Active JavaScript pour voir la vidéo.</p></noscript>
+
+<!-- ─────────── Le playbook ─────────── -->
+<section class="bloc playbook" id="playbook" hidden aria-labelledby="pb-titre">
+  <div class="pb-carte">
+    <img class="pb-couverture" src="/membres/playbook-couverture.webp" width="560" height="792"
+         alt="La couverture du playbook : Attire des joueurs sur ton jeu, et transforme-les en revenus">
+    <div class="pb-texte">
+      <p class="surtitre">Le playbook de la vidéo</p>
+      <h2 id="pb-titre">Attire des joueurs sur ton jeu, et transforme-les en revenus</h2>
+      <p class="pb-chapo">Le résumé écrit de la vidéo, en 23 pages : les 4 leçons, mon test réel, le pas-à-pas pour promouvoir une vidéo sur TikTok, et une checklist à cocher à chaque étape.</p>
+      <a class="btn btn-grand" id="pb-telecharger" href="/api/membres?fichier=playbook">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11"/><path d="m7 10.5 5 5 5-5"/><path d="M5 19.5h14"/></svg>
+        <span>Télécharger le playbook</span>
+      </a>
+      <p class="pb-info">PDF · 23 pages · 7 Mo</p>
+    </div>
+  </div>
+
+  <h3 class="pb-sommaire-titre">Ce qu'il y a dedans</h3>
+  <ol class="pb-sommaire">
+    <li><b>Quel jeu créer</b><span>Un jeu qui a une chance de devenir viral : les 3 recettes.</span></li>
+    <li><b>Des vidéos qui font des vues</b><span>Le hook, la rétention, les bons formats, la régularité.</span></li>
+    <li><b>Des vues aux joueurs fidèles</b><span>Les amener sur ton jeu, puis les faire revenir tous les jours.</span></li>
+    <li><b>La pub payante et Monetag</b><span>L'arbitrage, les 3 conditions, installer Monetag sur ton jeu.</span></li>
+    <li><b>Mon test réel</b><span>Un compte neuf, 4 vidéos, 11 000 vues, les premiers revenus.</span></li>
+    <li><b>Promouvoir une vidéo sur TikTok, pas à pas</b><span>Les 12 étapes, de la vidéo qui perce jusqu'aux statistiques.</span></li>
+    <li><b>Suivre, décider, passer à l'action</b><span>Rentable ou pas, le formulaire, ta checklist finale.</span></li>
+  </ol>
+  <p class="pb-aide">Le téléchargement ne démarre pas ? Ouvre cette page dans Chrome ou Safari, puis appuie à nouveau sur le bouton.</p>
+</section>
+
+<!-- ─────────── Les deux formulaires ─────────── -->
+<section class="bloc envois" id="envois" hidden aria-labelledby="envois-titre">
+  <div class="envois-tete">
+    <p class="surtitre">Mon coup de pouce</p>
+    <h2 id="envois-titre">Envoie-moi ton jeu et ton lien direct</h2>
+    <p>Le plus dur, c'est de commencer : avoir tes premiers joueurs, voir tes premiers revenus. Envoie-moi ces deux liens, je fais une sélection et je la partage sur mes chaînes WhatsApp.</p>
+  </div>
+
+  <!-- 1. Le lien du jeu -->
+  <div class="envoi-carte" id="carte-jeu">
+    <form class="envoi" id="form-jeu" data-sorte="jeu" novalidate>
+      <div class="envoi-tete">
+        <span class="num" aria-hidden="true">1</span>
+        <div>
+          <h3>Le lien de ton jeu</h3>
+          <p>Parmi les jeux envoyés, j'en sélectionne 15 à 20 et je les partage sur ma chaîne WhatsApp. Soigne ton jeu avant de l'envoyer : en ligne, sans bug, avec ses pubs bien intégrées.</p>
+        </div>
+      </div>
+      <div class="champs">
+        <label>Ton prénom
+          <input name="prenom" autocomplete="given-name" maxlength="40" required>
+        </label>
+        <label>Ton numéro WhatsApp
+          <input name="whatsapp" type="tel" inputmode="tel" autocomplete="tel" maxlength="24" placeholder="+225 07 00 00 00 00" required>
+          <small>Avec l'indicatif du pays. Il me sert à savoir de qui vient l'envoi.</small>
+        </label>
+        <label>Le nom de ton jeu
+          <input name="nom_jeu" maxlength="60" required>
+        </label>
+        <label>Le lien de ton jeu
+          <input name="lien" type="url" inputmode="url" autocomplete="url" autocapitalize="off" spellcheck="false" placeholder="https://monjeu.jouable.app" required>
+          <small>Ouvre-le d'abord sur ton téléphone pour vérifier que le jeu se lance.</small>
+        </label>
+        <label>En une phrase, à quoi on joue ? <em>Facultatif</em>
+          <textarea name="phrase" maxlength="160" rows="2" placeholder="Par exemple : tu esquives les voitures sur le pont le plus longtemps possible."></textarea>
+        </label>
+        <input class="piege" name="site" tabindex="-1" autocomplete="off" aria-hidden="true">
+      </div>
+      <p class="erreur" role="alert" hidden></p>
+      <button class="btn btn-grand" type="submit">Envoyer mon jeu</button>
+    </form>
+    <div class="recu" hidden tabindex="-1">
+      <span class="recu-icone" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span>
+      <h3>Ton jeu est bien reçu</h3>
+      <p class="recu-texte"></p>
+      <button class="btn-lien" type="button" data-encore>Envoyer un autre jeu</button>
+    </div>
+  </div>
+
+  <!-- 2. Le lien direct -->
+  <div class="envoi-carte" id="carte-lien">
+    <form class="envoi" id="form-lien" data-sorte="lien-direct" novalidate>
+      <div class="envoi-tete">
+        <span class="num" aria-hidden="true">2</span>
+        <div>
+          <h3>Ton lien direct</h3>
+          <p>Un lien qui mène directement vers des pubs : chaque clic génère des impressions, sans passer par ton jeu. J'en sélectionne 10 à 20 pour mes autres chaînes WhatsApp.</p>
+        </div>
+      </div>
+      <div class="astuce">
+        <b>Créer ton lien direct</b>
+        <p>Sur Adsterra, ouvre le menu Smartlinks, crée un nouveau lien direct et copie-le. Sur Monetag, c'est le même principe (Direct Link).</p>
+      </div>
+      <div class="champs">
+        <label>Ton prénom
+          <input name="prenom" autocomplete="given-name" maxlength="40" required>
+        </label>
+        <label>Ton numéro WhatsApp
+          <input name="whatsapp" type="tel" inputmode="tel" autocomplete="tel" maxlength="24" placeholder="+225 07 00 00 00 00" required>
+        </label>
+        <fieldset class="regies">
+          <legend>Ta régie</legend>
+          <label class="regie"><input type="radio" name="regie" value="adsterra" required><span>Adsterra</span></label>
+          <label class="regie"><input type="radio" name="regie" value="monetag"><span>Monetag</span></label>
+        </fieldset>
+        <label>Ton lien direct
+          <input name="lien" type="url" inputmode="url" autocapitalize="off" spellcheck="false" placeholder="https://…" required>
+        </label>
+        <input class="piege" name="site" tabindex="-1" autocomplete="off" aria-hidden="true">
+      </div>
+      <div class="attention"><p><b>Une seule régie.</b> Si tu utilises Adsterra et Monetag, envoie-moi le lien direct d'une seule des deux. Si tu en renvoies un autre, il remplace le premier.</p></div>
+      <p class="erreur" role="alert" hidden></p>
+      <button class="btn btn-grand" type="submit">Envoyer mon lien direct</button>
+    </form>
+    <div class="recu" hidden tabindex="-1">
+      <span class="recu-icone" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span>
+      <h3>Ton lien direct est bien reçu</h3>
+      <p class="recu-texte"></p>
+      <button class="btn-lien" type="button" data-encore>Changer mon lien direct</button>
+    </div>
+  </div>
+</section>
+
+<script src="/formation/contenu.js"></script>
+<script src="/formation/formation.js"></script>
+<script src="/membres/membres.js"></script>
+</body>
+</html>

@@ -4,7 +4,8 @@
   "trailingSlash": false,
   "functions": {
     "api/conseil.mjs": { "maxDuration": 60 },
-    "api/bonus.mjs": { "maxDuration": 60 }
+    "api/bonus.mjs": { "maxDuration": 60 },
+    "api/membres.mjs": { "maxDuration": 60 }
   },
   "redirects": [
     { "source": "/", "destination": "/chaine", "permanent": false },
@@ -100,6 +101,15 @@
     },
     {
       "source": "/rejoindre",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/membres/(.*)",
       "headers": [
         {
           "key": "X-Robots-Tag",

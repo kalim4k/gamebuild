@@ -144,6 +144,31 @@ https://influenceuseia.vercel.app/etape-video.html`
         bouton: { texte: "Faire le test de qualification", lien: "/diagnostic?src=video-accompagnement" },
         secondaire: { texte: "Retourner à la chaîne", lien: "https://www.whatsapp.com/channel/0029Vb8XIsmFnSzD0G0r5a2G" }
       }
+    },
+
+    /* ══════════════ Les vidéos des membres ══════════════
+       Réservées au groupe d'accompagnement (serie: "membres") : cachées
+       du sommaire, non indexées, pages dans membres/. Le lien se donne
+       dans le groupe. « blocs » : les sections de la page (par leur id)
+       placées sous la vidéo, ici le playbook et les deux formulaires. */
+    {
+      adresse: "/membres/promotion",
+      cache: true, serie: "membres",
+      titre: "Comment faire la promotion de son jeu et attirer des joueurs",
+      duree: "22 min",
+      youtube: "https://www.youtube.com/watch?v=1pm4qeghS_8",
+      resume: "Les 4 leçons du module : quel jeu créer, des vidéos qui font des vues, des joueurs qui reviennent, puis la pub payante. Avec mon test réel sur un compte TikTok tout neuf.",
+      prompts: [],
+      blocs: ["playbook", "envois"]
+    },
+    {
+      adresse: "/membres/adsense",
+      cache: true, serie: "membres",
+      titre: "Comment connecter son jeu à AdSense",
+      duree: "16 min",
+      youtube: "https://www.youtube.com/watch?v=Rr7YDwGGHnE",
+      resume: "Comment connecter ton jeu à Google AdSense, étape par étape, pour qu'il affiche les publicités de Google.",
+      prompts: []
     }
   ]
 };

@@ -5,8 +5,9 @@
    Une vidéo « cache: true » n'est ni dans le sommaire ni dans la
    navigation : sa page ne s'ouvre que par son adresse. Une vidéo qui
    a une « serie » est numérotée et reliée aux autres vidéos de la même
-   série (les vidéos de la chaîne WhatsApp), et « appel » ajoute un
-   appel à l'action sous le lecteur.
+   série (les vidéos de la chaîne WhatsApp, celles des membres), et
+   « appel » ajoute un appel à l'action sous le lecteur. « blocs » place
+   sous la vidéo des sections écrites dans le HTML de la page.
    Le lecteur YouTube n'est chargé qu'au clic : la page reste
    légère, et rien ne passe par la bande passante de Vercel.
    ══════════════════════════════════════════════════════════ */
@@ -170,6 +171,13 @@
       liste.forEach(function (p, i) { sec.appendChild(blocPrompt(p, i)); });
       app.appendChild(sec);
     }
+
+    /* Les sections propres à la page (vidéos des membres) : écrites dans
+       son HTML, cachées, puis placées ici, sous la vidéo. */
+    (v.blocs || []).forEach(function (id) {
+      var b = document.getElementById(id);
+      if (b) { b.hidden = false; app.appendChild(b); }
+    });
 
     if (pos < 0 || groupe.length < 2) return;   // page seule : pas de vidéo voisine
     var suite = el("nav", "suite");

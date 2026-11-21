@@ -1,0 +1,118 @@
+/* ══════════════════════════════════════════════════════════
+   VIDÉOS DES MEMBRES — en plus de formation/formation.css :
+   la présentation du playbook et les deux formulaires d'envoi.
+   Mêmes couleurs, même pile système, page claire.
+   ══════════════════════════════════════════════════════════ */
+
+.top-note{ font-size: 13px; color: var(--ink-3); white-space: nowrap; }
+
+.bloc{ padding-top: 48px; }
+.bloc h2{ margin: 0; font-size: clamp(26px, 6vw, 34px); line-height: 1.1; letter-spacing: -.03em; text-wrap: balance; }
+.bloc .surtitre{ margin-bottom: 8px; }
+.bloc[hidden]{ display: none; }
+
+/* ---------- Le playbook ---------- */
+.pb-carte{
+  display: grid; gap: 22px; align-items: center;
+  padding: 24px 22px; border-radius: 22px; background: var(--bg-alt);
+}
+.pb-couverture{
+  display: block; width: 100%; max-width: 220px; height: auto; margin: 0 auto;
+  border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,.12), 0 18px 40px rgba(29,20,40,.28);
+}
+.pb-texte{ display: grid; gap: 12px; justify-items: center; text-align: center; }
+.pb-chapo{ margin: 0; color: var(--ink-2); font-size: 17px; line-height: 1.45; max-width: 40ch; }
+.pb-texte .btn-grand{ margin-top: 6px; }
+.pb-info{ margin: 0; color: var(--ink-3); font-size: 14px; }
+@media (min-width: 640px){
+  .pb-carte{ grid-template-columns: 200px 1fr; padding: 30px; gap: 32px; }
+  .pb-couverture{ max-width: none; }
+  .pb-texte{ justify-items: start; text-align: left; }
+  .pb-texte .btn-grand{ width: auto; }
+}
+
+.pb-sommaire-titre{ margin: 30px 0 12px; font-size: 19px; letter-spacing: -.02em; }
+.pb-sommaire{ list-style: none; counter-reset: pb; margin: 0; padding: 0; display: grid; gap: 2px; }
+.pb-sommaire li{
+  counter-increment: pb; position: relative; padding: 12px 0 12px 44px;
+  border-bottom: 1px solid rgba(0,0,0,.08);
+}
+.pb-sommaire li:last-child{ border-bottom: 0; }
+.pb-sommaire li::before{
+  content: counter(pb); position: absolute; left: 0; top: 12px;
+  width: 30px; height: 30px; border-radius: 50%; background: var(--bg-alt);
+  display: grid; place-items: center; font-size: 14px; font-weight: 600; color: var(--blue-ink);
+}
+.pb-sommaire b{ display: block; font-size: 17px; letter-spacing: -.015em; }
+.pb-sommaire span{ display: block; color: var(--ink-2); font-size: 15px; line-height: 1.4; margin-top: 2px; }
+.pb-aide{ margin: 18px 0 0; color: var(--ink-3); font-size: 14px; }
+
+/* ---------- Les envois ---------- */
+.envois{ padding-bottom: 8px; }
+.envois-tete{ display: grid; gap: 10px; margin-bottom: 22px; }
+.envois-tete p:not(.surtitre){ margin: 0; color: var(--ink-2); font-size: 17px; line-height: 1.45; }
+
+.envoi-carte{ border-radius: 22px; background: var(--bg-alt); padding: 24px 20px; margin-bottom: 16px; }
+@media (min-width: 640px){ .envoi-carte{ padding: 28px; } }
+.envoi{ display: grid; gap: 18px; }
+.envoi-tete{ display: flex; gap: 14px; align-items: flex-start; }
+.envoi-tete .num{
+  flex: none; width: 36px; height: 36px; border-radius: 11px; background: var(--blue); color: #fff;
+  display: grid; place-items: center; font-weight: 700; font-size: 17px;
+}
+.envoi-tete h3{ margin: 4px 0 6px; font-size: 21px; letter-spacing: -.025em; }
+.envoi-tete p{ margin: 0; color: var(--ink-2); font-size: 16px; line-height: 1.45; }
+
+.astuce, .attention{ border-radius: 14px; padding: 14px 16px; font-size: 15px; line-height: 1.45; }
+.astuce{ background: #fff; }
+.astuce b{ display: block; margin-bottom: 2px; }
+.astuce p, .attention p{ margin: 0; color: var(--ink-2); }
+.attention{ background: #fff4e8; }
+.attention b{ color: var(--orange); }
+
+.champs{ display: grid; gap: 16px; }
+.champs label{ display: grid; gap: 6px; font-size: 15px; font-weight: 600; letter-spacing: -.01em; }
+.champs label em{ font-style: normal; font-weight: 400; color: var(--ink-3); }
+.champs small{ font-size: 13.5px; font-weight: 400; color: var(--ink-3); line-height: 1.4; }
+.champs input:not([type="radio"]), .champs textarea{
+  width: 100%; min-height: 48px; padding: 12px 14px; border-radius: 12px;
+  border: 1px solid var(--hair); background: #fff; color: var(--ink);
+  font: inherit; font-size: 17px; font-weight: 400; letter-spacing: -.01em;
+  transition: border-color .2s var(--ease), box-shadow .2s var(--ease);
+}
+.champs textarea{ resize: vertical; line-height: 1.4; min-height: 74px; }
+.champs input:focus, .champs textarea:focus{ outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(0,113,227,.18); }
+.champs [aria-invalid="true"]{ border-color: #d70015; box-shadow: 0 0 0 3px rgba(215,0,21,.12); }
+.champs ::placeholder{ color: #a1a1a6; }
+
+.regies{ border: 0; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.regies legend{ padding: 0; margin-bottom: 6px; font-size: 15px; font-weight: 600; letter-spacing: -.01em; }
+.regie{ position: relative; display: block !important; cursor: pointer; }
+.regie input{ position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.regie span{
+  display: grid; place-items: center; min-height: 48px; border-radius: 12px;
+  border: 1px solid var(--hair); background: #fff; font-size: 16px; font-weight: 500;
+  transition: border-color .2s var(--ease), background .2s var(--ease), color .2s var(--ease);
+}
+.regie input:checked + span{ border-color: var(--blue); background: #eef5ff; color: var(--blue-ink); font-weight: 600; }
+.regie input:focus-visible + span{ outline: 3px solid rgba(0,113,227,.5); outline-offset: 2px; }
+.regies[aria-invalid="true"] .regie span{ border-color: #d70015; }
+
+.piege{ position: absolute !important; left: -9999px !important; width: 1px !important; height: 1px !important; opacity: 0; }
+
+.erreur{ margin: 0; padding: 12px 14px; border-radius: 12px; background: #fff0f1; color: #b0000f; font-size: 15px; line-height: 1.4; }
+.erreur[hidden]{ display: none; }
+
+.envoi .btn-grand{ max-width: none; margin-top: 0; }
+@media (min-width: 640px){ .envoi .btn-grand{ width: auto; justify-self: start; } }
+.envoi .btn-grand[disabled]{ opacity: .6; cursor: progress; }
+
+/* ---------- Envoi reçu ---------- */
+.recu{ display: grid; gap: 10px; justify-items: center; text-align: center; padding: 10px 0 4px; outline: none; }
+.recu[hidden]{ display: none; }
+.recu-icone{ width: 52px; height: 52px; border-radius: 50%; background: #1d8a3b; display: grid; place-items: center; }
+.recu-icone svg{ width: 26px; height: 26px; fill: none; stroke: #fff; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+.recu h3{ margin: 4px 0 0; font-size: 21px; letter-spacing: -.025em; }
+.recu-texte{ margin: 0; color: var(--ink-2); font-size: 16px; line-height: 1.45; max-width: 38ch; }
+.btn-lien{ border: 0; background: none; color: var(--blue-ink); font-size: 16px; padding: 8px; cursor: pointer; }
+.btn-lien:hover{ text-decoration: underline; }
