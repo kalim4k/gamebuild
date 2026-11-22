@@ -147,7 +147,25 @@ a{ color: var(--blue-ink); text-decoration: none; }
 .places{ width: 100%; display: grid; gap: 8px; }
 .places-t{ font-size: 17px; line-height: 1.3; font-weight: 600; color: var(--orange); margin: 0; }
 .places-s{ font-size: 15px; line-height: 1.35; color: var(--ink-2); margin: 0; }
-.places-fin{ font-size: 15px; line-height: 1.35; font-weight: 600; color: var(--ink); margin: 0; font-variant-numeric: tabular-nums; }
+/* ---------- Le compte à rebours de l'ouverture ----------
+   En haut de la carte du prix et près du bouton du bas. Les cases
+   passent à l'orange quand il reste moins de 24 heures. */
+.chrono{ width: 100%; display: grid; justify-items: center; gap: 10px; }
+.chrono[hidden]{ display: none; }
+.chrono-t{ margin: 0; font-size: 14px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--orange); }
+.chrono-cases{ width: 100%; max-width: 360px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.chrono-cases div{
+  display: grid; justify-items: center; gap: 2px; padding: 12px 4px 10px;
+  border-radius: 14px; background: var(--ink); color: #fff;
+  box-shadow: 0 6px 18px rgba(0,0,0,.14);
+  transition: background-color .4s var(--ease);
+}
+.chrono-cases b{ font-size: clamp(30px, 9vw, 38px); line-height: 1; font-weight: 700; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.chrono-cases span{ font-size: 12px; color: rgba(255,255,255,.66); letter-spacing: 0; }
+.chrono.urgent .chrono-cases div{ background: var(--orange); }
+.chrono.urgent .chrono-cases span{ color: rgba(255,255,255,.82); }
+.chrono-d{ margin: 0; font-size: 15px; color: var(--ink-2); }
+.dock-l span.dock-chrono{ color: var(--orange); font-weight: 600; font-variant-numeric: tabular-nums; }
 .jauge{ height: 8px; border-radius: 8px; background: rgba(0,0,0,.08); overflow: hidden; }
 .jauge i{ display: block; height: 100%; width: 0; border-radius: 8px; background: var(--orange); transition: width .7s var(--ease); }
 
@@ -339,6 +357,16 @@ src="https://www.facebook.com/tr?id=4451955808377862&ev=PageView&noscript=1"
         <p class="ferme-t">Les portes du groupe sont temporairement fermées.</p>
         <p class="places-s">La réouverture sera annoncée sur la <a href="https://www.whatsapp.com/channel/0029Vb8XIsmFnSzD0G0r5a2G">chaîne WhatsApp</a>.</p>
       </div>
+      <div class="chrono ouvert" hidden>
+        <p class="chrono-t">Les portes ferment dans</p>
+        <div class="chrono-cases" role="timer" aria-label="Temps avant la fermeture">
+          <div><b data-c="j">00</b><span>jours</span></div>
+          <div><b data-c="h">00</b><span>heures</span></div>
+          <div><b data-c="m">00</b><span>min</span></div>
+          <div><b data-c="s">00</b><span>sec</span></div>
+        </div>
+        <p class="chrono-d"></p>
+      </div>
       <div class="prix ouvert">
         <b class="js-prix">3&nbsp;500&nbsp;F</b>
         <span>une seule fois, pour rejoindre le groupe</span>
@@ -347,7 +375,6 @@ src="https://www.facebook.com/tr?id=4451955808377862&ev=PageView&noscript=1"
         <p class="places-t" id="places-t"></p>
         <div class="jauge" aria-hidden="true"><i id="jauge"></i></div>
         <p class="places-s" id="places-s"></p>
-        <p class="places-fin" id="places-fin" hidden></p>
       </div>
       <p class="places-s ouvert" id="places-repli" hidden></p>
       <div class="places ouvert" id="bonus-places" hidden>
@@ -471,6 +498,15 @@ src="https://www.facebook.com/tr?id=4451955808377862&ev=PageView&noscript=1"
     <h2 class="t-head">Ton jeu commence ici.</h2>
     <p class="t-body measure ferme"><span class="ferme-raison">Les portes du groupe sont temporairement fermées.</span> La réouverture sera annoncée sur la <a href="https://www.whatsapp.com/channel/0029Vb8XIsmFnSzD0G0r5a2G">chaîne WhatsApp</a>.</p>
     <p class="t-body measure ouvert" id="cloture">Rejoins le groupe et démarre avec la première vidéo.</p>
+    <div class="chrono ouvert" hidden>
+      <p class="chrono-t">Les portes ferment dans</p>
+      <div class="chrono-cases" role="timer" aria-label="Temps avant la fermeture">
+        <div><b data-c="j">00</b><span>jours</span></div>
+        <div><b data-c="h">00</b><span>heures</span></div>
+        <div><b data-c="m">00</b><span>min</span></div>
+        <div><b data-c="s">00</b><span>sec</span></div>
+      </div>
+    </div>
     <a class="btn btn-lg js-payer ouvert" id="cta-bas" data-mesure="clôture" href="https://kgpqinxc.mychariow.shop/prd_iiq2laak/checkout">Rejoindre le groupe</a>
   </div>
 </section>
@@ -556,22 +592,33 @@ var VALEUR_PIXEL  = 3500;
     return d.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" }).replace(/ (?=\D+$)/, " ") + " à " +
       d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }).replace(":", " h ");
   }
-  function duree(ms) {
-    var m = Math.max(1, Math.ceil(ms / 60000)), j = Math.floor(m / 1440), h = Math.floor(m % 1440 / 60), mn = m % 60;
-    if (j) return j + " j " + h + " h";
-    if (h) return h + " h " + (mn < 10 ? "0" : "") + mn + " min";
-    return mn + " min";
-  }
-  /* Le temps restant, mis à jour toutes les 30 secondes ; à zéro, la page se ferme. */
+  function deux(n) { return (n < 10 ? "0" : "") + n; }
+  /* Le compte à rebours, à la seconde : les cases en haut et en bas, et la
+     barre mobile. Moins de 24 heures : les cases passent à l'orange. À zéro,
+     la page se ferme. */
   function compteARebours(fin) {
     var t = Date.parse(fin);
     if (!t) return;
+    var chronos = document.querySelectorAll(".chrono");
+    var cases = { j: document.querySelectorAll("[data-c=j]"), h: document.querySelectorAll("[data-c=h]"),
+                  m: document.querySelectorAll("[data-c=m]"), s: document.querySelectorAll("[data-c=s]") };
+    Array.prototype.forEach.call(document.querySelectorAll(".chrono-d"), function (e) {
+      var d = dateFin(fin);
+      e.textContent = d.charAt(0).toUpperCase() + d.slice(1);
+    });
+    Array.prototype.forEach.call(chronos, function (c) { c.hidden = false; });
+    var dock = $("dock-s");
+    dock.classList.add("dock-chrono");
+    function ecris(liste, v) { Array.prototype.forEach.call(liste, function (e) { if (e.textContent !== v) e.textContent = v; }); }
     (function tic() {
       var reste = t - Date.now();
       if (reste <= 0) { ferme(MSG_DATE); return; }
-      $("places-fin").textContent = "Fermeture dans " + duree(reste) + ", le " + dateFin(fin) + ".";
-      $("places-fin").hidden = false;
-      setTimeout(tic, 30000);
+      var s = Math.floor(reste / 1000), j = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600),
+          m = Math.floor(s % 3600 / 60), sec = s % 60;
+      ecris(cases.j, deux(j)); ecris(cases.h, deux(h)); ecris(cases.m, deux(m)); ecris(cases.s, deux(sec));
+      Array.prototype.forEach.call(chronos, function (c) { c.classList.toggle("urgent", s < 86400); });
+      dock.textContent = "Ferme dans " + (j ? j + " j " : "") + deux(h) + ":" + deux(m) + ":" + deux(sec);
+      setTimeout(tic, 1000 - Date.now() % 1000 + 20);
     })();
   }
 
