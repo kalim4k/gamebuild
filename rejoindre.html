@@ -552,14 +552,15 @@ var VALEUR_PIXEL  = 3500;
   /* La date limite, à l'heure du téléphone du visiteur : « mardi 24 novembre à 23 h 59 ». */
   function dateFin(fin) {
     var d = new Date(fin);
-    return d.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" }) + " à " +
-      d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }).replace(":", " h ");
+    /* Espaces insécables : « 23 h 59 » et « 24 novembre » ne se coupent jamais. */
+    return d.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" }).replace(/ (?=\D+$)/, " ") + " à " +
+      d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }).replace(":", " h ");
   }
   function duree(ms) {
     var m = Math.max(1, Math.ceil(ms / 60000)), j = Math.floor(m / 1440), h = Math.floor(m % 1440 / 60), mn = m % 60;
-    if (j) return j + " j " + h + " h";
-    if (h) return h + " h " + (mn < 10 ? "0" : "") + mn + " min";
-    return mn + " min";
+    if (j) return j + " j " + h + " h";
+    if (h) return h + " h " + (mn < 10 ? "0" : "") + mn + " min";
+    return mn + " min";
   }
   /* Le temps restant, mis à jour toutes les 30 secondes ; à zéro, la page se ferme. */
   function compteARebours(fin) {
