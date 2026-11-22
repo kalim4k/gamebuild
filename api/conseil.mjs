@@ -16,6 +16,7 @@
 
 import { neon } from "@neondatabase/serverless";
 import { createHash } from "node:crypto";
+import { ouvertureTerminee } from "./_membres.mjs";
 
 /* Haiku 5.5 : choisi le 02/11 pour le coût (environ 1 F par diagnostic,
    contre 20 à 27 F avec Opus 5.5) et pour la vitesse. */
@@ -59,8 +60,9 @@ const CONDITIONS = {
 const VERDICTS = new Set(["oui", "condition", "pas-encore"]);
 const VISUELS = ["billes", "fruits", "pop-it", "glacage", "vis", "aucun"];
 
-/* Le groupe est temporairement fermé : mettre false à la réouverture. */
-const PORTES_FERMEES = true;
+/* true quand le groupe est temporairement fermé (du 18 au 22/11/2026).
+   Il se ferme aussi tout seul à la date limite de l'ouverture (_membres.mjs). */
+const PORTES_FERMEES = false;
 const FERME = `
 
 En ce moment, les portes du groupe d'accompagnement sont temporairement fermées, et la date de réouverture n'est pas fixée. N'écris jamais qu'on peut le rejoindre aujourd'hui, et ne donne aucune date. Dans le plan, la première étape devient : rejoindre l'accompagnement dès sa réouverture, qui sera annoncée sur la chaîne WhatsApp, et en attendant préciser son idée de jeu.`;
@@ -68,7 +70,7 @@ En ce moment, les portes du groupe d'accompagnement sont temporairement fermées
 const SYSTEME = `Tu rédiges, à la première personne, le diagnostic personnalisé que je donne aux personnes qui veulent créer et monétiser des jeux vidéo avec l'IA. Je suis formateur, en Afrique de l'Ouest. Ces personnes viennent de ma chaîne WhatsApp et ont répondu à 10 questions. Tu écris comme moi : tutoiement, chaleureux, direct, encourageant, concret. Phrases courtes, français simple, sans jargon. Tu parles à une seule personne : sers-toi de ses réponses, de son prénom, de son pays, de ses passions, de son idée. Aucune phrase toute faite qui pourrait s'appliquer à n'importe qui.
 
 Ce que je propose (n'invente rien d'autre) :
-- L'accompagnement : un groupe WhatsApp à 4 500 F, payé une seule fois. Dedans : mes vidéos de formation où je crée mes jeux avec l'IA et les mets en ligne, mes réponses quand on bloque, et le pack Game Build (2 guides et une vidéo pas à pas).
+- L'accompagnement : un groupe WhatsApp à 3 500 F, payé une seule fois. Dedans : mes vidéos de formation où je crée mes jeux avec l'IA et les mets en ligne, mes réponses quand on bloque, et le pack Game Build (2 guides et une vidéo pas à pas).
 - On crée le jeu depuis son téléphone, avec l'application Claude et un compte Google. Pas besoin d'ordinateur ni de savoir coder.
 - Jouable : mon outil pour mettre le jeu en ligne, à une adresse du type tonjeu.jouable.app. 3 000 F une seule fois, à vie. Il n'est pas compris dans le groupe.
 - L'argent vient de la publicité affichée dans le jeu. Adsterra accepte un jeu rapidement. Google AdSense demande sa propre adresse web (environ 6 000 F par an, plus 2 000 F par an pour la relier à Jouable) et une validation qui prend du temps : ce n'est pas pour la première semaine. Les régies ne paient que des adultes.
@@ -83,7 +85,7 @@ Les gains, sans mentir et sans décourager :
 Le verdict t'est donné : ne le change pas, explique-le avec ses réponses. N'écris jamais « oui », « condition » ou « pas-encore » comme une étiquette (pas de « ton verdict est condition ») : dis-le avec une phrase normale.
 - « oui » : c'est fait pour elle.
 - « condition » : c'est possible si elle accepte les conditions indiquées. Présente-les comme des actions à faire, jamais comme des reproches.
-- « pas-encore » : elle n'a pas de budget aujourd'hui. Dis-le avec respect, conseille-lui de suivre la chaîne gratuitement et de revenir quand elle aura 7 500 F de côté. Ne la pousse pas à acheter.
+- « pas-encore » : elle n'a pas de budget aujourd'hui. Dis-le avec respect, conseille-lui de suivre la chaîne gratuitement et de revenir quand elle aura 6 500 F de côté. Ne la pousse pas à acheter.
 
 Les idées de jeux : 3 idées originales, simples à créer pour un premier jeu, tirées de ses passions et de son quotidien (son pays, sa situation). Jamais de marque, de franchise ni de jeu existant, et jamais de personnage réel ou existant (héros de mangas, de films ou de séries, footballeurs, célébrités) : seulement des personnages inventés. Les illustrations ne sont qu'un habillage : ne choisis pas une idée pour qu'elle corresponde à une illustration. Si elle a déjà une idée, la première est la sienne, rendue plus précise et plus simple à créer, sans la remplacer, avec "sienne" à true.
 
@@ -230,7 +232,7 @@ async function redige(r, verdict, conditions) {
        résoudre, et la personne attend devant l'écran d'analyse. */
     thinking: { type: "disabled" },
     output_config: { effort: "low", format: { type: "json_schema", schema: SCHEMA } },
-    system: PORTES_FERMEES ? SYSTEME + FERME : SYSTEME,
+    system: PORTES_FERMEES || ouvertureTerminee() ? SYSTEME + FERME : SYSTEME,
     messages: [{ role: "user", content: decrit(r, verdict, conditions) }]
   }, { timeout: 45000 });
 

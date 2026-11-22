@@ -28,7 +28,7 @@
 import { neon } from "@neondatabase/serverless";
 import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 import sharp from "sharp";
-import { lisProduit, bonusDe, BONUS_PLACES } from "./_membres.mjs";
+import { lisProduit, bonusDe, BONUS_PLACES, BONUS_DEBUT } from "./_membres.mjs";
 
 const REFAITS_MAX = 2;          /* images refaites au choix du membre, en plus de la série */
 const ESSAIS_ECHEC = 3;         /* nouvelles tentatives gratuites quand Kie échoue */
@@ -305,7 +305,8 @@ export default async function handler(req, res) {
       if (manque.length) { res.status(400).json({ erreur: "champs", champs: manque }); return; }
       const p = await membres();
       const plafond = Math.min(BONUS_PLACES, p ? bonusDe(p.membres).prises : BONUS_PLACES) + MARGE;
-      const [series] = await sql`SELECT count(*)::int AS n FROM bonus_acces WHERE jeu IS NOT NULL`;
+      /* Seulement les séries de la vague en cours : celles d'avant ne prennent pas les places des nouveaux. */
+      const [series] = await sql`SELECT count(*)::int AS n FROM bonus_acces WHERE jeu IS NOT NULL AND cree_le >= ${BONUS_DEBUT}::timestamptz`;
       if (series.n >= plafond) { res.status(429).json({ erreur: "complet" }); return; }
       const [pris] = await sql`UPDATE bonus_acces SET jeu = ${JSON.stringify(jeu)}::jsonb WHERE vente_id = ${venteId} AND jeu IS NULL RETURNING vente_id`;
       if (!pris) { res.status(409).json({ erreur: "deja" }); return; }

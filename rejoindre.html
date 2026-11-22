@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr" data-portes="fermees">
+<html lang="fr">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -33,9 +33,11 @@
    chaîne, ou il tombe ici sans la connaître. Une seule chose à
    faire : payer pour rejoindre le groupe. Le nombre de places
    vient de Chariow (/api/places) : sans réponse, la page n'en
-   affiche aucun. Les 2 bonus des 30 premiers membres (compteur
-   et section noire) ne s'affichent que si /api/places dit qu'il
-   en reste. Même système visuel que chaine.html.
+   affiche aucun. Pendant une ouverture limitée (100 places le
+   22/11/2026), le compteur montre les places restantes et la page
+   se ferme d'elle-même quand elles sont prises. Les 2 bonus
+   (section noire) ne s'affichent que si /api/places dit qu'il en
+   reste. Même système visuel que chaine.html.
    ══════════════════════════════════════════════════════════ */
 
 :root{
@@ -145,6 +147,7 @@ a{ color: var(--blue-ink); text-decoration: none; }
 .places{ width: 100%; display: grid; gap: 8px; }
 .places-t{ font-size: 17px; line-height: 1.3; font-weight: 600; color: var(--orange); margin: 0; }
 .places-s{ font-size: 15px; line-height: 1.35; color: var(--ink-2); margin: 0; }
+.places-fin{ font-size: 15px; line-height: 1.35; font-weight: 600; color: var(--ink); margin: 0; font-variant-numeric: tabular-nums; }
 .jauge{ height: 8px; border-radius: 8px; background: rgba(0,0,0,.08); overflow: hidden; }
 .jauge i{ display: block; height: 100%; width: 0; border-radius: 8px; background: var(--orange); transition: width .7s var(--ease); }
 
@@ -262,7 +265,8 @@ footer p{ margin: 0 0 14px; }
 
 /* ---------- Portes fermées ----------
    Tant que <html> porte data-portes="fermees", la page n'affiche ni prix
-   ni bouton de paiement. Pour rouvrir, retirer cet attribut. */
+   ni bouton de paiement. Pour fermer à la main, ajouter cet attribut ;
+   le script l'ajoute aussi tout seul quand l'ouverture est complète. */
 .ferme{ display: none; }
 [data-portes="fermees"] .ferme{ display: block; text-align: center; }
 [data-portes="fermees"] div.ferme{ display: grid; justify-items: center; gap: 8px; }
@@ -336,13 +340,14 @@ src="https://www.facebook.com/tr?id=4451955808377862&ev=PageView&noscript=1"
         <p class="places-s">La réouverture sera annoncée sur la <a href="https://www.whatsapp.com/channel/0029Vb8XIsmFnSzD0G0r5a2G">chaîne WhatsApp</a>.</p>
       </div>
       <div class="prix ouvert">
-        <b class="js-prix">4&nbsp;500&nbsp;F</b>
+        <b class="js-prix">3&nbsp;500&nbsp;F</b>
         <span>une seule fois, pour rejoindre le groupe</span>
       </div>
       <div class="places ouvert" id="places" hidden>
         <p class="places-t" id="places-t"></p>
         <div class="jauge" aria-hidden="true"><i id="jauge"></i></div>
         <p class="places-s" id="places-s"></p>
+        <p class="places-fin" id="places-fin" hidden></p>
       </div>
       <p class="places-s ouvert" id="places-repli" hidden></p>
       <div class="places ouvert" id="bonus-places" hidden>
@@ -359,9 +364,9 @@ src="https://www.facebook.com/tr?id=4451955808377862&ev=PageView&noscript=1"
 <!-- ═══════════════ LES 2 BONUS ═══════════════ -->
 <section class="bonus" id="bonus" hidden>
   <div class="wrap stack">
-    <p class="eyebrow">Pour les 30 premiers membres</p>
+    <p class="eyebrow" id="bonus-sur">Pour les 50 places de cette ouverture</p>
     <h2 class="t-head">2 bonus offerts, en plus du groupe.</h2>
-    <p class="t-body measure">Tu les reçois sur la page qui s'ouvre juste après ton paiement. Quand les 30&nbsp;places sont parties, ils ne sont plus offerts.</p>
+    <p class="t-body measure" id="bonus-intro">Offerts à chacune des 50&nbsp;places. Tu les reçois sur la page qui s'ouvre juste après ton paiement.</p>
     <div class="bonus-grille">
       <article class="bonus-carte">
         <div class="bonus-image bonus-image-guide">
@@ -464,7 +469,7 @@ src="https://www.facebook.com/tr?id=4451955808377862&ev=PageView&noscript=1"
 <section class="band-alt">
   <div class="wrap stack">
     <h2 class="t-head">Ton jeu commence ici.</h2>
-    <p class="t-body measure ferme">Les portes du groupe sont temporairement fermées. La réouverture sera annoncée sur la <a href="https://www.whatsapp.com/channel/0029Vb8XIsmFnSzD0G0r5a2G">chaîne WhatsApp</a>.</p>
+    <p class="t-body measure ferme"><span class="ferme-raison">Les portes du groupe sont temporairement fermées.</span> La réouverture sera annoncée sur la <a href="https://www.whatsapp.com/channel/0029Vb8XIsmFnSzD0G0r5a2G">chaîne WhatsApp</a>.</p>
     <p class="t-body measure ouvert" id="cloture">Rejoins le groupe et démarre avec la première vidéo.</p>
     <a class="btn btn-lg js-payer ouvert" id="cta-bas" data-mesure="clôture" href="https://kgpqinxc.mychariow.shop/prd_iiq2laak/checkout">Rejoindre le groupe</a>
   </div>
@@ -483,7 +488,7 @@ src="https://www.facebook.com/tr?id=4451955808377862&ev=PageView&noscript=1"
 <!-- ═══════════════ BARRE MOBILE ═══════════════ -->
 <div class="dock" id="dock">
   <div class="dock-l">
-    <b class="js-prix">4&nbsp;500&nbsp;F</b>
+    <b class="js-prix">3&nbsp;500&nbsp;F</b>
     <span id="dock-s">pour rejoindre le groupe</span>
   </div>
   <a class="btn js-payer" data-mesure="barre mobile" href="https://kgpqinxc.mychariow.shop/prd_iiq2laak/checkout">Rejoindre</a>
@@ -495,7 +500,7 @@ src="https://www.facebook.com/tr?id=4451955808377862&ev=PageView&noscript=1"
    tant que /api/places n'a pas répondu.
    ══════════════════════════════════════════════════════════ */
 var LIEN_PAIEMENT = "https://kgpqinxc.mychariow.shop/prd_iiq2laak/checkout";
-var VALEUR_PIXEL  = 4500;
+var VALEUR_PIXEL  = 3500;
 
 (function () {
   "use strict";
@@ -510,9 +515,21 @@ var VALEUR_PIXEL  = 4500;
      dans la page reste : elle est vraie sans chiffre du jour. */
   /* ---------- Les 2 bonus ----------
      Rien ne s'affiche tant que /api/places n'a pas dit qu'il en reste. */
-  function afficheBonus(b) {
+  /* Les bonus suivent exactement les places de l'ouverture : un seul compteur suffit. */
+  function bonusInclus(b, o) { return !!(b && o && b.places === o.places && b.restantes === o.restantes); }
+
+  function afficheBonus(b, o) {
     if (!b || !(b.restantes > 0)) return;
     var r = b.restantes;
+    if (bonusInclus(b, o)) {
+      $("bonus-sur").textContent = "Pour les " + b.places + " places de cette ouverture";
+      $("bonus-intro").textContent = "Offerts à chacune des " + b.places + " places. Tu les reçois sur la page qui s'ouvre juste après ton paiement.";
+      $("bonus-compte").textContent = "Il reste " + r + (r > 1 ? " places" : " place") + ", avec les 2 bonus.";
+      $("bonus").hidden = false;
+      return;
+    }
+    $("bonus-sur").textContent = "Pour les " + b.places + " premiers membres";
+    $("bonus-intro").textContent = "Tu les reçois sur la page qui s'ouvre juste après ton paiement. Quand les " + b.places + " places sont parties, ils ne sont plus offerts.";
     var phrase = r > 1 ? "Plus que " + r + " places avec les 2 bonus" : "Plus qu'une place avec les 2 bonus";
     $("bonus-t").textContent = phrase;
     $("bonus-s").textContent = (b.prises ? b.prises + " sur " + b.places + " déjà prises. " : "") +
@@ -525,12 +542,60 @@ var VALEUR_PIXEL  = 4500;
     setTimeout(function () { $("bonus-jauge").style.width = Math.min(100, b.prises / b.places * 100) + "%"; }, 60);
   }
 
+  /* L'ouverture est finie (places prises ou date passée) : la page se ferme d'elle-même. */
+  function ferme(texte) {
+    document.documentElement.setAttribute("data-portes", "fermees");
+    Array.prototype.forEach.call(document.querySelectorAll(".ferme-t, .ferme-raison"), function (e) { e.textContent = texte; });
+  }
+  var MSG_DATE = "Les inscriptions sont terminées : le groupe est fermé.";
+
+  /* La date limite, à l'heure du téléphone du visiteur : « mardi 24 novembre à 23 h 59 ». */
+  function dateFin(fin) {
+    var d = new Date(fin);
+    return d.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" }) + " à " +
+      d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }).replace(":", " h ");
+  }
+  function duree(ms) {
+    var m = Math.max(1, Math.ceil(ms / 60000)), j = Math.floor(m / 1440), h = Math.floor(m % 1440 / 60), mn = m % 60;
+    if (j) return j + " j " + h + " h";
+    if (h) return h + " h " + (mn < 10 ? "0" : "") + mn + " min";
+    return mn + " min";
+  }
+  /* Le temps restant, mis à jour toutes les 30 secondes ; à zéro, la page se ferme. */
+  function compteARebours(fin) {
+    var t = Date.parse(fin);
+    if (!t) return;
+    (function tic() {
+      var reste = t - Date.now();
+      if (reste <= 0) { ferme(MSG_DATE); return; }
+      $("places-fin").textContent = "Fermeture dans " + duree(reste) + ", le " + dateFin(fin) + ".";
+      $("places-fin").hidden = false;
+      setTimeout(tic, 30000);
+    })();
+  }
+
   function affichePlaces(p) {
     if (!p || !Number.isFinite(p.prix)) return;
-    afficheBonus(p.bonus);
+    var o = p.ouverture;
+    if (o && o.restantes === 0) { ferme("Les " + o.places + " places sont prises : le groupe est fermé."); return; }
+    if (o && (o.terminee || (o.fin && Date.parse(o.fin) <= Date.now()))) { ferme(MSG_DATE); return; }
+    afficheBonus(p.bonus, o);
     VALEUR_PIXEL = p.prix;
     Array.prototype.forEach.call(document.querySelectorAll(".js-prix"), function (b) { b.textContent = montant(p.prix); });
     if (p.restantes == null) { $("places-repli").hidden = true; return; }
+    if (o) {
+      var r = o.restantes, mots = r > 1 ? " places restantes" : " place restante";
+      var avant = o.fin ? "Le groupe ferme le " + dateFin(o.fin) + ", ou avant si elles sont toutes prises." : "Quand elles sont toutes prises, le groupe ferme.";
+      $("places-t").textContent = r + mots + " sur " + o.places;
+      $("places-s").textContent = o.prises ? o.prises + " déjà prises." : bonusInclus(p.bonus, o) ? "Les 2 bonus sont compris dans chaque place." : "";
+      $("dock-s").textContent = r + mots;
+      $("cloture").textContent = "Il reste " + r + (r > 1 ? " places" : " place") + (bonusInclus(p.bonus, o) ? ", avec les 2 bonus" : "") + ". " + avant;
+      $("places-repli").hidden = true;
+      $("places").hidden = false;
+      if (o.fin) compteARebours(o.fin);
+      setTimeout(function () { $("jauge").style.width = Math.min(100, o.prises / o.places * 100) + "%"; }, 60);
+      return;
+    }
     if (p.restantes === 0) {
       $("places-repli").textContent = "Dernières places à ce prix : il passe à " + montant(p.prixSuivant) + ".";
       return;

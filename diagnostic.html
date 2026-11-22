@@ -423,10 +423,20 @@ src="https://www.facebook.com/tr?id=4451955808377862&ev=PageView&noscript=1"
    ══════════════════════════════════════════════════════════ */
 var LIEN_PAIEMENT = "https://kgpqinxc.mychariow.shop/prd_iiq2laak/checkout";
 var LIEN_CHAINE   = "https://www.whatsapp.com/channel/0029Vb8XIsmFnSzD0G0r5a2G";
-var PORTES_FERMEES = true;   /* le groupe est temporairement fermé : false pour rouvrir */
-var PRIX_GROUPE   = "4 500 F";
+var PORTES_FERMEES = false;  /* true : le groupe est temporairement fermé (du 18 au 22/11/2026) */
+/* L'ouverture limitée (50 places, jusqu'au mardi 24/11 à 23 h 59) : quand
+   /api/places la dit complète ou terminée, le diagnostic repasse en portes fermées. */
+var FIN_OUVERTURE = "2026-11-24T23:59:00Z";
+if (Date.now() >= Date.parse(FIN_OUVERTURE)) PORTES_FERMEES = true;
+try {
+  fetch("/api/places").then(function (r) { return r.ok ? r.json() : null; }).then(function (p) {
+    var o = p && p.ouverture;
+    if (o && (o.restantes === 0 || o.terminee)) PORTES_FERMEES = true;
+  })["catch"](function () {});
+} catch (e) {}
+var PRIX_GROUPE   = "3 500 F";
 var PRIX_JOUABLE  = "3 000 F";
-var VALEUR_PIXEL  = 4500;     /* le prix du groupe, en F CFA, pour le pixel */
+var VALEUR_PIXEL  = 3500;     /* le prix du groupe, en F CFA, pour le pixel */
 
 (function () {
   "use strict";
@@ -910,7 +920,7 @@ var VALEUR_PIXEL  = 4500;     /* le prix du groupe, en F CFA, pour le pixel */
 
     /* Ce qu'il faut ajuster, formulé comme des actions */
     if (B === 0) {
-      ajuster.push("Mets 7 500 F de côté avant de te lancer : l'accompagnement coûte " + PRIX_GROUPE + ", puis " + PRIX_JOUABLE + " pour Jouable, qui met ton jeu en ligne.");
+      ajuster.push("Mets 6 500 F de côté avant de te lancer : l'accompagnement coûte " + PRIX_GROUPE + ", puis " + PRIX_JOUABLE + " pour Jouable, qui met ton jeu en ligne.");
     }
     if (T === 0) {
       ajuster.push("Avec moins de 30 minutes par jour, tu avanceras lentement. Vise au moins 1 heure : une partie pour ton jeu, une partie pour faire venir des joueurs.");

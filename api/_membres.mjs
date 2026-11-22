@@ -7,11 +7,39 @@
 export const PRODUIT = "prd_iiq2laak";
 export const VENTES_AU_LANCEMENT = 171;  /* les ventes de l'ancien pack, avant le groupe */
 
+/* L'ouverture en cours : OUVERTURE_PLACES places à partir de OUVERTURE_DEPART
+   membres, jusqu'à OUVERTURE_FIN. Quand les places sont prises ou la date
+   passée, /rejoindre et le diagnostic se ferment tout seuls.
+   Réouverture du 22/11/2026 : 50 places à 3 500 F, à partir de 188 membres,
+   jusqu'au mardi 24/11 à 23 h 59, heure de Lomé (UTC).
+   OUVERTURE_PLACES à null : pas de limite (pas de compteur ni de fermeture). */
+export const OUVERTURE_PLACES = 50;
+export const OUVERTURE_DEPART = 188;
+export const OUVERTURE_FIN = "2026-11-24T23:59:00Z";
+
 /* Les bonus vont aux BONUS_PLACES membres qui arrivent après BONUS_DEPART.
-   BONUS_DEPART : le nombre de membres le jour où les bonus ont ouvert (157 le 15/11/2026).
-   Pour une nouvelle vague de bonus, mets ici le nombre de membres du jour. */
-export const BONUS_PLACES = 30;
-export const BONUS_DEPART = 157;
+   BONUS_DEPART : le nombre de membres le jour où les bonus ont ouvert.
+   1re vague : 30 places à partir de 157 (15/11/2026). 2e vague : les 50 places
+   de la réouverture (22/11/2026). BONUS_DEBUT : le début de la vague en cours,
+   pour ne compter que ses séries de visuels. */
+export const BONUS_PLACES = 50;
+export const BONUS_DEPART = 188;
+export const BONUS_DEBUT = "2026-11-22T00:00:00Z";
+
+/* La date limite est-elle passée ? (sans Chariow : sert aussi au diagnostic de l'IA) */
+export function ouvertureTerminee(maintenant = Date.now()) {
+  return OUVERTURE_PLACES != null && !!OUVERTURE_FIN && maintenant >= Date.parse(OUVERTURE_FIN);
+}
+
+/* { places, prises, restantes, fin, terminee } de l'ouverture en cours, ou null sans limite. */
+export function ouvertureDe(membres) {
+  if (OUVERTURE_PLACES == null) return null;
+  const prises = Math.max(0, membres - OUVERTURE_DEPART);
+  return {
+    places: OUVERTURE_PLACES, prises: Math.min(prises, OUVERTURE_PLACES), restantes: Math.max(0, OUVERTURE_PLACES - prises),
+    fin: OUVERTURE_FIN || null, terminee: ouvertureTerminee()
+  };
+}
 
 /* { prix, membres } ou null si Chariow ne répond pas. */
 export async function lisProduit() {

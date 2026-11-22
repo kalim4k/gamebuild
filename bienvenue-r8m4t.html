@@ -18,7 +18,7 @@
    l'utilisateur accepte, parce qu'il approuve chaque demande à la
    main. Adresse peu devinable et non indexée.
 
-   Les 2 bonus des 30 premiers membres (le guide PDF et les visuels
+   Les 2 bonus de la vague en cours (le guide PDF et les visuels
    du jeu) s'affichent sous les étapes, tant que /api/bonus les
    ouvre. Le jeton est gardé sur le téléphone et dans l'adresse
    (#b=...), pour qu'il suive si la page est rouverte dans Chrome.
@@ -233,10 +233,10 @@ src="https://www.facebook.com/tr?id=4451955808377862&ev=PageView&noscript=1"
     </li>
   </ol>
 
-  <!-- Les 2 bonus des 30 premiers membres : cachés tant que /api/bonus ne les ouvre pas -->
+  <!-- Les 2 bonus de la vague en cours : cachés tant que /api/bonus ne les ouvre pas -->
   <section class="bonus" id="bonus" hidden aria-labelledby="bonus-titre">
     <div class="bonus-tete">
-      <p class="bonus-sur">Tu fais partie des 30 premiers</p>
+      <p class="bonus-sur">Offerts avec ta place</p>
       <h2 id="bonus-titre">Tes 2 bonus</h2>
       <p>Télécharge-les depuis cette page, dès maintenant.</p>
     </div>
@@ -351,8 +351,8 @@ var LIEN_GROUPE = "https://chat.whatsapp.com/LDT5QqOfVnJ02bLj69PSx3";
 
 /* ══════════════════════════════════════════════════════════
    LES 2 BONUS — /api/bonus ouvre l'accès tant que le groupe n'a
-   pas dépassé ses 30 premiers membres depuis l'ouverture des
-   bonus. Sinon la section reste cachée. Un téléphone qui a déjà
+   pas dépassé les places de la vague de bonus en cours (_membres.mjs).
+   Sinon la section reste cachée. Un téléphone qui a déjà
    son jeton garde ses bonus, même après.
    ══════════════════════════════════════════════════════════ */
 (function () {
