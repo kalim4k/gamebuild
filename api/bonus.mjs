@@ -7,8 +7,9 @@
              description, puis allégés en WebP et gardés dans la base.
 
    Qui y a droit : la page après achat demande un accès (action « ouvrir »).
-   Tant que le groupe n'a pas dépassé BONUS_DEPART + BONUS_PLACES membres
-   (_membres.mjs), elle reçoit un jeton signé, gardé sur le téléphone. Au-delà,
+   Tant que le groupe n'a pas dépassé les places de la vague de bonus
+   (_membres.mjs : pendant une ouverture, elles suivent le stock Chariow),
+   elle reçoit un jeton signé, gardé sur le téléphone. Au-delà,
    les bonus ne s'affichent plus. Le nombre de séries d'images ne dépasse
    jamais le nombre de membres arrivés depuis l'ouverture (+ MARGE).
 
@@ -276,7 +277,7 @@ export default async function handler(req, res) {
     if (corps.action === "ouvrir") {
       const p = await membres();
       if (!p) { res.status(503).json({ erreur: "indisponible" }); return; }
-      const b = bonusDe(p.membres);
+      const b = bonusDe(p);
       if (b.prises > b.places) { res.status(200).json({ ferme: true, places: b.places }); return; }
       const venteId = "m-" + randomBytes(8).toString("hex");
       await sql`INSERT INTO bonus_acces (vente_id, rang) VALUES (${venteId}, ${b.prises})`;
@@ -304,7 +305,8 @@ export default async function handler(req, res) {
       const manque = Object.keys(jeu).filter((k) => !jeu[k]);
       if (manque.length) { res.status(400).json({ erreur: "champs", champs: manque }); return; }
       const p = await membres();
-      const plafond = Math.min(BONUS_PLACES, p ? bonusDe(p.membres).prises : BONUS_PLACES) + MARGE;
+      const bp = p ? bonusDe(p) : null;
+      const plafond = (bp ? Math.min(bp.places, bp.prises) : BONUS_PLACES) + MARGE;
       /* Seulement les séries de la vague en cours : celles d'avant ne prennent pas les places des nouveaux. */
       const [series] = await sql`SELECT count(*)::int AS n FROM bonus_acces WHERE jeu IS NOT NULL AND cree_le >= ${BONUS_DEBUT}::timestamptz`;
       if (series.n >= plafond) { res.status(429).json({ erreur: "complet" }); return; }

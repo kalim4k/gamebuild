@@ -34,13 +34,13 @@ export default async function handler(req, res) {
   try {
     const p = await lisProduit();
     if (!p) { indisponible(); return; }
-    const { prix, membres } = p;
+    const { prix, membres, stock } = p;
     const bonPrix = prix === PRIX_ACTUEL;
     /* Prix de Chariow différent du prix en cours (pas encore changé, ou déjà monté) : pas de compteur. */
-    const ouverture = bonPrix ? ouvertureDe(membres) : null;
+    const ouverture = bonPrix ? ouvertureDe(membres, stock) : null;
     const restantes = ouverture ? ouverture.restantes
       : SEUIL == null || !bonPrix ? null : Math.max(0, SEUIL - membres);
-    const b = bonusDe(membres);
+    const b = bonusDe(p);
 
     res.setHeader("Cache-Control", "public, s-maxage=60, stale-while-revalidate=120");
     res.status(200).json({
