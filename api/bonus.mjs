@@ -8,7 +8,7 @@
 
    Qui y a droit : la page après achat demande un accès (action « ouvrir »).
    Tant que le groupe n'a pas dépassé les places de la vague de bonus
-   (_membres.mjs : pendant une ouverture, elles suivent le stock Chariow),
+   (_membres.mjs : pendant une ouverture, elles suivent la quantité Chariow),
    elle reçoit un jeton signé, gardé sur le téléphone. Au-delà,
    les bonus ne s'affichent plus. Le nombre de séries d'images ne dépasse
    jamais le nombre de membres arrivés depuis l'ouverture (+ MARGE).

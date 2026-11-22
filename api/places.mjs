@@ -34,10 +34,10 @@ export default async function handler(req, res) {
   try {
     const p = await lisProduit();
     if (!p) { indisponible(); return; }
-    const { prix, membres, stock } = p;
+    const { prix, membres, quantite } = p;
     const bonPrix = prix === PRIX_ACTUEL;
     /* Prix de Chariow différent du prix en cours (pas encore changé, ou déjà monté) : pas de compteur. */
-    const ouverture = bonPrix ? ouvertureDe(membres, stock) : null;
+    const ouverture = bonPrix ? ouvertureDe(membres, quantite) : null;
     const restantes = ouverture ? ouverture.restantes
       : SEUIL == null || !bonPrix ? null : Math.max(0, SEUIL - membres);
     const b = bonusDe(p);
