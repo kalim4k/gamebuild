@@ -33,9 +33,10 @@
    chaîne, ou il tombe ici sans la connaître. Une seule chose à
    faire : payer pour rejoindre le groupe. Le nombre de places
    vient de Chariow (/api/places) : sans réponse, la page n'en
-   affiche aucun. Pendant une ouverture limitée (100 places le
-   22/11/2026), le compteur montre les places restantes et la page
-   se ferme d'elle-même quand elles sont prises. Les 2 bonus
+   affiche aucun. Pendant une ouverture limitée (réouverture du
+   22/11/2026), le compteur montre les places restantes ; quand elles
+   sont prises, la page se ferme, ou, au palier (23/11/2026 : 3 500 F
+   puis 4 500 F), le groupe reste ouvert au prix suivant. Les 2 bonus
    (section noire) ne s'affichent que si /api/places dit qu'il en
    reste. Même système visuel que chaine.html.
    ══════════════════════════════════════════════════════════ */
@@ -355,7 +356,7 @@ src="https://www.facebook.com/tr?id=4451955808377862&ev=PageView&noscript=1"
     <div class="prix-carte">
       <div class="ferme" role="status">
         <p class="ferme-t">Les portes du groupe sont temporairement fermées.</p>
-        <p class="places-s">La réouverture sera annoncée sur la <a href="https://www.whatsapp.com/channel/0029Vb8XIsmFnSzD0G0r5a2G">chaîne WhatsApp</a>.</p>
+        <p class="places-s ferme-suite">La réouverture sera annoncée sur la <a href="https://www.whatsapp.com/channel/0029Vb8XIsmFnSzD0G0r5a2G">chaîne WhatsApp</a>.</p>
       </div>
       <div class="chrono ouvert" hidden>
         <p class="chrono-t">Les portes ferment dans</p>
@@ -496,7 +497,7 @@ src="https://www.facebook.com/tr?id=4451955808377862&ev=PageView&noscript=1"
 <section class="band-alt">
   <div class="wrap stack">
     <h2 class="t-head">Ton jeu commence ici.</h2>
-    <p class="t-body measure ferme"><span class="ferme-raison">Les portes du groupe sont temporairement fermées.</span> La réouverture sera annoncée sur la <a href="https://www.whatsapp.com/channel/0029Vb8XIsmFnSzD0G0r5a2G">chaîne WhatsApp</a>.</p>
+    <p class="t-body measure ferme"><span class="ferme-raison">Les portes du groupe sont temporairement fermées.</span><span class="ferme-suite"> La réouverture sera annoncée sur la <a href="https://www.whatsapp.com/channel/0029Vb8XIsmFnSzD0G0r5a2G">chaîne WhatsApp</a>.</span></p>
     <p class="t-body measure ouvert" id="cloture">Rejoins le groupe et démarre avec la première vidéo.</p>
     <div class="chrono ouvert" hidden>
       <p class="chrono-t">Les portes ferment dans</p>
@@ -544,7 +545,8 @@ var VALEUR_PIXEL  = 3500;
   var $ = function (id) { return document.getElementById(id); };
   $("year").textContent = new Date().getFullYear();
 
-  function montant(n) { return String(n).replace(/\B(?=(\d{3})+$)/g, " ") + " F"; }
+  /* Espaces insécables : « 3 500 F » ne se coupe jamais en fin de ligne. */
+  function montant(n) { return String(n).replace(/\B(?=(\d{3})+$)/g, " ") + " F"; }
 
   /* ---------- Les places ----------
      Le nombre vient de Chariow. S'il ne vient pas, la phrase déjà écrite
@@ -578,12 +580,20 @@ var VALEUR_PIXEL  = 3500;
     setTimeout(function () { $("bonus-jauge").style.width = Math.min(100, b.prises / b.places * 100) + "%"; }, 60);
   }
 
-  /* L'ouverture est finie (places prises ou date passée) : la page se ferme d'elle-même. */
-  function ferme(texte) {
+  /* L'ouverture est finie (places prises ou date passée) : la page se ferme
+     d'elle-même. Au palier (o.apres), le groupe reste ouvert : la page attend
+     seulement que le prix passe au suivant sur Chariow. */
+  function ferme(texte, suite) {
     document.documentElement.setAttribute("data-portes", "fermees");
     Array.prototype.forEach.call(document.querySelectorAll(".ferme-t, .ferme-raison"), function (e) { e.textContent = texte; });
+    if (suite) Array.prototype.forEach.call(document.querySelectorAll(".ferme-suite"), function (e) { e.textContent = suite; });
   }
   var MSG_DATE = "Les inscriptions sont terminées : le groupe est fermé.";
+  function finOuverture(o, prix, parDate) {
+    if (!o.apres) { ferme(parDate ? MSG_DATE : "Les " + o.places + " places sont prises : le groupe est fermé."); return; }
+    ferme(parDate ? "Les places à " + montant(prix) + ", c'est fini." : "Les " + o.places + " places à " + montant(prix) + " sont parties.",
+      " Le groupe reste ouvert : il passe à " + montant(o.apres) + " dans quelques minutes. Recharge la page un peu plus tard.");
+  }
 
   /* La date limite, à l'heure du téléphone du visiteur : « mardi 24 novembre à 23 h 59 ». */
   function dateFin(fin) {
@@ -596,10 +606,14 @@ var VALEUR_PIXEL  = 3500;
   /* Le compte à rebours, à la seconde : les cases en haut et en bas, et la
      barre mobile. Moins de 24 heures : les cases passent à l'orange. À zéro,
      la page se ferme. */
-  function compteARebours(fin) {
-    var t = Date.parse(fin);
+  function compteARebours(o, prix) {
+    var fin = o.fin, t = Date.parse(fin);
     if (!t) return;
     var chronos = document.querySelectorAll(".chrono");
+    Array.prototype.forEach.call(document.querySelectorAll(".chrono-t"), function (e) {
+      e.textContent = o.apres ? "Le prix passe à " + montant(o.apres) + " dans" : "Les portes ferment dans";
+    });
+    var avantDock = o.apres ? "Prix en hausse dans " : "Ferme dans ";
     var cases = { j: document.querySelectorAll("[data-c=j]"), h: document.querySelectorAll("[data-c=h]"),
                   m: document.querySelectorAll("[data-c=m]"), s: document.querySelectorAll("[data-c=s]") };
     Array.prototype.forEach.call(document.querySelectorAll(".chrono-d"), function (e) {
@@ -612,12 +626,12 @@ var VALEUR_PIXEL  = 3500;
     function ecris(liste, v) { Array.prototype.forEach.call(liste, function (e) { if (e.textContent !== v) e.textContent = v; }); }
     (function tic() {
       var reste = t - Date.now();
-      if (reste <= 0) { ferme(MSG_DATE); return; }
+      if (reste <= 0) { finOuverture(o, prix, true); return; }
       var s = Math.floor(reste / 1000), j = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600),
           m = Math.floor(s % 3600 / 60), sec = s % 60;
       ecris(cases.j, deux(j)); ecris(cases.h, deux(h)); ecris(cases.m, deux(m)); ecris(cases.s, deux(sec));
       Array.prototype.forEach.call(chronos, function (c) { c.classList.toggle("urgent", s < 86400); });
-      dock.textContent = "Ferme dans " + (j ? j + " j " : "") + deux(h) + ":" + deux(m) + ":" + deux(sec);
+      dock.textContent = avantDock + (j ? j + " j " : "") + deux(h) + ":" + deux(m) + ":" + deux(sec);
       setTimeout(tic, 1000 - Date.now() % 1000 + 20);
     })();
   }
@@ -625,22 +639,30 @@ var VALEUR_PIXEL  = 3500;
   function affichePlaces(p) {
     if (!p || !Number.isFinite(p.prix)) return;
     var o = p.ouverture;
-    if (o && o.restantes === 0) { ferme("Les " + o.places + " places sont prises : le groupe est fermé."); return; }
-    if (o && (o.terminee || (o.fin && Date.parse(o.fin) <= Date.now()))) { ferme(MSG_DATE); return; }
+    if (o && o.restantes === 0) { finOuverture(o, p.prix, false); return; }
+    if (o && (o.terminee || (o.fin && Date.parse(o.fin) <= Date.now()))) { finOuverture(o, p.prix, true); return; }
     afficheBonus(p.bonus, o);
     VALEUR_PIXEL = p.prix;
     Array.prototype.forEach.call(document.querySelectorAll(".js-prix"), function (b) { b.textContent = montant(p.prix); });
     if (p.restantes == null) { $("places-repli").hidden = true; return; }
     if (o) {
       var r = o.restantes, mots = r > 1 ? " places restantes" : " place restante";
-      var avant = o.fin ? "Le groupe ferme le " + dateFin(o.fin) + ", ou avant si elles sont toutes prises." : "Quand elles sont toutes prises, le groupe ferme.";
-      $("places-t").textContent = r + mots + " sur " + o.places;
-      $("places-s").textContent = o.prises ? o.prises + " déjà prises." : bonusInclus(p.bonus, o) ? "Les 2 bonus sont compris dans chaque place." : "";
+      var avant = o.apres
+        ? "Ensuite, le prix passe à " + montant(o.apres) + (o.fin ? ", au plus tard le " + dateFin(o.fin) : "") + "."
+        : o.fin ? "Le groupe ferme le " + dateFin(o.fin) + ", ou avant si elles sont toutes prises." : "Quand elles sont toutes prises, le groupe ferme.";
+      if (o.apres) {
+        /* Palier : les places sont au prix d'ouverture, puis le prix monte ; le groupe ne ferme pas. */
+        $("places-t").textContent = r + mots + " à " + montant(p.prix);
+        $("places-s").textContent = (o.prises ? o.prises + " déjà prises sur " + o.places + ". " : "") + "Ensuite, le prix passe à " + montant(o.apres) + ".";
+      } else {
+        $("places-t").textContent = r + mots + " sur " + o.places;
+        $("places-s").textContent = o.prises ? o.prises + " déjà prises." : bonusInclus(p.bonus, o) ? "Les 2 bonus sont compris dans chaque place." : "";
+      }
       $("dock-s").textContent = r + mots;
-      $("cloture").textContent = "Il reste " + r + (r > 1 ? " places" : " place") + (bonusInclus(p.bonus, o) ? ", avec les 2 bonus" : "") + ". " + avant;
+      $("cloture").textContent = "Il reste " + r + (r > 1 ? " places" : " place") + (o.apres ? " à " + montant(p.prix) : "") + (bonusInclus(p.bonus, o) ? ", avec les 2 bonus" : "") + ". " + avant;
       $("places-repli").hidden = true;
       $("places").hidden = false;
-      if (o.fin) compteARebours(o.fin);
+      if (o.fin) compteARebours(o, p.prix);
       setTimeout(function () { $("jauge").style.width = Math.min(100, o.prises / o.places * 100) + "%"; }, 60);
       return;
     }

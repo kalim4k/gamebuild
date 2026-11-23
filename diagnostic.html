@@ -424,14 +424,19 @@ src="https://www.facebook.com/tr?id=4451955808377862&ev=PageView&noscript=1"
 var LIEN_PAIEMENT = "https://kgpqinxc.mychariow.shop/prd_iiq2laak/checkout";
 var LIEN_CHAINE   = "https://www.whatsapp.com/channel/0029Vb8XIsmFnSzD0G0r5a2G";
 var PORTES_FERMEES = false;  /* true : le groupe est temporairement fermé (du 18 au 22/11/2026) */
-/* L'ouverture limitée (50 places, jusqu'au mardi 24/11 à 23 h 59) : quand
-   /api/places la dit complète ou terminée, le diagnostic repasse en portes fermées. */
+/* L'ouverture limitée (jusqu'au mardi 24/11 à 23 h 59) : le prix affiché suit
+   Chariow (/api/places). Au palier (ouverture.apres : 3 500 F puis 4 500 F depuis
+   le 23/11), le groupe reste ouvert au prix suivant. Sans palier, quand l'ouverture
+   est complète ou terminée, le diagnostic repasse en portes fermées. */
 var FIN_OUVERTURE = "2026-11-24T23:59:00Z";
-if (Date.now() >= Date.parse(FIN_OUVERTURE)) PORTES_FERMEES = true;
+var TOTAL_DEPART  = "6 500 F";   /* le groupe et Jouable, à prévoir avant de se lancer */
+function montantDiag(n) { return String(n).replace(/\B(?=(\d{3})+$)/g, " ") + " F"; }
 try {
   fetch("/api/places").then(function (r) { return r.ok ? r.json() : null; }).then(function (p) {
-    var o = p && p.ouverture;
-    if (o && (o.restantes === 0 || o.terminee)) PORTES_FERMEES = true;
+    if (!p) return;
+    var o = p.ouverture;
+    if (o && !o.apres && (o.restantes === 0 || o.terminee)) PORTES_FERMEES = true;
+    if (Number.isFinite(p.prix)) { PRIX_GROUPE = montantDiag(p.prix); VALEUR_PIXEL = p.prix; TOTAL_DEPART = montantDiag(p.prix + 3000); }
   })["catch"](function () {});
 } catch (e) {}
 var PRIX_GROUPE   = "3 500 F";
@@ -920,7 +925,7 @@ var VALEUR_PIXEL  = 3500;     /* le prix du groupe, en F CFA, pour le pixel */
 
     /* Ce qu'il faut ajuster, formulé comme des actions */
     if (B === 0) {
-      ajuster.push("Mets 6 500 F de côté avant de te lancer : l'accompagnement coûte " + PRIX_GROUPE + ", puis " + PRIX_JOUABLE + " pour Jouable, qui met ton jeu en ligne.");
+      ajuster.push("Mets " + TOTAL_DEPART + " de côté avant de te lancer : l'accompagnement coûte " + PRIX_GROUPE + ", puis " + PRIX_JOUABLE + " pour Jouable, qui met ton jeu en ligne.");
     }
     if (T === 0) {
       ajuster.push("Avec moins de 30 minutes par jour, tu avanceras lentement. Vise au moins 1 heure : une partie pour ton jeu, une partie pour faire venir des joueurs.");

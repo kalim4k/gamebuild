@@ -15,22 +15,30 @@ export const VENTES_AU_LANCEMENT = 171;  /* les ventes de l'ancien pack, avant l
    les places restantes : on n'utilise pas le « restant » de Chariow, qui
    bouge aussi avec les paiements en cours. OUVERTURE_PLACES ne sert que si
    Chariow n'a pas de quantité (illimitée). Quand il ne reste plus de place
-   ou que la date passe, /rejoindre et le diagnostic se ferment tout seuls.
+   ou que la date passe : si OUVERTURE_APRES est un prix, le groupe reste
+   ouvert et passe à ce prix (palier) ; s'il est null, /rejoindre et le
+   diagnostic se ferment.
    Réouverture du 22/11/2026 : 3 500 F, à partir de 188 membres, jusqu'au
-   mardi 24/11 à 23 h 59, heure de Lomé (UTC).
+   mardi 24/11 à 23 h 59, heure de Lomé (UTC). 50 places vendues le 23/11 ;
+   50 de plus le même jour, puis 4 500 F (palier), le groupe reste ouvert.
+   OUVERTURE_PRIX : le prix de l'ouverture ; tant que Chariow affiche un autre
+   prix, aucun compteur ne s'affiche (c'est le cas une fois passé au palier).
    OUVERTURE_PLACES à null : pas d'ouverture limitée (ni compteur ni fermeture). */
-export const OUVERTURE_PLACES = 50;
+export const OUVERTURE_PLACES = 100;
 export const OUVERTURE_DEPART = 188;
 export const OUVERTURE_FIN = "2026-11-24T23:59:00Z";
+export const OUVERTURE_PRIX = 3500;
+export const OUVERTURE_APRES = 4500;
 
 /* Les bonus vont aux membres qui arrivent après BONUS_DEPART.
    BONUS_SUIT_OUVERTURE : chaque place de l'ouverture a ses bonus (leur nombre
    suit la quantité Chariow) ; sinon, seulement les BONUS_PLACES premiers.
-   1re vague : 30 places à partir de 157 (15/11/2026). 2e vague : toutes les
-   places de la réouverture (22/11/2026). BONUS_DEBUT : le début de la vague
+   1re vague : 30 places à partir de 157 (15/11/2026). 2e vague : les places à
+   3 500 F de la réouverture (22 et 23/11/2026), soit les 100 premiers après
+   188 ; pas de bonus au palier de 4 500 F. BONUS_DEBUT : le début de la vague
    en cours, pour ne compter que ses séries de visuels. */
-export const BONUS_SUIT_OUVERTURE = true;
-export const BONUS_PLACES = 50;
+export const BONUS_SUIT_OUVERTURE = false;
+export const BONUS_PLACES = 100;
 export const BONUS_DEPART = 188;
 export const BONUS_DEBUT = "2026-11-22T00:00:00Z";
 
@@ -39,13 +47,18 @@ export function ouvertureTerminee(maintenant = Date.now()) {
   return OUVERTURE_PLACES != null && !!OUVERTURE_FIN && maintenant >= Date.parse(OUVERTURE_FIN);
 }
 
-/* { places, prises, restantes, fin, terminee } de l'ouverture en cours, ou null sans limite.
-   quantite : la quantité totale du produit sur Chariow (null si illimitée). */
+/* Le groupe se ferme-t-il à la fin de l'ouverture ? Non s'il passe à un palier de prix. */
+export const FERME_A_LA_FIN = OUVERTURE_APRES == null;
+
+/* { places, prises, restantes, fin, terminee, apres } de l'ouverture en cours, ou null sans limite.
+   quantite : la quantité totale du produit sur Chariow (null si illimitée).
+   apres : le prix qui suit l'ouverture (null : le groupe ferme). */
 export function ouvertureDe(membres, quantite = null) {
   if (OUVERTURE_PLACES == null) return null;
   const prises = Math.max(0, membres - OUVERTURE_DEPART);
   const places = Number.isFinite(quantite) ? Math.max(0, quantite - VENTES_AU_LANCEMENT - OUVERTURE_DEPART) : OUVERTURE_PLACES;
-  return { places, prises: Math.min(prises, places), restantes: Math.max(0, places - prises), fin: OUVERTURE_FIN || null, terminee: ouvertureTerminee() };
+  return { places, prises: Math.min(prises, places), restantes: Math.max(0, places - prises), fin: OUVERTURE_FIN || null,
+    terminee: ouvertureTerminee(), apres: OUVERTURE_APRES };
 }
 
 /* { prix, membres, quantite } ou null si Chariow ne répond pas.

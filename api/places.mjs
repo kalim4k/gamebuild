@@ -17,9 +17,9 @@
    affiche un autre prix, la page ne montre aucun compteur.
    Les places des bonus se règlent dans _membres.mjs. */
 
-import { lisProduit, bonusDe, ouvertureDe } from "./_membres.mjs";
+import { lisProduit, bonusDe, ouvertureDe, OUVERTURE_PRIX } from "./_membres.mjs";
 
-const PRIX_ACTUEL = 3500;          /* réouverture du 22/11/2026 : 50 places à 3 500 F, jusqu'au mardi 24/11 */
+const PRIX_ACTUEL = OUVERTURE_PRIX; /* le prix de l'ouverture en cours (_membres.mjs) */
 const SEUIL = null;                /* paliers seulement : le nombre de membres qui déclenche la hausse */
 const PRIX_SUIVANT = null;         /* paliers passés : 1 990 F jusqu'à 50 membres, 2 500 F jusqu'à 100, 3 500 F jusqu'à 150, puis 4 500 F */
 
