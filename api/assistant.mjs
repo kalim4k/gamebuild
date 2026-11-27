@@ -77,14 +77,17 @@ function historique(h) {
   return msgs.filter((m, i) => !(msgs[i + 1] && msgs[i + 1].role === m.role));
 }
 
-async function garde(v, question, reponse, rep, ms, erreur) {
+/* La question est rangée AVANT la réponse : elle compte dans la limite même
+   si la suite échoue. La réponse et les jetons sont ajoutés à la fin, avant
+   de fermer la réponse (Vercel peut arrêter la fonction juste après). */
+async function complete(id, reponse, rep, ms, erreur) {
+  if (!id) return;
   const u = rep && rep.usage || {};
   try {
-    await sql`insert into assistant_questions (visiteur, question, reponse, modele, entree, cache_lu, cache_ecrit, sortie, ms, erreur)
-      values (${v}, ${question}, ${reponse ? reponse.slice(0, 6000) : null}, ${rep ? rep.model : MODELE},
-              ${u.input_tokens ?? null}, ${u.cache_read_input_tokens ?? null}, ${u.cache_creation_input_tokens ?? null},
-              ${u.output_tokens ?? null}, ${ms}, ${erreur})`;
-  } catch (e) { console.error("assistant: question non gardée", e.message); }
+    await sql`update assistant_questions set reponse = ${reponse ? reponse.slice(0, 6000) : null}, modele = ${rep ? rep.model : MODELE},
+      entree = ${u.input_tokens ?? null}, cache_lu = ${u.cache_read_input_tokens ?? null}, cache_ecrit = ${u.cache_creation_input_tokens ?? null},
+      sortie = ${u.output_tokens ?? null}, ms = ${ms}, erreur = ${erreur} where id = ${id}`;
+  } catch (e) { console.error("assistant: réponse non gardée", e.message); }
 }
 
 /* ══════════════ La fonction ══════════════ */
@@ -111,6 +114,12 @@ export default async function handler(req, res) {
   let texteSavoir;
   try { texteSavoir = await lisSavoir(); } catch (e) { console.error("assistant: savoir", e.message); }
   if (!texteSavoir) { res.status(503).json({ erreur: "savoir-absent" }); return; }
+
+  let id = null;
+  try {
+    const [l] = await sql`insert into assistant_questions (visiteur, question, modele) values (${v}, ${question}, ${MODELE}) returning id`;
+    id = l.id;
+  } catch (e) { console.error("assistant: question non gardée", e.message); res.status(503).json({ erreur: "base" }); return; }
 
   const messages = [...historique(corps.historique), { role: "user", content: question }];
   const { default: Anthropic } = await import("@anthropic-ai/sdk");
@@ -148,15 +157,15 @@ export default async function handler(req, res) {
       res.write((reponse ? "\n\n" : "") + phrase);
       reponse += (reponse ? "\n\n" : "") + phrase;
     }
-    res.end();
     console.log("assistant:", rep.model, "entrée", rep.usage?.input_tokens, "cache lu", rep.usage?.cache_read_input_tokens,
       "cache écrit", rep.usage?.cache_creation_input_tokens, "sortie", rep.usage?.output_tokens, Date.now() - debut, "ms");
-    await garde(v, question, reponse, rep, Date.now() - debut, null);
+    await complete(id, reponse, rep, Date.now() - debut, null);
+    res.end();
   } catch (e) {
     console.error("assistant:", e.status || "", e.message);
     const code = e instanceof Anthropic.RateLimitError ? "occupe" : "ia";
+    await complete(id, reponse || null, rep, Date.now() - debut, code + (e.status ? " " + e.status : ""));
     if (!commence) res.status(e instanceof Anthropic.RateLimitError ? 429 : 502).json({ erreur: code });
     else { res.write("\n\n[erreur]"); res.end(); }
-    await garde(v, question, reponse || null, rep, Date.now() - debut, code + (e.status ? " " + e.status : ""));
   }
 }
