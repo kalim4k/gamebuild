@@ -68,6 +68,7 @@
       if (!vus[cle] && videos[id.toLowerCase()]) { vus[cle] = 1; passages.push({ id: id.toLowerCase(), m: +m, s: +s }); }
       return "";
     });
+    propre = propre.replace(/\[voir:[^\]\n]*\]/gi, "");            /* un passage mal formé ou inconnu : jamais affiché tel quel */
     if (!fini) propre = propre.replace(/\[[^\]\n]{0,40}$/, "");   /* un passage pas encore fini d'arriver */
     return { texte: propre.replace(/\n{3,}/g, "\n\n").trim(), passages: passages.slice(0, 3) };
   }
