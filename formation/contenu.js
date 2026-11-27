@@ -31,7 +31,11 @@ window.FORMATION = {
   bibliotheque: [
     {
       titre: "Créer ton jeu et le faire payer",
-      adresses: ["/video/presentation", "/video/adsense-adsterra", "/video/creer-ton-jeu", "/gamebuild", "/membres/adsense", "/membres/promotion"]
+      adresses: ["/video/presentation", "/video/adsense-adsterra", "/video/creer-ton-jeu", "/membres/jeu-tap-to-earn", "/membres/jeu-telegram", "/membres/adsense", "/membres/promotion"]
+    },
+    {
+      titre: "Retirer tes gains",
+      adresses: ["/membres/webmoney", "/membres/paypal"]
     },
     {
       titre: "D'autres façons de gagner avec l'IA",
@@ -192,6 +196,46 @@ https://influenceuseia.vercel.app/etape-video.html`
       duree: "16 min",
       youtube: "https://www.youtube.com/watch?v=Rr7YDwGGHnE",
       resume: "Comment connecter ton jeu à Google AdSense, étape par étape, pour qu'il affiche les publicités de Google.",
+      prompts: []
+    },
+    {
+      adresse: "/membres/jeu-tap-to-earn",
+      miniature: "/membres/miniatures/jeu-tap-to-earn.webp",
+      cache: true, serie: "membres",
+      titre: "Crée un jeu Tap to Earn avec Claude",
+      duree: "4 min",
+      youtube: "https://www.youtube.com/watch?v=qGGGpJ7Uh48",
+      resume: "Comment créer avec Claude un jeu Tap to Earn, le jeu où l'on tape sur l'écran pour gagner des pièces.",
+      prompts: []
+    },
+    {
+      adresse: "/membres/jeu-telegram",
+      miniature: "/membres/miniatures/jeu-telegram.webp",
+      cache: true, serie: "membres",
+      titre: "Mets ton jeu sur Telegram",
+      duree: "6 min",
+      youtube: "https://www.youtube.com/watch?v=ymwDcJuKeOQ",
+      resume: "Tu crées un bot avec BotFather, puis tu donnes à Claude le lien de ton jeu sur Jouable et le token du bot : il en fait un mini-jeu qu'on lance directement dans Telegram.",
+      prompts: []
+    },
+    {
+      adresse: "/membres/webmoney",
+      miniature: "/membres/miniatures/webmoney.webp",
+      cache: true, serie: "membres",
+      titre: "Crée ton compte WebMoney pour retirer tes gains Adsterra",
+      duree: "2 min",
+      youtube: "https://www.youtube.com/watch?v=Ysio3SgKC8Q",
+      resume: "Installer WebMoney, vérifier ton identité, puis le relier à Adsterra pour retirer ton argent à partir de 5 dollars.",
+      prompts: []
+    },
+    {
+      adresse: "/membres/paypal",
+      miniature: "/membres/miniatures/paypal.webp",
+      cache: true, serie: "membres",
+      titre: "Crée un compte PayPal vérifié en Afrique",
+      duree: "3 min",
+      youtube: "https://www.youtube.com/watch?v=IjL5U1bexD0",
+      resume: "Créer un compte PayPal business vérifié pour recevoir tes gains d'Adsterra ou de Monetag.",
       prompts: []
     }
   ]

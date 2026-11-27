@@ -215,3 +215,16 @@
 .envoyer[disabled]{ opacity: .45; cursor: progress; }
 .envoyer svg{ width: 22px; height: 22px; fill: none; stroke: #fff; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
 .saisie-note{ margin: 6px auto 0; color: var(--ink-3); font-size: 12.5px; text-align: center; }
+
+/* Sur ordinateur : la bibliothèque prend toute la largeur, 3 puis 4 vidéos par ligne. */
+@media (min-width: 960px){
+  .page-biblio .wrap{ max-width: 1400px; padding: 0 40px; }
+  .page-biblio .entete{ padding-top: 56px; }
+  .page-biblio .chapo{ max-width: 60ch; }
+  .page-biblio .assistant-carte{ max-width: 720px; }
+  .page-biblio .biblio-section{ padding-top: 52px; }
+  .page-biblio .biblio-grille{ grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 34px 24px; }
+}
+@media (min-width: 1280px){
+  .page-biblio .biblio-grille{ grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
