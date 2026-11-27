@@ -5,7 +5,8 @@
   "functions": {
     "api/conseil.mjs": { "maxDuration": 60 },
     "api/bonus.mjs": { "maxDuration": 60 },
-    "api/membres.mjs": { "maxDuration": 60 }
+    "api/membres.mjs": { "maxDuration": 60 },
+    "api/assistant.mjs": { "maxDuration": 60 }
   },
   "redirects": [
     { "source": "/", "destination": "/chaine", "permanent": false },
@@ -109,6 +110,15 @@
       ]
     },
     {
+      "source": "/membres",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
       "source": "/membres/(.*)",
       "headers": [
         {
@@ -145,6 +155,15 @@
     },
     {
       "source": "/api/diagnostic",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store"
+        }
+      ]
+    },
+    {
+      "source": "/api/assistant",
       "headers": [
         {
           "key": "Cache-Control",

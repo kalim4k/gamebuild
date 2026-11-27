@@ -11,6 +11,7 @@
    youtube : le lien de la vidéo, sous n'importe quelle forme
              (youtu.be/…, youtube.com/watch?v=…, /shorts/…).
              Vide = « Vidéo bientôt disponible ».
+   miniature : l'image de la carte dans la bibliothèque des membres.
    prompts : les prompts affichés sous la vidéo, dans l'ordre.
              [] = pas de prompt sous cette vidéo.
              Chaque texte s'écrit entre deux accents graves ` … ` :
@@ -24,9 +25,24 @@ window.FORMATION = {
   titre: "Formation gratuite",
   sousTitre: "Trois vidéos pour créer avec l'IA et en tirer de l'argent. Regarde-les dans l'ordre, ou va directement à celle qui t'intéresse.",
 
+  /* La bibliothèque des membres (/membres) : toutes les formations, rangées
+     en sections, dans cet ordre. Chaque carte reprend le titre, la durée et
+     la « miniature » de la vidéo (images dans membres/miniatures/). */
+  bibliotheque: [
+    {
+      titre: "Créer ton jeu et le faire payer",
+      adresses: ["/video/presentation", "/video/adsense-adsterra", "/video/creer-ton-jeu", "/gamebuild", "/membres/adsense", "/membres/promotion"]
+    },
+    {
+      titre: "D'autres façons de gagner avec l'IA",
+      adresses: ["/formation/influenceur-ia", "/formation/dessins-animes-ia", "/formation/influenceuse-ia"]
+    }
+  ],
+
   videos: [
     {
       adresse: "/gamebuild",
+      miniature: "/membres/miniatures/gamebuild.webp",
       cache: true,
       titre: "Crée ton jeu avec Claude et gagne de l'argent avec la pub",
       duree: "12 min",
@@ -36,6 +52,7 @@ window.FORMATION = {
     },
     {
       adresse: "/formation/influenceur-ia",
+      miniature: "/membres/miniatures/influenceur-ia.webp",
       titre: "Crée ton influenceur IA bizarre et fais-le percer sur TikTok",
       duree: "9 min",
       youtube: "https://youtu.be/QGUQmvaGzGM",
@@ -49,6 +66,7 @@ window.FORMATION = {
     },
     {
       adresse: "/formation/dessins-animes-ia",
+      miniature: "/membres/miniatures/dessins-animes-ia.webp",
       titre: "Des dessins animés IA sur TikTok, comme Télétoon",
       duree: "8 min",
       youtube: "https://youtu.be/fAISLfSDOKU",
@@ -62,10 +80,11 @@ window.FORMATION = {
     },
     {
       adresse: "/formation/influenceuse-ia",
+      miniature: "/membres/miniatures/influenceuse-ia.webp",
       titre: "Ton influenceuse IA qui vend ses contenus sur Momolink",
-      duree: "20 min",
-      youtube: "https://youtu.be/ht3LHiLuqTs",
-      resume: "Garder le même visage d'une image à l'autre, rendre les vidéos virales avec les bons sons, puis vendre des contenus exclusifs sur Momolink.",
+      duree: "10 min",
+      youtube: "https://www.youtube.com/watch?v=90WlRQy3EEY",
+      resume: "Créer ton influenceuse IA, générer ses images et ses vidéos, faire des vues sur TikTok, puis la monétiser avec TikTok et Momolink.",
       prompts: [
         {
           titre: "Le prompt à envoyer à Claude",
@@ -87,6 +106,7 @@ https://influenceuseia.vercel.app/etape-video.html`
        dessous. Le diagnostic garde la vidéo d'origine dans « src ». */
     {
       adresse: "/video/presentation",
+      miniature: "/membres/miniatures/presentation.webp",
       cache: true, serie: "chaine",
       titre: "Comment ton jeu peut te rapporter de l'argent",
       duree: "10 min",
@@ -102,6 +122,7 @@ https://influenceuseia.vercel.app/etape-video.html`
     },
     {
       adresse: "/video/adsense-adsterra",
+      miniature: "/membres/miniatures/adsense-adsterra.webp",
       cache: true, serie: "chaine",
       titre: "Comment Adsterra et Google AdSense te paient",
       duree: "11 min",
@@ -117,6 +138,7 @@ https://influenceuseia.vercel.app/etape-video.html`
     },
     {
       adresse: "/video/creer-ton-jeu",
+      miniature: "/membres/miniatures/creer-ton-jeu.webp",
       cache: true, serie: "chaine",
       titre: "Crée ton jeu avec Claude et mets-le en ligne sur Jouable",
       duree: "11 min",
@@ -153,6 +175,7 @@ https://influenceuseia.vercel.app/etape-video.html`
        placées sous la vidéo, ici le playbook et les deux formulaires. */
     {
       adresse: "/membres/promotion",
+      miniature: "/membres/miniatures/promotion.webp",
       cache: true, serie: "membres",
       titre: "Comment faire la promotion de son jeu et attirer des joueurs",
       duree: "22 min",
@@ -163,6 +186,7 @@ https://influenceuseia.vercel.app/etape-video.html`
     },
     {
       adresse: "/membres/adsense",
+      miniature: "/membres/miniatures/adsense.webp",
       cache: true, serie: "membres",
       titre: "Comment connecter son jeu à AdSense",
       duree: "16 min",

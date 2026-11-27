@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+<title>L'assistant des formations</title>
+<meta name="description" content="Pose ta question : l'assistant répond à partir des vidéos de formation du groupe, et te dit où regarder.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#ffffff">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="L'assistant des formations">
+<meta property="og:description" content="Pose ta question : il répond à partir des vidéos du groupe, et te dit où regarder.">
+<meta property="og:image" content="https://gamebuild-delta.vercel.app/membres/miniatures/creer-ton-jeu.webp">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ccircle cx=%2750%27 cy=%2750%27 r=%2750%27 fill=%27%230071e3%27/%3E%3Cpath d=%27M40 30v40l32-20z%27 fill=%27white%27/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/formation/formation.css">
+<link rel="stylesheet" href="/membres/membres.css">
+<!-- L'assistant des membres : la page parle à /api/assistant, qui répond à
+     partir des transcriptions des vidéos de formation (rangées dans la base). -->
+</head>
+<body class="page-assistant">
+<header class="top"><div class="wrap">
+  <a class="top-retour" href="/membres">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg>
+    <span>Les formations</span>
+  </a>
+  <span class="top-note">Réservé aux membres</span>
+</div></header>
+
+<main class="wrap discussion">
+  <section class="accueil" id="accueil">
+    <p class="surtitre">Assistant</p>
+    <h1>Pose ta question</h1>
+    <p class="chapo">L'assistant a regardé toutes les vidéos de formation du groupe. Il te répond avec ce qui y est dit, et te montre le passage à regarder.</p>
+    <p class="exemples-titre">Par exemple :</p>
+    <div class="exemples" id="exemples">
+      <button type="button">Comment je mets mon jeu en ligne sur Jouable ?</button>
+      <button type="button">Quelle différence entre Adsterra et AdSense ?</button>
+      <button type="button">Comment connecter mon jeu à AdSense ?</button>
+      <button type="button">Comment attirer mes premiers joueurs ?</button>
+    </div>
+  </section>
+
+  <ol class="fil" id="fil" aria-live="polite"></ol>
+</main>
+
+<form class="saisie" id="saisie" novalidate>
+  <div class="wrap saisie-boite">
+    <label class="sr" for="question">Ta question</label>
+    <textarea id="question" rows="1" maxlength="800" placeholder="Écris ta question…" enterkeyhint="send"></textarea>
+    <button class="envoyer" id="envoyer" type="submit" aria-label="Envoyer la question">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5"/><path d="m6 11 6-6 6 6"/></svg>
+    </button>
+  </div>
+  <p class="wrap saisie-note">L'assistant répond avec les vidéos de formation. Il peut se tromper : vérifie dans la vidéo.</p>
+</form>
+
+<noscript><p class="wrap">Active JavaScript pour utiliser l'assistant.</p></noscript>
+<script src="/formation/contenu.js"></script>
+<script src="/membres/assistant.js"></script>
+</body>
+</html>
